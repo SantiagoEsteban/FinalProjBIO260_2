@@ -10,11 +10,12 @@ library(ggplot2)
 library(readxl)
 library(ggmap)
 library(RNetCDF)
+library(xlsx)
 
 ###############
-#Weather Data
+#Daily Weather Data
 ###############
-weather <- read_csv("D:/Google Drive/Medicina/MPH/Courses/BIO 260/FinalProjBIO260/Weather_data/721339.csv")
+weather <- read_csv("D:/Google Drive/Medicina/MPH/Courses/BIO 260/FinalProjBIO260_2/Weather_data/721339.csv")
 weather$PRCP[weather$PRCP==-9999] <- NA
 weather$TMAX[weather$TMAX==-9999] <- NA
 weather$TMIN[weather$TMIN==-9999] <- NA
@@ -22,8 +23,9 @@ weather$DATE <- ymd(weather$DATE)
 weather_Guinea <- filter(weather, STATION_NAME!='LUNGI SL' & STATION_NAME!='KANKAN GV' & STATION_NAME!='MONROVIA ROBERTS INTERNATIONAL LI')
 weather_SierraLeone <- filter(weather, STATION_NAME=='LUNGI SL')
 weather_Liberia <- filter(weather, STATION_NAME=='MONROVIA ROBERTS INTERNATIONAL LI')
-
-
+weather_Guinea$week <- floor_date(weather_Guinea$DATE, unit="week")
+weather_Guinea$month <- floor_date(weather_Guinea$DATE, unit="month")
+weather_Guinea <- as.data.frame(unlist(weather_Guinea))
 
 
 ##########
@@ -38,8 +40,6 @@ ggplot(data=filter(weather_Guinea, STATION_NAME=='CONAKRY AERO GV')) +
     geom_smooth(aes(x=DATE, y=TMIN), color='blue', method='loess', span=0.2)
 
 #Weekly
-weather_Guinea$week <- floor_date(weather_Guinea$DATE, unit="week")
-weather_Guinea$month <- floor_date(weather_Guinea$DATE, unit="month")
 ggplot(data=filter(weather_Guinea, STATION_NAME=='CONAKRY AERO GV' & DATE>'2014-06-01')) + 
            geom_boxplot(aes(y=TMAX, x=week, group=week)) + 
     geom_smooth(aes(x=DATE, y=TMAX), method='loess', span=0.2) +
@@ -49,49 +49,49 @@ ggplot(data=filter(weather_Guinea, STATION_NAME=='CONAKRY AERO GV' & DATE>'2014-
 
 #Monthly Conakry
 #Vap - vapor pressure
-vap <- open.nc('D:/Google Drive/Medicina/MPH/Courses/BIO 260/FinalProjBIO260/Weather_data/cru_ts3.23.2011.2014.vap.dat.nc', write=FALSE)
+vap <- open.nc('D:/Google Drive/Medicina/MPH/Courses/BIO 260/FinalProjBIO260_2/Weather_data/cru_ts3.23.2011.2014.vap.dat.nc', write=FALSE)
 vap2 <- read.nc(vap, unpack=TRUE)
 vap3 <- var.get.nc(vap, "vap")
 Vap_Conakry_monthly <- as.data.frame(cbind(Year=c(rep(2011, 12), rep(2012, 12), rep(2013, 12), rep(2014, 12)), Month=rep(seq(1,12,1), 4), Vap=vap3[333,200,1:48]))
 
 #Wet - wet day frequency in days
-Wet <- open.nc('D:/Google Drive/Medicina/MPH/Courses/BIO 260/FinalProjBIO260/Weather_data/cru_ts3.23.01.2011.2014.wet.dat.nc', write=FALSE)
+Wet <- open.nc('D:/Google Drive/Medicina/MPH/Courses/BIO 260/FinalProjBIO260_2/Weather_data/cru_ts3.23.01.2011.2014.wet.dat.nc', write=FALSE)
 Wet2 <- read.nc(Wet, unpack=TRUE)
 Wet3 <- var.get.nc(Wet, "wet")
 Wet_Conakry_monthly <- as.data.frame(cbind(Year=c(rep(2011, 12), rep(2012, 12), rep(2013, 12), rep(2014, 12)), Month=rep(seq(1,12,1), 4), Wet=Wet3[333,200,1:48]))
 
 #dtr - daily temperature range
-dtr <- open.nc('D:/Google Drive/Medicina/MPH/Courses/BIO 260/FinalProjBIO260/Weather_data/cru_ts3.23.2011.2014.dtr.dat.nc', write=FALSE)
+dtr <- open.nc('D:/Google Drive/Medicina/MPH/Courses/BIO 260/FinalProjBIO260_2/Weather_data/cru_ts3.23.2011.2014.dtr.dat.nc', write=FALSE)
 dtr2 <- read.nc(dtr, unpack=TRUE)
 dtr3 <- var.get.nc(dtr, "dtr")
 dtr_Conakry_monthly <- as.data.frame(cbind(Year=c(rep(2011, 12), rep(2012, 12), rep(2013, 12), rep(2014, 12)), Month=rep(seq(1,12,1), 4), dtr=dtr3[333,200,1:48]))
 
 #pet - potential evapotranspiration
-pet <- open.nc('D:/Google Drive/Medicina/MPH/Courses/BIO 260/FinalProjBIO260/Weather_data/cru_ts3.23.2011.2014.pet.dat.nc', write=FALSE)
+pet <- open.nc('D:/Google Drive/Medicina/MPH/Courses/BIO 260/FinalProjBIO260_2/Weather_data/cru_ts3.23.2011.2014.pet.dat.nc', write=FALSE)
 pet2 <- read.nc(pet, unpack=TRUE)
 pet3 <- var.get.nc(pet, "pet")
 pet_Conakry_monthly <- as.data.frame(cbind(Year=c(rep(2011, 12), rep(2012, 12), rep(2013, 12), rep(2014, 12)), Month=rep(seq(1,12,1), 4), pet=pet3[333,200,1:48]))
 
 #Pre - precipitation
-pre <- open.nc('D:/Google Drive/Medicina/MPH/Courses/BIO 260/FinalProjBIO260/Weather_data/cru_ts3.23.2011.2014.pre.dat.nc', write=FALSE)
+pre <- open.nc('D:/Google Drive/Medicina/MPH/Courses/BIO 260/FinalProjBIO260_2/Weather_data/cru_ts3.23.2011.2014.pre.dat.nc', write=FALSE)
 pre2 <- read.nc(pre, unpack=TRUE)
 pre3 <- var.get.nc(pre, "pre")
 pre_Conakry_monthly <- as.data.frame(cbind(Year=c(rep(2011, 12), rep(2012, 12), rep(2013, 12), rep(2014, 12)), Month=rep(seq(1,12,1), 4), pre=pre3[333,200,1:48]))
 
 #Tmn - Tmin
-tmn <- open.nc('D:/Google Drive/Medicina/MPH/Courses/BIO 260/FinalProjBIO260/Weather_data/cru_ts3.23.2011.2014.tmn.dat.nc', write=FALSE)
+tmn <- open.nc('D:/Google Drive/Medicina/MPH/Courses/BIO 260/FinalProjBIO260_2/Weather_data/cru_ts3.23.2011.2014.tmn.dat.nc', write=FALSE)
 tmn2 <- read.nc(tmn, unpack=TRUE)
 tmn3 <- var.get.nc(tmn, "tmn")
 tmn_Conakry_monthly <- as.data.frame(cbind(Year=c(rep(2011, 12), rep(2012, 12), rep(2013, 12), rep(2014, 12)), Month=rep(seq(1,12,1), 4), tmn=tmn3[333,200,1:48]))
 
 #Tmp - Tmean
-tmp <- open.nc('D:/Google Drive/Medicina/MPH/Courses/BIO 260/FinalProjBIO260/Weather_data/cru_ts3.23.2011.2014.tmp.dat.nc', write=FALSE)
+tmp <- open.nc('D:/Google Drive/Medicina/MPH/Courses/BIO 260/FinalProjBIO260_2/Weather_data/cru_ts3.23.2011.2014.tmp.dat.nc', write=FALSE)
 tmp2 <- read.nc(tmn, unpack=TRUE)
 tmp3 <- var.get.nc(tmp, "tmp")
 tmp_Conakry_monthly <- as.data.frame(cbind(Year=c(rep(2011, 12), rep(2012, 12), rep(2013, 12), rep(2014, 12)), Month=rep(seq(1,12,1), 4), tmp=tmp3[333,200,1:48]))
 
 #Tmx - Tmax
-tmx <- open.nc('D:/Google Drive/Medicina/MPH/Courses/BIO 260/FinalProjBIO260/Weather_data/cru_ts3.23.2011.2014.tmx.dat.nc', write=FALSE)
+tmx <- open.nc('D:/Google Drive/Medicina/MPH/Courses/BIO 260/FinalProjBIO260_2/Weather_data/cru_ts3.23.2011.2014.tmx.dat.nc', write=FALSE)
 tmx2 <- read.nc(tmx, unpack=TRUE)
 tmx3 <- var.get.nc(tmx, "tmx")
 tmx_Conakry_monthly <- as.data.frame(cbind(Year=c(rep(2011, 12), rep(2012, 12), rep(2013, 12), rep(2014, 12)), Month=rep(seq(1,12,1), 4), tmx=tmx3[333,200,1:48]))
@@ -131,7 +131,7 @@ write.csv(Conakry_monthly, file="Conakry_monthly.csv")
 #Guinea CASES
 #############
 
-guinea_cases <- read_csv("D:/Google Drive/Medicina/MPH/Courses/BIO 260/FinalProjBIO260/Cases/Guinea_Cases_district.csv")
+guinea_cases <- read_csv("D:/Google Drive/Medicina/MPH/Courses/BIO 260/FinalProjBIO260_2/Cases/Guinea_Cases_district.csv")
 guinea_cases <- gather(guinea_cases, Week, Cases, 5:123)
 guinea_cases$Epi_Week <- gsub("^.*\\("," ",x=guinea_cases$Week)
 guinea_cases$Epi_Week <- gsub("\\)"," ",x=guinea_cases$Epi_Week)
@@ -164,7 +164,7 @@ Guinea_stations$lon <- as.numeric(as.character((Guinea_stations$lon)))
 Guinea_stations$lat <- as.numeric(as.character((Guinea_stations$lat)))
 
 library(sp)
-guineards <- readRDS("D:/Google Drive/Medicina/MPH/Courses/BIO 260/FinalProjBIO260/Guinea-Admin/GIN_adm1.rds")
+guineards <- readRDS("D:/Google Drive/Medicina/MPH/Courses/BIO 260/FinalProjBIO260_2/Guinea-Admin/GIN_adm1.rds")
 guineashp.df <- fortify(guineards)
 
 ggmap(Guinea, extent='normal') +
@@ -187,49 +187,49 @@ ggmap(Guinea, extent='normal') +
 
 #Monthly Freetown
 #Vap - vapor pressure
-vap <- open.nc('D:/Google Drive/Medicina/MPH/Courses/BIO 260/FinalProjBIO260/Weather_data/cru_ts3.23.2011.2014.vap.dat.nc', write=FALSE)
+vap <- open.nc('D:/Google Drive/Medicina/MPH/Courses/BIO 260/FinalProjBIO260_2/Weather_data/cru_ts3.23.2011.2014.vap.dat.nc', write=FALSE)
 vap2 <- read.nc(vap, unpack=TRUE)
 vap3 <- var.get.nc(vap, "vap")
 Vap_Freetown_monthly <- as.data.frame(cbind(Year=c(rep(2013, 12), rep(2014, 12)), Month=rep(seq(1,12,1), 2), Vap=vap3[334,197,25:48]))
 
 #Wet - wet day frequency in days
-Wet <- open.nc('D:/Google Drive/Medicina/MPH/Courses/BIO 260/FinalProjBIO260/Weather_data/cru_ts3.23.01.2011.2014.wet.dat.nc', write=FALSE)
+Wet <- open.nc('D:/Google Drive/Medicina/MPH/Courses/BIO 260/FinalProjBIO260_2/Weather_data/cru_ts3.23.01.2011.2014.wet.dat.nc', write=FALSE)
 Wet2 <- read.nc(Wet, unpack=TRUE)
 Wet3 <- var.get.nc(Wet, "wet")
 Wet_Freetown_monthly <- as.data.frame(cbind(Year=c(rep(2013, 12), rep(2014, 12)), Month=rep(seq(1,12,1), 2), Wet=Wet3[334,197,25:48]))
 
 #dtr - daily temperature range
-dtr <- open.nc('D:/Google Drive/Medicina/MPH/Courses/BIO 260/FinalProjBIO260/Weather_data/cru_ts3.23.2011.2014.dtr.dat.nc', write=FALSE)
+dtr <- open.nc('D:/Google Drive/Medicina/MPH/Courses/BIO 260/FinalProjBIO260_2/Weather_data/cru_ts3.23.2011.2014.dtr.dat.nc', write=FALSE)
 dtr2 <- read.nc(dtr, unpack=TRUE)
 dtr3 <- var.get.nc(dtr, "dtr")
 dtr_Freetown_monthly <- as.data.frame(cbind(Year=c(rep(2013, 12), rep(2014, 12)), Month=rep(seq(1,12,1), 2), dtr=dtr3[334,197,25:48]))
 
 #pet - potential evapotranspiration
-pet <- open.nc('D:/Google Drive/Medicina/MPH/Courses/BIO 260/FinalProjBIO260/Weather_data/cru_ts3.23.2011.2014.pet.dat.nc', write=FALSE)
+pet <- open.nc('D:/Google Drive/Medicina/MPH/Courses/BIO 260/FinalProjBIO260_2/Weather_data/cru_ts3.23.2011.2014.pet.dat.nc', write=FALSE)
 pet2 <- read.nc(pet, unpack=TRUE)
 pet3 <- var.get.nc(pet, "pet")
 pet_Freetown_monthly <- as.data.frame(cbind(Year=c(rep(2013, 12), rep(2014, 12)), Month=rep(seq(1,12,1), 2), pet=pet3[334,197,25:48]))
 
 #Pre - precipitation
-pre <- open.nc('D:/Google Drive/Medicina/MPH/Courses/BIO 260/FinalProjBIO260/Weather_data/cru_ts3.23.2011.2014.pre.dat.nc', write=FALSE)
+pre <- open.nc('D:/Google Drive/Medicina/MPH/Courses/BIO 260/FinalProjBIO260_2/Weather_data/cru_ts3.23.2011.2014.pre.dat.nc', write=FALSE)
 pre2 <- read.nc(pre, unpack=TRUE)
 pre3 <- var.get.nc(pre, "pre")
 pre_Freetown_monthly <- as.data.frame(cbind(Year=c(rep(2013, 12), rep(2014, 12)), Month=rep(seq(1,12,1), 2), pre=pre3[334,197,25:48]))
 
 #Tmn - Tmin
-tmn <- open.nc('D:/Google Drive/Medicina/MPH/Courses/BIO 260/FinalProjBIO260/Weather_data/cru_ts3.23.2011.2014.tmn.dat.nc', write=FALSE)
+tmn <- open.nc('D:/Google Drive/Medicina/MPH/Courses/BIO 260/FinalProjBIO260_2/Weather_data/cru_ts3.23.2011.2014.tmn.dat.nc', write=FALSE)
 tmn2 <- read.nc(tmn, unpack=TRUE)
 tmn3 <- var.get.nc(tmn, "tmn")
 tmn_Freetown_monthly <- as.data.frame(cbind(Year=c(rep(2013, 12), rep(2014, 12)), Month=rep(seq(1,12,1), 2), tmn=tmn3[334,197,25:48]))
 
 #Tmp - Tmean
-tmp <- open.nc('D:/Google Drive/Medicina/MPH/Courses/BIO 260/FinalProjBIO260/Weather_data/cru_ts3.23.2011.2014.tmp.dat.nc', write=FALSE)
+tmp <- open.nc('D:/Google Drive/Medicina/MPH/Courses/BIO 260/FinalProjBIO260_2/Weather_data/cru_ts3.23.2011.2014.tmp.dat.nc', write=FALSE)
 tmp2 <- read.nc(tmn, unpack=TRUE)
 tmp3 <- var.get.nc(tmp, "tmp")
 tmp_Freetown_monthly <- as.data.frame(cbind(Year=c(rep(2013, 12), rep(2014, 12)), Month=rep(seq(1,12,1), 2), tmp=tmp3[334,197,25:48]))
 
 #Tmx - Tmax
-tmx <- open.nc('D:/Google Drive/Medicina/MPH/Courses/BIO 260/FinalProjBIO260/Weather_data/cru_ts3.23.2011.2014.tmx.dat.nc', write=FALSE)
+tmx <- open.nc('D:/Google Drive/Medicina/MPH/Courses/BIO 260/FinalProjBIO260_2/Weather_data/cru_ts3.23.2011.2014.tmx.dat.nc', write=FALSE)
 tmx2 <- read.nc(tmx, unpack=TRUE)
 tmx3 <- var.get.nc(tmx, "tmx")
 tmx_Freetown_monthly <- as.data.frame(cbind(Year=c(rep(2013, 12), rep(2014, 12)), Month=rep(seq(1,12,1), 2), tmx=tmx3[334,197,25:48]))
@@ -268,10 +268,11 @@ write.csv(Freetown_monthly, file="Freetown_monthly.csv")
 #SL CASES
 ##########
 
-SierraLeone_cases <- read_csv("D:/Google Drive/Medicina/MPH/Courses/BIO 260/FinalProjBIO260/Cases/SierraLeone_Cases_district.csv")
-SierraLeone_cases$Epi_week <- gsub("^.*\\("," ",x=SierraLeone_cases$week)
-SierraLeone_cases$Epi_week <- gsub("\\)"," ",x=SierraLeone_cases$Epi_week)
-SierraLeone_cases <- select(SierraLeone_cases, week, Epi_week, everything())
+SierraLeone_cases <- read_csv("D:/Google Drive/Medicina/MPH/Courses/BIO 260/FinalProjBIO260_2/Cases/SierraLeone_Cases_district.csv")
+SierraLeone_cases <- gather(SierraLeone_cases, Week, Cases, 5:123)
+SierraLeone_cases$Epi_Week <- gsub("^.*\\("," ",x=SierraLeone_cases$Week)
+SierraLeone_cases$Epi_Week <- gsub("\\)"," ",x=SierraLeone_cases$Epi_Week)
+colnames(SierraLeone_cases) <- c('Location', 'Source', 'Indicator', 'Case_definition', 'Week', 'Cases', 'Epi_Week')
 write.csv(SierraLeone_cases, "SierraLeone_cases_long.csv")
 
 ##########
@@ -305,49 +306,49 @@ ggmap(SierraLeone, extent='device') +
 
 #Monthly Monrovia
 #Vap - vapor pressure
-vap <- open.nc('D:/Google Drive/Medicina/MPH/Courses/BIO 260/FinalProjBIO260/Weather_data/cru_ts3.23.2011.2014.vap.dat.nc', write=FALSE)
+vap <- open.nc('D:/Google Drive/Medicina/MPH/Courses/BIO 260/FinalProjBIO260_2/Weather_data/cru_ts3.23.2011.2014.vap.dat.nc', write=FALSE)
 vap2 <- read.nc(vap, unpack=TRUE)
 vap3 <- var.get.nc(vap, "vap")
 Vap_Monrovia_monthly <- as.data.frame(cbind(Year=c(rep(2013, 12), rep(2014, 12)), Month=rep(seq(1,12,1), 2), Vap=vap3[339,193,25:48]))
 
 #Wet - wet day frequency in days
-Wet <- open.nc('D:/Google Drive/Medicina/MPH/Courses/BIO 260/FinalProjBIO260/Weather_data/cru_ts3.23.01.2011.2014.wet.dat.nc', write=FALSE)
+Wet <- open.nc('D:/Google Drive/Medicina/MPH/Courses/BIO 260/FinalProjBIO260_2/Weather_data/cru_ts3.23.01.2011.2014.wet.dat.nc', write=FALSE)
 Wet2 <- read.nc(Wet, unpack=TRUE)
 Wet3 <- var.get.nc(Wet, "wet")
 Wet_Monrovia_monthly <- as.data.frame(cbind(Year=c(rep(2013, 12), rep(2014, 12)), Month=rep(seq(1,12,1), 2), Wet=Wet3[339,193,25:48]))
 
 #dtr - daily temperature range
-dtr <- open.nc('D:/Google Drive/Medicina/MPH/Courses/BIO 260/FinalProjBIO260/Weather_data/cru_ts3.23.2011.2014.dtr.dat.nc', write=FALSE)
+dtr <- open.nc('D:/Google Drive/Medicina/MPH/Courses/BIO 260/FinalProjBIO260_2/Weather_data/cru_ts3.23.2011.2014.dtr.dat.nc', write=FALSE)
 dtr2 <- read.nc(dtr, unpack=TRUE)
 dtr3 <- var.get.nc(dtr, "dtr")
 dtr_Monrovia_monthly <- as.data.frame(cbind(Year=c(rep(2013, 12), rep(2014, 12)), Month=rep(seq(1,12,1), 2), dtr=dtr3[339,193,25:48]))
 
 #pet - potential evapotranspiration
-pet <- open.nc('D:/Google Drive/Medicina/MPH/Courses/BIO 260/FinalProjBIO260/Weather_data/cru_ts3.23.2011.2014.pet.dat.nc', write=FALSE)
+pet <- open.nc('D:/Google Drive/Medicina/MPH/Courses/BIO 260/FinalProjBIO260_2/Weather_data/cru_ts3.23.2011.2014.pet.dat.nc', write=FALSE)
 pet2 <- read.nc(pet, unpack=TRUE)
 pet3 <- var.get.nc(pet, "pet")
 pet_Monrovia_monthly <- as.data.frame(cbind(Year=c(rep(2013, 12), rep(2014, 12)), Month=rep(seq(1,12,1), 2), pet=pet3[339,193,25:48]))
 
 #Pre - precipitation
-pre <- open.nc('D:/Google Drive/Medicina/MPH/Courses/BIO 260/FinalProjBIO260/Weather_data/cru_ts3.23.2011.2014.pre.dat.nc', write=FALSE)
+pre <- open.nc('D:/Google Drive/Medicina/MPH/Courses/BIO 260/FinalProjBIO260_2/Weather_data/cru_ts3.23.2011.2014.pre.dat.nc', write=FALSE)
 pre2 <- read.nc(pre, unpack=TRUE)
 pre3 <- var.get.nc(pre, "pre")
 pre_Monrovia_monthly <- as.data.frame(cbind(Year=c(rep(2013, 12), rep(2014, 12)), Month=rep(seq(1,12,1), 2), pre=pre3[339,193,25:48]))
 
 #Tmn - Tmin
-tmn <- open.nc('D:/Google Drive/Medicina/MPH/Courses/BIO 260/FinalProjBIO260/Weather_data/cru_ts3.23.2011.2014.tmn.dat.nc', write=FALSE)
+tmn <- open.nc('D:/Google Drive/Medicina/MPH/Courses/BIO 260/FinalProjBIO260_2/Weather_data/cru_ts3.23.2011.2014.tmn.dat.nc', write=FALSE)
 tmn2 <- read.nc(tmn, unpack=TRUE)
 tmn3 <- var.get.nc(tmn, "tmn")
 tmn_Monrovia_monthly <- as.data.frame(cbind(Year=c(rep(2013, 12), rep(2014, 12)), Month=rep(seq(1,12,1), 2), tmn=tmn3[339,193,25:48]))
 
 #Tmp - Tmean
-tmp <- open.nc('D:/Google Drive/Medicina/MPH/Courses/BIO 260/FinalProjBIO260/Weather_data/cru_ts3.23.2011.2014.tmp.dat.nc', write=FALSE)
+tmp <- open.nc('D:/Google Drive/Medicina/MPH/Courses/BIO 260/FinalProjBIO260_2/Weather_data/cru_ts3.23.2011.2014.tmp.dat.nc', write=FALSE)
 tmp2 <- read.nc(tmn, unpack=TRUE)
 tmp3 <- var.get.nc(tmp, "tmp")
 tmp_Monrovia_monthly <- as.data.frame(cbind(Year=c(rep(2013, 12), rep(2014, 12)), Month=rep(seq(1,12,1), 2), tmp=tmp3[339,193,25:48]))
 
 #Tmx - Tmax
-tmx <- open.nc('D:/Google Drive/Medicina/MPH/Courses/BIO 260/FinalProjBIO260/Weather_data/cru_ts3.23.2011.2014.tmx.dat.nc', write=FALSE)
+tmx <- open.nc('D:/Google Drive/Medicina/MPH/Courses/BIO 260/FinalProjBIO260_2/Weather_data/cru_ts3.23.2011.2014.tmx.dat.nc', write=FALSE)
 tmx2 <- read.nc(tmx, unpack=TRUE)
 tmx3 <- var.get.nc(tmx, "tmx")
 tmx_Monrovia_monthly <- as.data.frame(cbind(Year=c(rep(2013, 12), rep(2014, 12)), Month=rep(seq(1,12,1), 2), tmx=tmx3[339,193,25:48]))
@@ -385,7 +386,7 @@ write.csv(Monrovia_monthly, file="Monrovia_monthly.csv")
 ##########
 #LI CASES
 ##########
-liberia_cases <- read_csv("D:/Google Drive/Medicina/MPH/Courses/BIO 260/FinalProjBIO260/Cases/Liberia_Cases_district.csv")
+liberia_cases <- read_csv("D:/Google Drive/Medicina/MPH/Courses/BIO 260/FinalProjBIO260_2/Cases/Liberia_Cases_district.csv")
 liberia_cases <- gather(liberia_cases, Week, Cases, 5:123)
 liberia_cases$Epi_Week <- gsub("^.*\\("," ",x=liberia_cases$Week)
 liberia_cases$Epi_Week <- gsub("\\)"," ",x=liberia_cases$Epi_Week)
