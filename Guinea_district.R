@@ -78,6 +78,8 @@ Vap_Beyla_monthly_2015a <- select(Vap_Beyla_monthly_2015a, date, Year, Month, da
 Vap_Beyla_monthly_2015 <- full_join(Vap_Beyla_monthly_2015a, Vap_Beyla_monthly_2015)
 Vap_Beyla_monthly <- rbind(select(Vap_Beyla_monthly,date, Year, Month, day, Location, Vap), Vap_Beyla_monthly_2015)
 rm(Vap_Beyla_monthly_2015, Vap_Beyla_monthly_2015a)
+Vap_Beyla_monthly$measurement <- "Vap"
+Vap_Beyla_monthly <- rename(Vap_Beyla_monthly, Value=Vap)
 #Boffa
 Vap_Boffa_monthly <- as.data.frame(cbind(Year=c(rep(2011, 12), rep(2012, 12), rep(2013, 12), rep(2014, 12)), 
                                          Month=rep(seq(1,12,1), 4), day=1,
@@ -97,6 +99,8 @@ Vap_Boffa_monthly_2015a <- select(Vap_Boffa_monthly_2015a, date, Year, Month, da
 Vap_Boffa_monthly_2015 <- full_join(Vap_Boffa_monthly_2015a, Vap_Boffa_monthly_2015)
 Vap_Boffa_monthly <- rbind(select(Vap_Boffa_monthly,date, Year, Month, day, Location, Vap), Vap_Boffa_monthly_2015)
 rm(Vap_Boffa_monthly_2015, Vap_Boffa_monthly_2015a)
+Vap_Boffa_monthly$measurement <- "Vap"
+Vap_Boffa_monthly <- rename(Vap_Boffa_monthly, Value=Vap)
 #Boke
 Vap_Boke_monthly <- as.data.frame(cbind(Year=c(rep(2011, 12), rep(2012, 12), rep(2013, 12), rep(2014, 12)), 
                                          Month=rep(seq(1,12,1), 4), day=1,
@@ -115,6 +119,8 @@ Vap_Boke_monthly_2015a <- select(Vap_Boke_monthly_2015a, date, Year, Month, day,
 Vap_Boke_monthly_2015 <- full_join(Vap_Boke_monthly_2015a, Vap_Boke_monthly_2015)
 Vap_Boke_monthly <- rbind(select(Vap_Boke_monthly,date, Year, Month, day, Location, Vap), Vap_Boke_monthly_2015)
 rm(Vap_Boke_monthly_2015, Vap_Boke_monthly_2015a)
+Vap_Boke_monthly$measurement <- "Vap"
+Vap_Boke_monthly <- rename(Vap_Boke_monthly, Value=Vap)
 #Coyah
 Vap_Coyah_monthly <- as.data.frame(cbind(Year=c(rep(2011, 12), rep(2012, 12), rep(2013, 12), rep(2014, 12)), 
                                         Month=rep(seq(1,12,1), 4), day=1,
@@ -130,6 +136,8 @@ Vap_Coyah_monthly_2015a <- select(Vap_Coyah_monthly_2015a, date, Year, Month, da
 Vap_Coyah_monthly_2015 <- full_join(Vap_Coyah_monthly_2015a, Vap_Coyah_monthly_2015)
 Vap_Coyah_monthly <- rbind(select(Vap_Coyah_monthly,date, Year, Month, day, Location, Vap), Vap_Coyah_monthly_2015)
 rm(Vap_Coyah_monthly_2015, Vap_Coyah_monthly_2015a)
+Vap_Coyah_monthly$measurement <- "Vap"
+Vap_Coyah_monthly <- rename(Vap_Coyah_monthly, Value=Vap)
 #Dabola
 Vap_Dabola_monthly <- as.data.frame(cbind(Year=c(rep(2011, 12), rep(2012, 12), rep(2013, 12), rep(2014, 12)), 
                                         Month=rep(seq(1,12,1), 4), day=1,
@@ -147,6 +155,8 @@ Vap_Dabola_monthly_2015a <- select(Vap_Dabola_monthly_2015a, date, Year, Month, 
 Vap_Dabola_monthly_2015 <- full_join(Vap_Dabola_monthly_2015a, Vap_Dabola_monthly_2015)
 Vap_Dabola_monthly <- rbind(select(Vap_Dabola_monthly,date, Year, Month, day, Location, Vap), Vap_Dabola_monthly_2015)
 rm(Vap_Dabola_monthly_2015, Vap_Dabola_monthly_2015a)
+Vap_Dabola_monthly$measurement <- "Vap"
+Vap_Dabola_monthly <- rename(Vap_Dabola_monthly, Value=Vap)
 #Dalaba
 Vap_Dalaba_monthly <- as.data.frame(cbind(Year=c(rep(2011, 12), rep(2012, 12), rep(2013, 12), rep(2014, 12)), 
                                           Month=rep(seq(1,12,1), 4), day=1,
@@ -164,6 +174,8 @@ Vap_Dalaba_monthly_2015a <- select(Vap_Dalaba_monthly_2015a, date, Year, Month, 
 Vap_Dalaba_monthly_2015 <- full_join(Vap_Dalaba_monthly_2015a, Vap_Dalaba_monthly_2015)
 Vap_Dalaba_monthly <- rbind(select(Vap_Dalaba_monthly,date, Year, Month, day, Location, Vap), Vap_Dalaba_monthly_2015)
 rm(Vap_Dalaba_monthly_2015, Vap_Dalaba_monthly_2015a)
+Vap_Dalaba_monthly$measurement <- "Vap"
+Vap_Dalaba_monthly <- rename(Vap_Dalaba_monthly, Value=Vap)
 #Dinguiray
 Vap_Dinguiray_monthly <- as.data.frame(cbind(Year=c(rep(2011, 12), rep(2012, 12), rep(2013, 12), rep(2014, 12)), 
                                              Month=rep(seq(1,12,1), 4), day=1,
@@ -185,6 +197,8 @@ Vap_Dinguiray_monthly_2015a <- select(Vap_Dinguiray_monthly_2015a, date, Year, M
 Vap_Dinguiray_monthly_2015 <- full_join(Vap_Dinguiray_monthly_2015a, Vap_Dinguiray_monthly_2015)
 Vap_Dinguiray_monthly <- rbind(select(Vap_Dinguiray_monthly,date, Year, Month, day, Location, Vap), Vap_Dinguiray_monthly_2015)
 rm(Vap_Dinguiray_monthly_2015, Vap_Dinguiray_monthly_2015a)
+Vap_Dinguiray_monthly$measurement <- "Vap"
+Vap_Dinguiray_monthly <- rename(Vap_Dinguiray_monthly, Value=Vap)
 #Dubreka
 Vap_Dubreka_monthly <- as.data.frame(cbind(Year=c(rep(2011, 12), rep(2012, 12), rep(2013, 12), rep(2014, 12)), 
                                              Month=rep(seq(1,12,1), 4), day=1,
@@ -202,6 +216,8 @@ Vap_Dubreka_monthly_2015a <- select(Vap_Dubreka_monthly_2015a, date, Year, Month
 Vap_Dubreka_monthly_2015 <- full_join(Vap_Dubreka_monthly_2015a, Vap_Dubreka_monthly_2015)
 Vap_Dubreka_monthly <- rbind(select(Vap_Dubreka_monthly,date, Year, Month, day, Location, Vap), Vap_Dubreka_monthly_2015)
 rm(Vap_Dubreka_monthly_2015, Vap_Dubreka_monthly_2015a)
+Vap_Dubreka_monthly$measurement <- "Vap"
+Vap_Dubreka_monthly <- rename(Vap_Dubreka_monthly, Value=Vap)
 #Faranah
 Vap_Faranah_monthly <- as.data.frame(cbind(Year=c(rep(2011, 12), rep(2012, 12), rep(2013, 12), rep(2014, 12)), 
                                              Month=rep(seq(1,12,1), 4), day=1,
@@ -222,6 +238,8 @@ Vap_Faranah_monthly_2015a <- select(Vap_Faranah_monthly_2015a, date, Year, Month
 Vap_Faranah_monthly_2015 <- full_join(Vap_Faranah_monthly_2015a, Vap_Faranah_monthly_2015)
 Vap_Faranah_monthly <- rbind(select(Vap_Faranah_monthly,date, Year, Month, day, Location, Vap), Vap_Faranah_monthly_2015)
 rm(Vap_Faranah_monthly_2015, Vap_Faranah_monthly_2015a)
+Vap_Faranah_monthly$measurement <- "Vap"
+Vap_Faranah_monthly <- rename(Vap_Faranah_monthly, Value=Vap)
 #Forecariah
 Vap_Forecariah_monthly <- as.data.frame(cbind(Year=c(rep(2011, 12), rep(2012, 12), rep(2013, 12), rep(2014, 12)), 
                                            Month=rep(seq(1,12,1), 4), day=1,
@@ -240,6 +258,8 @@ Vap_Forecariah_monthly_2015a <- select(Vap_Forecariah_monthly_2015a, date, Year,
 Vap_Forecariah_monthly_2015 <- full_join(Vap_Forecariah_monthly_2015a, Vap_Forecariah_monthly_2015)
 Vap_Forecariah_monthly <- rbind(select(Vap_Forecariah_monthly,date, Year, Month, day, Location, Vap), Vap_Forecariah_monthly_2015)
 rm(Vap_Forecariah_monthly_2015, Vap_Forecariah_monthly_2015a)
+Vap_Forecariah_monthly$measurement <- "Vap"
+Vap_Forecariah_monthly <- rename(Vap_Forecariah_monthly, Value=Vap)
 #Fria
 Vap_Fria_monthly <- as.data.frame(cbind(Year=c(rep(2011, 12), rep(2012, 12), rep(2013, 12), rep(2014, 12)), 
                                               Month=rep(seq(1,12,1), 4), day=1,
@@ -257,6 +277,8 @@ Vap_Fria_monthly_2015a <- select(Vap_Fria_monthly_2015a, date, Year, Month, day,
 Vap_Fria_monthly_2015 <- full_join(Vap_Fria_monthly_2015a, Vap_Fria_monthly_2015)
 Vap_Fria_monthly <- rbind(select(Vap_Fria_monthly,date, Year, Month, day, Location, Vap), Vap_Fria_monthly_2015)
 rm(Vap_Fria_monthly_2015, Vap_Fria_monthly_2015a)
+Vap_Fria_monthly$measurement <- "Vap"
+Vap_Fria_monthly <- rename(Vap_Fria_monthly, Value=Vap)
 #Gaoual
 Vap_Gaoual_monthly <- as.data.frame(cbind(Year=c(rep(2011, 12), rep(2012, 12), rep(2013, 12), rep(2014, 12)), 
                                              Month=rep(seq(1,12,1), 4), day=1,
@@ -279,6 +301,8 @@ Vap_Gaoual_monthly_2015a <- select(Vap_Gaoual_monthly_2015a, date, Year, Month, 
 Vap_Gaoual_monthly_2015 <- full_join(Vap_Gaoual_monthly_2015a, Vap_Gaoual_monthly_2015)
 Vap_Gaoual_monthly <- rbind(select(Vap_Gaoual_monthly,date, Year, Month, day, Location, Vap), Vap_Gaoual_monthly_2015)
 rm(Vap_Gaoual_monthly_2015, Vap_Gaoual_monthly_2015a)
+Vap_Gaoual_monthly$measurement <- "Vap"
+Vap_Gaoual_monthly <- rename(Vap_Gaoual_monthly, Value=Vap)
 #Gueckedou
 Vap_Gueckedou_monthly <- as.data.frame(cbind(Year=c(rep(2011, 12), rep(2012, 12), rep(2013, 12), rep(2014, 12)), 
                                           Month=rep(seq(1,12,1), 4), day=1,
@@ -294,6 +318,8 @@ Vap_Gueckedou_monthly_2015a <- select(Vap_Gueckedou_monthly_2015a, date, Year, M
 Vap_Gueckedou_monthly_2015 <- full_join(Vap_Gueckedou_monthly_2015a, Vap_Gueckedou_monthly_2015)
 Vap_Gueckedou_monthly <- rbind(select(Vap_Gueckedou_monthly,date, Year, Month, day, Location, Vap), Vap_Gueckedou_monthly_2015)
 rm(Vap_Gueckedou_monthly_2015, Vap_Gueckedou_monthly_2015a)
+Vap_Gueckedou_monthly$measurement <- "Vap"
+Vap_Gueckedou_monthly <- rename(Vap_Gueckedou_monthly, Value=Vap)
 #Kankan
 Vap_Kankan_monthly <- as.data.frame(cbind(Year=c(rep(2011, 12), rep(2012, 12), rep(2013, 12), rep(2014, 12)), 
                                           Month=rep(seq(1,12,1), 4), day=1,
@@ -315,6 +341,8 @@ Vap_Kankan_monthly_2015a <- select(Vap_Kankan_monthly_2015a, date, Year, Month, 
 Vap_Kankan_monthly_2015 <- full_join(Vap_Kankan_monthly_2015a, Vap_Kankan_monthly_2015)
 Vap_Kankan_monthly <- rbind(select(Vap_Kankan_monthly,date, Year, Month, day, Location, Vap), Vap_Kankan_monthly_2015)
 rm(Vap_Kankan_monthly_2015, Vap_Kankan_monthly_2015a)
+Vap_Kankan_monthly$measurement <- "Vap"
+Vap_Kankan_monthly <- rename(Vap_Kankan_monthly, Value=Vap)
 #Kerouane
 Vap_Kerouane_monthly <- as.data.frame(cbind(Year=c(rep(2011, 12), rep(2012, 12), rep(2013, 12), rep(2014, 12)), 
                                           Month=rep(seq(1,12,1), 4), day=1,
@@ -336,6 +364,8 @@ Vap_Kerouane_monthly_2015a <- select(Vap_Kerouane_monthly_2015a, date, Year, Mon
 Vap_Kerouane_monthly_2015 <- full_join(Vap_Kerouane_monthly_2015a, Vap_Kerouane_monthly_2015)
 Vap_Kerouane_monthly <- rbind(select(Vap_Kerouane_monthly,date, Year, Month, day, Location, Vap), Vap_Kerouane_monthly_2015)
 rm(Vap_Kerouane_monthly_2015, Vap_Kerouane_monthly_2015a)
+Vap_Kerouane_monthly$measurement <- "Vap"
+Vap_Kerouane_monthly <- rename(Vap_Kerouane_monthly, Value=Vap)
 #Kindia
 Vap_Kindia_monthly <- as.data.frame(cbind(Year=c(rep(2011, 12), rep(2012, 12), rep(2013, 12), rep(2014, 12)), 
                                             Month=rep(seq(1,12,1), 4), day=1,
@@ -355,6 +385,8 @@ Vap_Kindia_monthly_2015a <- select(Vap_Kindia_monthly_2015a, date, Year, Month, 
 Vap_Kindia_monthly_2015 <- full_join(Vap_Kindia_monthly_2015a, Vap_Kindia_monthly_2015)
 Vap_Kindia_monthly <- rbind(select(Vap_Kindia_monthly,date, Year, Month, day, Location, Vap), Vap_Kindia_monthly_2015)
 rm(Vap_Kindia_monthly_2015, Vap_Kindia_monthly_2015a)
+Vap_Kindia_monthly$measurement <- "Vap"
+Vap_Kindia_monthly <- rename(Vap_Kindia_monthly, Value=Vap)
 #KISSIDOUGOU
 Vap_Kissidougou_monthly <- as.data.frame(cbind(Year=c(rep(2011, 12), rep(2012, 12), rep(2013, 12), rep(2014, 12)), 
                                           Month=rep(seq(1,12,1), 4), day=1,
@@ -373,6 +405,8 @@ Vap_Kissidougou_monthly_2015a <- select(Vap_Kissidougou_monthly_2015a, date, Yea
 Vap_Kissidougou_monthly_2015 <- full_join(Vap_Kissidougou_monthly_2015a, Vap_Kissidougou_monthly_2015)
 Vap_Kissidougou_monthly <- rbind(select(Vap_Kissidougou_monthly,date, Year, Month, day, Location, Vap), Vap_Kissidougou_monthly_2015)
 rm(Vap_Kissidougou_monthly_2015, Vap_Kissidougou_monthly_2015a)
+Vap_Kissidougou_monthly$measurement <- "Vap"
+Vap_Kissidougou_monthly <- rename(Vap_Kissidougou_monthly, Value=Vap)
 #Koubia
 Vap_Koubia_monthly <- as.data.frame(cbind(Year=c(rep(2011, 12), rep(2012, 12), rep(2013, 12), rep(2014, 12)), 
                                                Month=rep(seq(1,12,1), 4), day=1,
@@ -388,6 +422,8 @@ Vap_Koubia_monthly_2015a <- select(Vap_Koubia_monthly_2015a, date, Year, Month, 
 Vap_Koubia_monthly_2015 <- full_join(Vap_Koubia_monthly_2015a, Vap_Koubia_monthly_2015)
 Vap_Koubia_monthly <- rbind(select(Vap_Koubia_monthly,date, Year, Month, day, Location, Vap), Vap_Koubia_monthly_2015)
 rm(Vap_Koubia_monthly_2015, Vap_Koubia_monthly_2015a)
+Vap_Koubia_monthly$measurement <- "Vap"
+Vap_Koubia_monthly <- rename(Vap_Koubia_monthly, Value=Vap)
 #Koundara
 Vap_Koundara_monthly <- as.data.frame(cbind(Year=c(rep(2011, 12), rep(2012, 12), rep(2013, 12), rep(2014, 12)), 
                                                Month=rep(seq(1,12,1), 4), day=1,
@@ -406,6 +442,8 @@ Vap_Koundara_monthly_2015a <- select(Vap_Koundara_monthly_2015a, date, Year, Mon
 Vap_Koundara_monthly_2015 <- full_join(Vap_Koundara_monthly_2015a, Vap_Koundara_monthly_2015)
 Vap_Koundara_monthly <- rbind(select(Vap_Koundara_monthly,date, Year, Month, day, Location, Vap), Vap_Koundara_monthly_2015)
 rm(Vap_Koundara_monthly_2015, Vap_Koundara_monthly_2015a)
+Vap_Koundara_monthly$measurement <- "Vap"
+Vap_Koundara_monthly <- rename(Vap_Koundara_monthly, Value=Vap)
 #Kouroussa
 Vap_Kouroussa_monthly <- as.data.frame(cbind(Year=c(rep(2011, 12), rep(2012, 12), rep(2013, 12), rep(2014, 12)), 
                                             Month=rep(seq(1,12,1), 4), day=1,
@@ -429,6 +467,8 @@ Vap_Kouroussa_monthly_2015a <- select(Vap_Kouroussa_monthly_2015a, date, Year, M
 Vap_Kouroussa_monthly_2015 <- full_join(Vap_Kouroussa_monthly_2015a, Vap_Kouroussa_monthly_2015)
 Vap_Kouroussa_monthly <- rbind(select(Vap_Kouroussa_monthly,date, Year, Month, day, Location, Vap), Vap_Kouroussa_monthly_2015)
 rm(Vap_Kouroussa_monthly_2015, Vap_Kouroussa_monthly_2015a)
+Vap_Kouroussa_monthly$measurement <- "Vap"
+Vap_Kouroussa_monthly <- rename(Vap_Kouroussa_monthly, Value=Vap)
 #Labe
 Vap_Labe_monthly <- as.data.frame(cbind(Year=c(rep(2011, 12), rep(2012, 12), rep(2013, 12), rep(2014, 12)), 
                                             Month=rep(seq(1,12,1), 4), day=1,
@@ -446,6 +486,8 @@ Vap_Labe_monthly_2015a <- select(Vap_Labe_monthly_2015a, date, Year, Month, day,
 Vap_Labe_monthly_2015 <- full_join(Vap_Labe_monthly_2015a, Vap_Labe_monthly_2015)
 Vap_Labe_monthly <- rbind(select(Vap_Labe_monthly,date, Year, Month, day, Location, Vap), Vap_Labe_monthly_2015)
 rm(Vap_Labe_monthly_2015, Vap_Labe_monthly_2015a)
+Vap_Labe_monthly$measurement <- "Vap"
+Vap_Labe_monthly <- rename(Vap_Labe_monthly, Value=Vap)
 #Lelouma
 Vap_Lelouma_monthly <- as.data.frame(cbind(Year=c(rep(2011, 12), rep(2012, 12), rep(2013, 12), rep(2014, 12)), 
                                         Month=rep(seq(1,12,1), 4), day=1,
@@ -463,6 +505,8 @@ Vap_Lelouma_monthly_2015a <- select(Vap_Lelouma_monthly_2015a, date, Year, Month
 Vap_Lelouma_monthly_2015 <- full_join(Vap_Lelouma_monthly_2015a, Vap_Lelouma_monthly_2015)
 Vap_Lelouma_monthly <- rbind(select(Vap_Lelouma_monthly,date, Year, Month, day, Location, Vap), Vap_Lelouma_monthly_2015)
 rm(Vap_Lelouma_monthly_2015, Vap_Lelouma_monthly_2015a)
+Vap_Lelouma_monthly$measurement <- "Vap"
+Vap_Lelouma_monthly <- rename(Vap_Lelouma_monthly, Value=Vap)
 #Lola
 Vap_Lola_monthly <- as.data.frame(cbind(Year=c(rep(2011, 12), rep(2012, 12), rep(2013, 12), rep(2014, 12)), 
                                            Month=rep(seq(1,12,1), 4), day=1,
@@ -480,6 +524,8 @@ Vap_Lola_monthly_2015a <- select(Vap_Lola_monthly_2015a, date, Year, Month, day,
 Vap_Lola_monthly_2015 <- full_join(Vap_Lola_monthly_2015a, Vap_Lola_monthly_2015)
 Vap_Lola_monthly <- rbind(select(Vap_Lola_monthly,date, Year, Month, day, Location, Vap), Vap_Lola_monthly_2015)
 rm(Vap_Lola_monthly_2015, Vap_Lola_monthly_2015a)
+Vap_Lola_monthly$measurement <- "Vap"
+Vap_Lola_monthly <- rename(Vap_Lola_monthly, Value=Vap)
 #Macenta
 Vap_Macenta_monthly <- as.data.frame(cbind(Year=c(rep(2011, 12), rep(2012, 12), rep(2013, 12), rep(2014, 12)), 
                                         Month=rep(seq(1,12,1), 4), day=1,
@@ -498,6 +544,8 @@ Vap_Macenta_monthly_2015a <- select(Vap_Macenta_monthly_2015a, date, Year, Month
 Vap_Macenta_monthly_2015 <- full_join(Vap_Macenta_monthly_2015a, Vap_Macenta_monthly_2015)
 Vap_Macenta_monthly <- rbind(select(Vap_Macenta_monthly,date, Year, Month, day, Location, Vap), Vap_Macenta_monthly_2015)
 rm(Vap_Macenta_monthly_2015, Vap_Macenta_monthly_2015a)
+Vap_Macenta_monthly$measurement <- "Vap"
+Vap_Macenta_monthly <- rename(Vap_Macenta_monthly, Value=Vap)
 #Mali
 Vap_Mali_monthly <- as.data.frame(cbind(Year=c(rep(2011, 12), rep(2012, 12), rep(2013, 12), rep(2014, 12)), 
                                              Month=rep(seq(1,12,1), 4), day=1,
@@ -518,6 +566,8 @@ Vap_Mali_monthly_2015a <- select(Vap_Mali_monthly_2015a, date, Year, Month, day,
 Vap_Mali_monthly_2015 <- full_join(Vap_Mali_monthly_2015a, Vap_Mali_monthly_2015)
 Vap_Mali_monthly <- rbind(select(Vap_Mali_monthly,date, Year, Month, day, Location, Vap), Vap_Mali_monthly_2015)
 rm(Vap_Mali_monthly_2015, Vap_Mali_monthly_2015a)
+Vap_Mali_monthly$measurement <- "Vap"
+Vap_Mali_monthly <- rename(Vap_Mali_monthly, Value=Vap)
 #Mamou
 Vap_Mamou_monthly <- as.data.frame(cbind(Year=c(rep(2011, 12), rep(2012, 12), rep(2013, 12), rep(2014, 12)), 
                                            Month=rep(seq(1,12,1), 4), day=1,
@@ -536,6 +586,8 @@ Vap_Mamou_monthly_2015a <- select(Vap_Mamou_monthly_2015a, date, Year, Month, da
 Vap_Mamou_monthly_2015 <- full_join(Vap_Mamou_monthly_2015a, Vap_Mamou_monthly_2015)
 Vap_Mamou_monthly <- rbind(select(Vap_Mamou_monthly,date, Year, Month, day, Location, Vap), Vap_Mamou_monthly_2015)
 rm(Vap_Mamou_monthly_2015, Vap_Mamou_monthly_2015a)
+Vap_Mamou_monthly$measurement <- "Vap"
+Vap_Mamou_monthly <- rename(Vap_Mamou_monthly, Value=Vap)
 #Nzerekore
 Vap_Nzerekore_monthly <- as.data.frame(cbind(Year=c(rep(2011, 12), rep(2012, 12), rep(2013, 12), rep(2014, 12)), 
                                         Month=rep(seq(1,12,1), 4), day=1,
@@ -553,6 +605,8 @@ Vap_Nzerekore_monthly_2015a <- select(Vap_Nzerekore_monthly_2015a, date, Year, M
 Vap_Nzerekore_monthly_2015 <- full_join(Vap_Nzerekore_monthly_2015a, Vap_Nzerekore_monthly_2015)
 Vap_Nzerekore_monthly <- rbind(select(Vap_Nzerekore_monthly,date, Year, Month, day, Location, Vap), Vap_Nzerekore_monthly_2015)
 rm(Vap_Nzerekore_monthly_2015, Vap_Nzerekore_monthly_2015a)
+Vap_Nzerekore_monthly$measurement <- "Vap"
+Vap_Nzerekore_monthly <- rename(Vap_Nzerekore_monthly, Value=Vap)
 #Pita
 Vap_Pita_monthly <- as.data.frame(cbind(Year=c(rep(2011, 12), rep(2012, 12), rep(2013, 12), rep(2014, 12)), 
                                            Month=rep(seq(1,12,1), 4), day=1,
@@ -571,6 +625,8 @@ Vap_Pita_monthly_2015a <- select(Vap_Pita_monthly_2015a, date, Year, Month, day,
 Vap_Pita_monthly_2015 <- full_join(Vap_Pita_monthly_2015a, Vap_Pita_monthly_2015)
 Vap_Pita_monthly <- rbind(select(Vap_Pita_monthly,date, Year, Month, day, Location, Vap), Vap_Pita_monthly_2015)
 rm(Vap_Pita_monthly_2015, Vap_Pita_monthly_2015a)
+Vap_Pita_monthly$measurement <- "Vap"
+Vap_Pita_monthly <- rename(Vap_Pita_monthly, Value=Vap)
 #Siguiri
 Vap_Siguiri_monthly <- as.data.frame(cbind(Year=c(rep(2011, 12), rep(2012, 12), rep(2013, 12), rep(2014, 12)), 
                                         Month=rep(seq(1,12,1), 4), day=1,
@@ -592,6 +648,8 @@ Vap_Siguiri_monthly_2015a <- select(Vap_Siguiri_monthly_2015a, date, Year, Month
 Vap_Siguiri_monthly_2015 <- full_join(Vap_Siguiri_monthly_2015a, Vap_Siguiri_monthly_2015)
 Vap_Siguiri_monthly <- rbind(select(Vap_Siguiri_monthly,date, Year, Month, day, Location, Vap), Vap_Siguiri_monthly_2015)
 rm(Vap_Siguiri_monthly_2015, Vap_Siguiri_monthly_2015a)
+Vap_Siguiri_monthly$measurement <- "Vap"
+Vap_Siguiri_monthly <- rename(Vap_Siguiri_monthly, Value=Vap)
 #Telimele
 Vap_Telimele_monthly <- as.data.frame(cbind(Year=c(rep(2011, 12), rep(2012, 12), rep(2013, 12), rep(2014, 12)), 
                                            Month=rep(seq(1,12,1), 4), day=1,
@@ -611,6 +669,8 @@ Vap_Telimele_monthly_2015a <- select(Vap_Telimele_monthly_2015a, date, Year, Mon
 Vap_Telimele_monthly_2015 <- full_join(Vap_Telimele_monthly_2015a, Vap_Telimele_monthly_2015)
 Vap_Telimele_monthly <- rbind(select(Vap_Telimele_monthly,date, Year, Month, day, Location, Vap), Vap_Telimele_monthly_2015)
 rm(Vap_Telimele_monthly_2015, Vap_Telimele_monthly_2015a)
+Vap_Telimele_monthly$measurement <- "Vap"
+Vap_Telimele_monthly <- rename(Vap_Telimele_monthly, Value=Vap)
 #Tougue
 Vap_Tougue_monthly <- as.data.frame(cbind(Year=c(rep(2011, 12), rep(2012, 12), rep(2013, 12), rep(2014, 12)), 
                                              Month=rep(seq(1,12,1), 4),day=1, 
@@ -628,6 +688,8 @@ Vap_Tougue_monthly_2015a <- select(Vap_Tougue_monthly_2015a, date, Year, Month, 
 Vap_Tougue_monthly_2015 <- full_join(Vap_Tougue_monthly_2015a, Vap_Tougue_monthly_2015)
 Vap_Tougue_monthly <- rbind(select(Vap_Tougue_monthly,date, Year, Month, day, Location, Vap), Vap_Tougue_monthly_2015)
 rm(Vap_Tougue_monthly_2015, Vap_Tougue_monthly_2015a)
+Vap_Tougue_monthly$measurement <- "Vap"
+Vap_Tougue_monthly <- rename(Vap_Tougue_monthly, Value=Vap)
 #Yomou
 Vap_Yomou_monthly <- as.data.frame(cbind(Year=c(rep(2011, 12), rep(2012, 12), rep(2013, 12), rep(2014, 12)), 
                                         Month=rep(seq(1,12,1), 4),day=1, 
@@ -645,3 +707,18 @@ Vap_Yomou_monthly_2015a <- select(Vap_Yomou_monthly_2015a, date, Year, Month, da
 Vap_Yomou_monthly_2015 <- full_join(Vap_Yomou_monthly_2015a, Vap_Yomou_monthly_2015)
 Vap_Yomou_monthly <- rbind(select(Vap_Yomou_monthly,date, Year, Month, day, Location, Vap), Vap_Yomou_monthly_2015)
 rm(Vap_Yomou_monthly_2015, Vap_Yomou_monthly_2015a)
+Vap_Yomou_monthly$measurement <- "Vap"
+Vap_Yomou_monthly <- rename(Vap_Yomou_monthly, Value=Vap)
+
+#Merging in long format
+Vap_Guinea_monthly_district <- rbind(Vap_Beyla_monthly, Vap_Boke_monthly, Vap_Boffa_monthly,
+                                     Vap_Coyah_monthly, Vap_Dabola_monthly, Vap_Dalaba_monthly,
+                                     Vap_Dinguiray_monthly, Vap_Dubreka_monthly, Vap_Faranah_monthly,
+                                     Vap_Forecariah_monthly, Vap_Fria_monthly, Vap_Gaoual_monthly,
+                                     Vap_Gueckedou_monthly, Vap_Kankan_monthly, Vap_Kerouane_monthly,
+                                     Vap_Kindia_monthly, Vap_Kissidougou_monthly, Vap_Koubia_monthly,
+                                     Vap_Koundara_monthly, Vap_Kouroussa_monthly, Vap_Labe_monthly,
+                                     Vap_Lelouma_monthly, Vap_Lola_monthly, Vap_Macenta_monthly,
+                                     Vap_Mali_monthly, Vap_Mamou_monthly, Vap_Nzerekore_monthly,
+                                     Vap_Pita_monthly, Vap_Siguiri_monthly, Vap_Telimele_monthly,
+                                     Vap_Tougue_monthly, Vap_Yomou_monthly)
