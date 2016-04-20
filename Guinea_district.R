@@ -50,6 +50,9 @@ TELIMELE 11.25, (13.75, 13.25); 10.75, (13.75, 13.25)
 TOUGUE 11.75, 11.25; 11.25, 11.75
 YOMOU 7.75, 9.25; 7.25, (9.25, 8.75)'
 
+
+
+
 #####################
 #Vap - vapor pressure
 #####################
@@ -121,6 +124,23 @@ Vap_Boke_monthly <- rbind(select(Vap_Boke_monthly,date, Year, Month, day, Locati
 rm(Vap_Boke_monthly_2015, Vap_Boke_monthly_2015a)
 Vap_Boke_monthly$measurement <- "Vap"
 Vap_Boke_monthly <- rename(Vap_Boke_monthly, Value=Vap)
+#Conakry
+Vap_Conakry_monthly <- as.data.frame(cbind(Year=c(rep(2011, 12), rep(2012, 12), rep(2013, 12), rep(2014, 12)), 
+                                         Month=rep(seq(1,12,1), 4), day=1,
+                                         Vap=vap.var[which(lon==13.75),which(lat==9.75),1:48]))
+Vap_Conakry_monthly$Location <- 'Conakry'
+Vap_Conakry_monthly$date <- ymd(paste(Vap_Conakry_monthly$Year, Vap_Conakry_monthly$Month, Vap_Conakry_monthly$day, sep="-"))
+Vap_Conakry_monthly_2015 <- select(Vap_Conakry_monthly, Location, Year, Month, Vap) %>% group_by( Month) %>% summarize(Vap=mean(Vap))
+Vap_Conakry_monthly_2015a <- as.data.frame(cbind(Year=rep(2015, 12), Month=rep(seq(1,12,1),1), day=1))
+Vap_Conakry_monthly_2015a$Location <- 'Conakry'
+Vap_Conakry_monthly_2015a$date <- ymd(paste(Vap_Conakry_monthly_2015a$Year, Vap_Conakry_monthly_2015a$Month, Vap_Conakry_monthly_2015a$day, sep="-"))
+Vap_Conakry_monthly_2015a <- select(Vap_Conakry_monthly_2015a, date, Year, Month, day, Location)
+Vap_Conakry_monthly_2015 <- full_join(Vap_Conakry_monthly_2015a, Vap_Conakry_monthly_2015)
+Vap_Conakry_monthly <- rbind(select(Vap_Conakry_monthly,date, Year, Month, day, Location, Vap), Vap_Conakry_monthly_2015)
+rm(Vap_Conakry_monthly_2015, Vap_Conakry_monthly_2015a)
+Vap_Conakry_monthly$measurement <- "Vap"
+Vap_Conakry_monthly <- rename(Vap_Conakry_monthly, Value=Vap)
+
 #Coyah
 Vap_Coyah_monthly <- as.data.frame(cbind(Year=c(rep(2011, 12), rep(2012, 12), rep(2013, 12), rep(2014, 12)), 
                                         Month=rep(seq(1,12,1), 4), day=1,
@@ -684,7 +704,7 @@ Vap_Yomou_monthly <- rename(Vap_Yomou_monthly, Value=Vap)
 
 #Merging in long format
 Vap_Guinea_monthly_district <- rbind(Vap_Beyla_monthly, Vap_Boke_monthly, Vap_Boffa_monthly,
-                                     Vap_Coyah_monthly, Vap_Dabola_monthly, Vap_Dalaba_monthly,
+                                     Vap_Conakry_monthly, Vap_Coyah_monthly, Vap_Dabola_monthly, Vap_Dalaba_monthly,
                                      Vap_Dinguiray_monthly, Vap_Dubreka_monthly, Vap_Faranah_monthly,
                                      Vap_Forecariah_monthly, Vap_Fria_monthly, Vap_Gaoual_monthly,
                                      Vap_Gueckedou_monthly, Vap_Kankan_monthly, Vap_Kerouane_monthly,
@@ -767,6 +787,23 @@ wet_Boke_monthly <- rbind(select(wet_Boke_monthly,date, Year, Month, day, Locati
 rm(wet_Boke_monthly_2015, wet_Boke_monthly_2015a)
 wet_Boke_monthly$measurement <- "wet"
 wet_Boke_monthly <- rename(wet_Boke_monthly, Value=wet)
+#Conakry
+wet_Conakry_monthly <- as.data.frame(cbind(Year=c(rep(2011, 12), rep(2012, 12), rep(2013, 12), rep(2014, 12)), 
+                                           Month=rep(seq(1,12,1), 4), day=1,
+                                           wet=wet.var[which(lon==13.75),which(lat==9.75),1:48]))
+wet_Conakry_monthly$Location <- 'Conakry'
+wet_Conakry_monthly$date <- ymd(paste(wet_Conakry_monthly$Year, wet_Conakry_monthly$Month, wet_Conakry_monthly$day, sep="-"))
+wet_Conakry_monthly_2015 <- select(wet_Conakry_monthly, Location, Year, Month, wet) %>% group_by( Month) %>% summarize(wet=mean(wet))
+wet_Conakry_monthly_2015a <- as.data.frame(cbind(Year=rep(2015, 12), Month=rep(seq(1,12,1),1), day=1))
+wet_Conakry_monthly_2015a$Location <- 'Conakry'
+wet_Conakry_monthly_2015a$date <- ymd(paste(wet_Conakry_monthly_2015a$Year, wet_Conakry_monthly_2015a$Month, wet_Conakry_monthly_2015a$day, sep="-"))
+wet_Conakry_monthly_2015a <- select(wet_Conakry_monthly_2015a, date, Year, Month, day, Location)
+wet_Conakry_monthly_2015 <- full_join(wet_Conakry_monthly_2015a, wet_Conakry_monthly_2015)
+wet_Conakry_monthly <- rbind(select(wet_Conakry_monthly,date, Year, Month, day, Location, wet), wet_Conakry_monthly_2015)
+rm(wet_Conakry_monthly_2015, wet_Conakry_monthly_2015a)
+wet_Conakry_monthly$measurement <- "wet"
+wet_Conakry_monthly <- rename(wet_Conakry_monthly, Value=wet)
+
 #Coyah
 wet_Coyah_monthly <- as.data.frame(cbind(Year=c(rep(2011, 12), rep(2012, 12), rep(2013, 12), rep(2014, 12)), 
                                          Month=rep(seq(1,12,1), 4), day=1,
@@ -1330,7 +1367,7 @@ wet_Yomou_monthly <- rename(wet_Yomou_monthly, Value=wet)
 
 #Merging in long format
 wet_Guinea_monthly_district <- rbind(wet_Beyla_monthly, wet_Boke_monthly, wet_Boffa_monthly,
-                                     wet_Coyah_monthly, wet_Dabola_monthly, wet_Dalaba_monthly,
+                                     wet_Conakry_monthly, wet_Coyah_monthly, wet_Dabola_monthly, wet_Dalaba_monthly,
                                      wet_Dinguiray_monthly, wet_Dubreka_monthly, wet_Faranah_monthly,
                                      wet_Forecariah_monthly, wet_Fria_monthly, wet_Gaoual_monthly,
                                      wet_Gueckedou_monthly, wet_Kankan_monthly, wet_Kerouane_monthly,
@@ -1412,6 +1449,23 @@ dtr_Boke_monthly <- rbind(select(dtr_Boke_monthly,date, Year, Month, day, Locati
 rm(dtr_Boke_monthly_2015, dtr_Boke_monthly_2015a)
 dtr_Boke_monthly$measurement <- "dtr"
 dtr_Boke_monthly <- rename(dtr_Boke_monthly, Value=dtr)
+#Conakry
+dtr_Conakry_monthly <- as.data.frame(cbind(Year=c(rep(2011, 12), rep(2012, 12), rep(2013, 12), rep(2014, 12)), 
+                                           Month=rep(seq(1,12,1), 4), day=1,
+                                           dtr=dtr.var[which(lon==13.75),which(lat==9.75),1:48]))
+dtr_Conakry_monthly$Location <- 'Conakry'
+dtr_Conakry_monthly$date <- ymd(paste(dtr_Conakry_monthly$Year, dtr_Conakry_monthly$Month, dtr_Conakry_monthly$day, sep="-"))
+dtr_Conakry_monthly_2015 <- select(dtr_Conakry_monthly, Location, Year, Month, dtr) %>% group_by( Month) %>% summarize(dtr=mean(dtr))
+dtr_Conakry_monthly_2015a <- as.data.frame(cbind(Year=rep(2015, 12), Month=rep(seq(1,12,1),1), day=1))
+dtr_Conakry_monthly_2015a$Location <- 'Conakry'
+dtr_Conakry_monthly_2015a$date <- ymd(paste(dtr_Conakry_monthly_2015a$Year, dtr_Conakry_monthly_2015a$Month, dtr_Conakry_monthly_2015a$day, sep="-"))
+dtr_Conakry_monthly_2015a <- select(dtr_Conakry_monthly_2015a, date, Year, Month, day, Location)
+dtr_Conakry_monthly_2015 <- full_join(dtr_Conakry_monthly_2015a, dtr_Conakry_monthly_2015)
+dtr_Conakry_monthly <- rbind(select(dtr_Conakry_monthly,date, Year, Month, day, Location, dtr), dtr_Conakry_monthly_2015)
+rm(dtr_Conakry_monthly_2015, dtr_Conakry_monthly_2015a)
+dtr_Conakry_monthly$measurement <- "dtr"
+dtr_Conakry_monthly <- rename(dtr_Conakry_monthly, Value=dtr)
+
 #Coyah
 dtr_Coyah_monthly <- as.data.frame(cbind(Year=c(rep(2011, 12), rep(2012, 12), rep(2013, 12), rep(2014, 12)), 
                                          Month=rep(seq(1,12,1), 4), day=1,
@@ -2057,6 +2111,23 @@ pet_Boke_monthly <- rbind(select(pet_Boke_monthly,date, Year, Month, day, Locati
 rm(pet_Boke_monthly_2015, pet_Boke_monthly_2015a)
 pet_Boke_monthly$measurement <- "pet"
 pet_Boke_monthly <- rename(pet_Boke_monthly, Value=pet)
+#Conakry
+pet_Conakry_monthly <- as.data.frame(cbind(Year=c(rep(2011, 12), rep(2012, 12), rep(2013, 12), rep(2014, 12)), 
+                                           Month=rep(seq(1,12,1), 4), day=1,
+                                           pet=pet.var[which(lon==13.75),which(lat==9.75),1:48]))
+pet_Conakry_monthly$Location <- 'Conakry'
+pet_Conakry_monthly$date <- ymd(paste(pet_Conakry_monthly$Year, pet_Conakry_monthly$Month, pet_Conakry_monthly$day, sep="-"))
+pet_Conakry_monthly_2015 <- select(pet_Conakry_monthly, Location, Year, Month, pet) %>% group_by( Month) %>% summarize(pet=mean(pet))
+pet_Conakry_monthly_2015a <- as.data.frame(cbind(Year=rep(2015, 12), Month=rep(seq(1,12,1),1), day=1))
+pet_Conakry_monthly_2015a$Location <- 'Conakry'
+pet_Conakry_monthly_2015a$date <- ymd(paste(pet_Conakry_monthly_2015a$Year, pet_Conakry_monthly_2015a$Month, pet_Conakry_monthly_2015a$day, sep="-"))
+pet_Conakry_monthly_2015a <- select(pet_Conakry_monthly_2015a, date, Year, Month, day, Location)
+pet_Conakry_monthly_2015 <- full_join(pet_Conakry_monthly_2015a, pet_Conakry_monthly_2015)
+pet_Conakry_monthly <- rbind(select(pet_Conakry_monthly,date, Year, Month, day, Location, pet), pet_Conakry_monthly_2015)
+rm(pet_Conakry_monthly_2015, pet_Conakry_monthly_2015a)
+pet_Conakry_monthly$measurement <- "pet"
+pet_Conakry_monthly <- rename(pet_Conakry_monthly, Value=pet)
+
 #Coyah
 pet_Coyah_monthly <- as.data.frame(cbind(Year=c(rep(2011, 12), rep(2012, 12), rep(2013, 12), rep(2014, 12)), 
                                          Month=rep(seq(1,12,1), 4), day=1,
@@ -2620,7 +2691,7 @@ pet_Yomou_monthly <- rename(pet_Yomou_monthly, Value=pet)
 
 #Merging in long format
 pet_Guinea_monthly_district <- rbind(pet_Beyla_monthly, pet_Boke_monthly, pet_Boffa_monthly,
-                                     pet_Coyah_monthly, pet_Dabola_monthly, pet_Dalaba_monthly,
+                                     pet_Conakry_monthly, pet_Coyah_monthly, pet_Dabola_monthly, pet_Dalaba_monthly,
                                      pet_Dinguiray_monthly, pet_Dubreka_monthly, pet_Faranah_monthly,
                                      pet_Forecariah_monthly, pet_Fria_monthly, pet_Gaoual_monthly,
                                      pet_Gueckedou_monthly, pet_Kankan_monthly, pet_Kerouane_monthly,
@@ -2702,6 +2773,22 @@ pre_Boke_monthly <- rbind(select(pre_Boke_monthly,date, Year, Month, day, Locati
 rm(pre_Boke_monthly_2015, pre_Boke_monthly_2015a)
 pre_Boke_monthly$measurement <- "pre"
 pre_Boke_monthly <- rename(pre_Boke_monthly, Value=pre)
+#Conakry
+pre_Conakry_monthly <- as.data.frame(cbind(Year=c(rep(2011, 12), rep(2012, 12), rep(2013, 12), rep(2014, 12)), 
+                                           Month=rep(seq(1,12,1), 4), day=1,
+                                           pre=pre.var[which(lon==13.75),which(lat==9.75),1:48]))
+pre_Conakry_monthly$Location <- 'Conakry'
+pre_Conakry_monthly$date <- ymd(paste(pre_Conakry_monthly$Year, pre_Conakry_monthly$Month, pre_Conakry_monthly$day, sep="-"))
+pre_Conakry_monthly_2015 <- select(pre_Conakry_monthly, Location, Year, Month, pre) %>% group_by( Month) %>% summarize(pre=mean(pre))
+pre_Conakry_monthly_2015a <- as.data.frame(cbind(Year=rep(2015, 12), Month=rep(seq(1,12,1),1), day=1))
+pre_Conakry_monthly_2015a$Location <- 'Conakry'
+pre_Conakry_monthly_2015a$date <- ymd(paste(pre_Conakry_monthly_2015a$Year, pre_Conakry_monthly_2015a$Month, pre_Conakry_monthly_2015a$day, sep="-"))
+pre_Conakry_monthly_2015a <- select(pre_Conakry_monthly_2015a, date, Year, Month, day, Location)
+pre_Conakry_monthly_2015 <- full_join(pre_Conakry_monthly_2015a, pre_Conakry_monthly_2015)
+pre_Conakry_monthly <- rbind(select(pre_Conakry_monthly,date, Year, Month, day, Location, pre), pre_Conakry_monthly_2015)
+rm(pre_Conakry_monthly_2015, pre_Conakry_monthly_2015a)
+pre_Conakry_monthly$measurement <- "pre"
+pre_Conakry_monthly <- rename(pre_Conakry_monthly, Value=pre)
 #Coyah
 pre_Coyah_monthly <- as.data.frame(cbind(Year=c(rep(2011, 12), rep(2012, 12), rep(2013, 12), rep(2014, 12)), 
                                          Month=rep(seq(1,12,1), 4), day=1,
@@ -3265,7 +3352,7 @@ pre_Yomou_monthly <- rename(pre_Yomou_monthly, Value=pre)
 
 #Merging in long format
 pre_Guinea_monthly_district <- rbind(pre_Beyla_monthly, pre_Boke_monthly, pre_Boffa_monthly,
-                                     pre_Coyah_monthly, pre_Dabola_monthly, pre_Dalaba_monthly,
+                                     pre_Conakry_monthly, pre_Coyah_monthly, pre_Dabola_monthly, pre_Dalaba_monthly,
                                      pre_Dinguiray_monthly, pre_Dubreka_monthly, pre_Faranah_monthly,
                                      pre_Forecariah_monthly, pre_Fria_monthly, pre_Gaoual_monthly,
                                      pre_Gueckedou_monthly, pre_Kankan_monthly, pre_Kerouane_monthly,
@@ -3347,6 +3434,22 @@ tmn_Boke_monthly <- rbind(select(tmn_Boke_monthly,date, Year, Month, day, Locati
 rm(tmn_Boke_monthly_2015, tmn_Boke_monthly_2015a)
 tmn_Boke_monthly$measurement <- "tmn"
 tmn_Boke_monthly <- rename(tmn_Boke_monthly, Value=tmn)
+#Conakry
+tmn_Conakry_monthly <- as.data.frame(cbind(Year=c(rep(2011, 12), rep(2012, 12), rep(2013, 12), rep(2014, 12)), 
+                                           Month=rep(seq(1,12,1), 4), day=1,
+                                           tmn=tmn.var[which(lon==13.75),which(lat==9.75),1:48]))
+tmn_Conakry_monthly$Location <- 'Conakry'
+tmn_Conakry_monthly$date <- ymd(paste(tmn_Conakry_monthly$Year, tmn_Conakry_monthly$Month, tmn_Conakry_monthly$day, sep="-"))
+tmn_Conakry_monthly_2015 <- select(tmn_Conakry_monthly, Location, Year, Month, tmn) %>% group_by( Month) %>% summarize(tmn=mean(tmn))
+tmn_Conakry_monthly_2015a <- as.data.frame(cbind(Year=rep(2015, 12), Month=rep(seq(1,12,1),1), day=1))
+tmn_Conakry_monthly_2015a$Location <- 'Conakry'
+tmn_Conakry_monthly_2015a$date <- ymd(paste(tmn_Conakry_monthly_2015a$Year, tmn_Conakry_monthly_2015a$Month, tmn_Conakry_monthly_2015a$day, sep="-"))
+tmn_Conakry_monthly_2015a <- select(tmn_Conakry_monthly_2015a, date, Year, Month, day, Location)
+tmn_Conakry_monthly_2015 <- full_join(tmn_Conakry_monthly_2015a, tmn_Conakry_monthly_2015)
+tmn_Conakry_monthly <- rbind(select(tmn_Conakry_monthly,date, Year, Month, day, Location, tmn), tmn_Conakry_monthly_2015)
+rm(tmn_Conakry_monthly_2015, tmn_Conakry_monthly_2015a)
+tmn_Conakry_monthly$measurement <- "tmn"
+tmn_Conakry_monthly <- rename(tmn_Conakry_monthly, Value=tmn)
 #Coyah
 tmn_Coyah_monthly <- as.data.frame(cbind(Year=c(rep(2011, 12), rep(2012, 12), rep(2013, 12), rep(2014, 12)), 
                                          Month=rep(seq(1,12,1), 4), day=1,
@@ -3910,7 +4013,7 @@ tmn_Yomou_monthly <- rename(tmn_Yomou_monthly, Value=tmn)
 
 #Merging in long format
 tmn_Guinea_monthly_district <- rbind(tmn_Beyla_monthly, tmn_Boke_monthly, tmn_Boffa_monthly,
-                                     tmn_Coyah_monthly, tmn_Dabola_monthly, tmn_Dalaba_monthly,
+                                     tmn_Conakry_monthly, tmn_Coyah_monthly, tmn_Dabola_monthly, tmn_Dalaba_monthly,
                                      tmn_Dinguiray_monthly, tmn_Dubreka_monthly, tmn_Faranah_monthly,
                                      tmn_Forecariah_monthly, tmn_Fria_monthly, tmn_Gaoual_monthly,
                                      tmn_Gueckedou_monthly, tmn_Kankan_monthly, tmn_Kerouane_monthly,
@@ -3992,6 +4095,22 @@ tmp_Boke_monthly <- rbind(select(tmp_Boke_monthly,date, Year, Month, day, Locati
 rm(tmp_Boke_monthly_2015, tmp_Boke_monthly_2015a)
 tmp_Boke_monthly$measurement <- "tmp"
 tmp_Boke_monthly <- rename(tmp_Boke_monthly, Value=tmp)
+#Conakry
+tmp_Conakry_monthly <- as.data.frame(cbind(Year=c(rep(2011, 12), rep(2012, 12), rep(2013, 12), rep(2014, 12)), 
+                                           Month=rep(seq(1,12,1), 4), day=1,
+                                           tmp=tmp.var[which(lon==13.75),which(lat==9.75),1:48]))
+tmp_Conakry_monthly$Location <- 'Conakry'
+tmp_Conakry_monthly$date <- ymd(paste(tmp_Conakry_monthly$Year, tmp_Conakry_monthly$Month, tmp_Conakry_monthly$day, sep="-"))
+tmp_Conakry_monthly_2015 <- select(tmp_Conakry_monthly, Location, Year, Month, tmp) %>% group_by( Month) %>% summarize(tmp=mean(tmp))
+tmp_Conakry_monthly_2015a <- as.data.frame(cbind(Year=rep(2015, 12), Month=rep(seq(1,12,1),1), day=1))
+tmp_Conakry_monthly_2015a$Location <- 'Conakry'
+tmp_Conakry_monthly_2015a$date <- ymd(paste(tmp_Conakry_monthly_2015a$Year, tmp_Conakry_monthly_2015a$Month, tmp_Conakry_monthly_2015a$day, sep="-"))
+tmp_Conakry_monthly_2015a <- select(tmp_Conakry_monthly_2015a, date, Year, Month, day, Location)
+tmp_Conakry_monthly_2015 <- full_join(tmp_Conakry_monthly_2015a, tmp_Conakry_monthly_2015)
+tmp_Conakry_monthly <- rbind(select(tmp_Conakry_monthly,date, Year, Month, day, Location, tmp), tmp_Conakry_monthly_2015)
+rm(tmp_Conakry_monthly_2015, tmp_Conakry_monthly_2015a)
+tmp_Conakry_monthly$measurement <- "tmp"
+tmp_Conakry_monthly <- rename(tmp_Conakry_monthly, Value=tmp)
 #Coyah
 tmp_Coyah_monthly <- as.data.frame(cbind(Year=c(rep(2011, 12), rep(2012, 12), rep(2013, 12), rep(2014, 12)), 
                                          Month=rep(seq(1,12,1), 4), day=1,
@@ -4555,7 +4674,7 @@ tmp_Yomou_monthly <- rename(tmp_Yomou_monthly, Value=tmp)
 
 #Merging in long format
 tmp_Guinea_monthly_district <- rbind(tmp_Beyla_monthly, tmp_Boke_monthly, tmp_Boffa_monthly,
-                                     tmp_Coyah_monthly, tmp_Dabola_monthly, tmp_Dalaba_monthly,
+                                     tmp_Conakry_monthly, tmp_Coyah_monthly, tmp_Dabola_monthly, tmp_Dalaba_monthly,
                                      tmp_Dinguiray_monthly, tmp_Dubreka_monthly, tmp_Faranah_monthly,
                                      tmp_Forecariah_monthly, tmp_Fria_monthly, tmp_Gaoual_monthly,
                                      tmp_Gueckedou_monthly, tmp_Kankan_monthly, tmp_Kerouane_monthly,
@@ -4638,6 +4757,22 @@ tmx_Boke_monthly <- rbind(select(tmx_Boke_monthly,date, Year, Month, day, Locati
 rm(tmx_Boke_monthly_2015, tmx_Boke_monthly_2015a)
 tmx_Boke_monthly$measurement <- "tmx"
 tmx_Boke_monthly <- rename(tmx_Boke_monthly, Value=tmx)
+#Conakry
+tmx_Conakry_monthly <- as.data.frame(cbind(Year=c(rep(2011, 12), rep(2012, 12), rep(2013, 12), rep(2014, 12)), 
+                                           Month=rep(seq(1,12,1), 4), day=1,
+                                           tmx=tmx.var[which(lon==13.75),which(lat==9.75),1:48]))
+tmx_Conakry_monthly$Location <- 'Conakry'
+tmx_Conakry_monthly$date <- ymd(paste(tmx_Conakry_monthly$Year, tmx_Conakry_monthly$Month, tmx_Conakry_monthly$day, sep="-"))
+tmx_Conakry_monthly_2015 <- select(tmx_Conakry_monthly, Location, Year, Month, tmx) %>% group_by( Month) %>% summarize(tmx=mean(tmx))
+tmx_Conakry_monthly_2015a <- as.data.frame(cbind(Year=rep(2015, 12), Month=rep(seq(1,12,1),1), day=1))
+tmx_Conakry_monthly_2015a$Location <- 'Conakry'
+tmx_Conakry_monthly_2015a$date <- ymd(paste(tmx_Conakry_monthly_2015a$Year, tmx_Conakry_monthly_2015a$Month, tmx_Conakry_monthly_2015a$day, sep="-"))
+tmx_Conakry_monthly_2015a <- select(tmx_Conakry_monthly_2015a, date, Year, Month, day, Location)
+tmx_Conakry_monthly_2015 <- full_join(tmx_Conakry_monthly_2015a, tmx_Conakry_monthly_2015)
+tmx_Conakry_monthly <- rbind(select(tmx_Conakry_monthly,date, Year, Month, day, Location, tmx), tmx_Conakry_monthly_2015)
+rm(tmx_Conakry_monthly_2015, tmx_Conakry_monthly_2015a)
+tmx_Conakry_monthly$measurement <- "tmx"
+tmx_Conakry_monthly <- rename(tmx_Conakry_monthly, Value=tmx)
 #Coyah
 tmx_Coyah_monthly <- as.data.frame(cbind(Year=c(rep(2011, 12), rep(2012, 12), rep(2013, 12), rep(2014, 12)), 
                                          Month=rep(seq(1,12,1), 4), day=1,
@@ -5201,7 +5336,7 @@ tmx_Yomou_monthly <- rename(tmx_Yomou_monthly, Value=tmx)
 
 #Merging in long format
 tmx_Guinea_monthly_district <- rbind(tmx_Beyla_monthly, tmx_Boke_monthly, tmx_Boffa_monthly,
-                                     tmx_Coyah_monthly, tmx_Dabola_monthly, tmx_Dalaba_monthly,
+                                     tmx_Conakry_monthly, tmx_Coyah_monthly, tmx_Dabola_monthly, tmx_Dalaba_monthly,
                                      tmx_Dinguiray_monthly, tmx_Dubreka_monthly, tmx_Faranah_monthly,
                                      tmx_Forecariah_monthly, tmx_Fria_monthly, tmx_Gaoual_monthly,
                                      tmx_Gueckedou_monthly, tmx_Kankan_monthly, tmx_Kerouane_monthly,
@@ -5218,3 +5353,12 @@ Guinea_monthly_district <- rbind(Vap_Guinea_monthly_district, wet_Guinea_monthly
 write.csv(Guinea_monthly_district, file='Guinea_monthly_district.csv')
 typeof(as.data.frame(Guinea_monthly_district))
 is.vector(Guinea_monthly_district)
+
+
+ggplot(filter(Guinea_monthly_district, measurement=='tmp')) + geom_line(aes(x=date, y=Value)) + 
+    facet_grid(Location~.)
+
+a <- read.csv('Guinea_monthly_district.csv')
+
+ggplot(filter(a, measurement=='tmp')) + geom_line(aes(x=as.POSIXct(date), y=Value)) + 
+    facet_grid(Location~.)
