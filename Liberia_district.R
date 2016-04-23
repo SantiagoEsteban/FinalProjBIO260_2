@@ -198,9 +198,7 @@ Vap_Margibi_monthly <- rename(Vap_Margibi_monthly, Value=Vap)
 #Maryland
 Vap_Maryland_monthly <- as.data.frame(cbind(Year=c(rep(2011, 12), rep(2012, 12), rep(2013, 12), rep(2014, 12)), 
                                         Month=rep(seq(1,12,1), 4), day=1,
-                                        Vap1=vap.var[which(lon==7.75),which(lat==4.75),1:48],
-                                        Vap2=vap.var[which(lon==7.75),which(lat==4.25),1:48]))
-Vap_Maryland_monthly$Vap <- rowMeans(select(Vap_Maryland_monthly, Vap1, Vap2))
+                                        Vap=vap.var[which(lon==7.75),which(lat==4.75),1:48]))
 Vap_Maryland_monthly$Location <- 'Maryland'
 Vap_Maryland_monthly$date <- ymd(paste(Vap_Maryland_monthly$Year, Vap_Maryland_monthly$Month, Vap_Maryland_monthly$day, sep="-"))
 Vap_Maryland_monthly_2015 <- select(Vap_Maryland_monthly, Location, Year, Month, Vap) %>% group_by( Month) %>% summarize(Vap=mean(Vap))
@@ -502,9 +500,7 @@ wet_Margibi_monthly <- rename(wet_Margibi_monthly, Value=wet)
 #Maryland
 wet_Maryland_monthly <- as.data.frame(cbind(Year=c(rep(2011, 12), rep(2012, 12), rep(2013, 12), rep(2014, 12)), 
                                             Month=rep(seq(1,12,1), 4), day=1,
-                                            wet1=wet.var[which(lon==7.75),which(lat==4.75),1:48],
-                                            wet2=wet.var[which(lon==7.75),which(lat==4.25),1:48]))
-wet_Maryland_monthly$wet <- rowMeans(select(wet_Maryland_monthly, wet1, wet2))
+                                            wet=wet.var[which(lon==7.75),which(lat==4.75),1:48]))
 wet_Maryland_monthly$Location <- 'Maryland'
 wet_Maryland_monthly$date <- ymd(paste(wet_Maryland_monthly$Year, wet_Maryland_monthly$Month, wet_Maryland_monthly$day, sep="-"))
 wet_Maryland_monthly_2015 <- select(wet_Maryland_monthly, Location, Year, Month, wet) %>% group_by( Month) %>% summarize(wet=mean(wet))
@@ -807,9 +803,7 @@ dtr_Margibi_monthly <- rename(dtr_Margibi_monthly, Value=dtr)
 #Maryland
 dtr_Maryland_monthly <- as.data.frame(cbind(Year=c(rep(2011, 12), rep(2012, 12), rep(2013, 12), rep(2014, 12)), 
                                             Month=rep(seq(1,12,1), 4), day=1,
-                                            dtr1=dtr.var[which(lon==7.75),which(lat==4.75),1:48],
-                                            dtr2=dtr.var[which(lon==7.75),which(lat==4.25),1:48]))
-dtr_Maryland_monthly$dtr <- rowMeans(select(dtr_Maryland_monthly, dtr1, dtr2))
+                                            dtr=dtr.var[which(lon==7.75),which(lat==4.75),1:48]))
 dtr_Maryland_monthly$Location <- 'Maryland'
 dtr_Maryland_monthly$date <- ymd(paste(dtr_Maryland_monthly$Year, dtr_Maryland_monthly$Month, dtr_Maryland_monthly$day, sep="-"))
 dtr_Maryland_monthly_2015 <- select(dtr_Maryland_monthly, Location, Year, Month, dtr) %>% group_by( Month) %>% summarize(dtr=mean(dtr))
@@ -1112,9 +1106,7 @@ pet_Margibi_monthly <- rename(pet_Margibi_monthly, Value=pet)
 #Maryland
 pet_Maryland_monthly <- as.data.frame(cbind(Year=c(rep(2011, 12), rep(2012, 12), rep(2013, 12), rep(2014, 12)), 
                                             Month=rep(seq(1,12,1), 4), day=1,
-                                            pet1=pet.var[which(lon==7.75),which(lat==4.75),1:48],
-                                            pet2=pet.var[which(lon==7.75),which(lat==4.25),1:48]))
-pet_Maryland_monthly$pet <- rowMeans(select(pet_Maryland_monthly, pet1, pet2))
+                                            pet=pet.var[which(lon==7.75),which(lat==4.75),1:48]))
 pet_Maryland_monthly$Location <- 'Maryland'
 pet_Maryland_monthly$date <- ymd(paste(pet_Maryland_monthly$Year, pet_Maryland_monthly$Month, pet_Maryland_monthly$day, sep="-"))
 pet_Maryland_monthly_2015 <- select(pet_Maryland_monthly, Location, Year, Month, pet) %>% group_by( Month) %>% summarize(pet=mean(pet))
@@ -1417,9 +1409,7 @@ pre_Margibi_monthly <- rename(pre_Margibi_monthly, Value=pre)
 #Maryland
 pre_Maryland_monthly <- as.data.frame(cbind(Year=c(rep(2011, 12), rep(2012, 12), rep(2013, 12), rep(2014, 12)), 
                                             Month=rep(seq(1,12,1), 4), day=1,
-                                            pre1=pre.var[which(lon==7.75),which(lat==4.75),1:48],
-                                            pre2=pre.var[which(lon==7.75),which(lat==4.25),1:48]))
-pre_Maryland_monthly$pre <- rowMeans(select(pre_Maryland_monthly, pre1, pre2))
+                                            pre=pre.var[which(lon==7.75),which(lat==4.75),1:48]))
 pre_Maryland_monthly$Location <- 'Maryland'
 pre_Maryland_monthly$date <- ymd(paste(pre_Maryland_monthly$Year, pre_Maryland_monthly$Month, pre_Maryland_monthly$day, sep="-"))
 pre_Maryland_monthly_2015 <- select(pre_Maryland_monthly, Location, Year, Month, pre) %>% group_by( Month) %>% summarize(pre=mean(pre))
@@ -1722,9 +1712,7 @@ tmn_Margibi_monthly <- rename(tmn_Margibi_monthly, Value=tmn)
 #Maryland
 tmn_Maryland_monthly <- as.data.frame(cbind(Year=c(rep(2011, 12), rep(2012, 12), rep(2013, 12), rep(2014, 12)), 
                                             Month=rep(seq(1,12,1), 4), day=1,
-                                            tmn1=tmn.var[which(lon==7.75),which(lat==4.75),1:48],
-                                            tmn2=tmn.var[which(lon==7.75),which(lat==4.25),1:48]))
-tmn_Maryland_monthly$tmn <- rowMeans(select(tmn_Maryland_monthly, tmn1, tmn2))
+                                            tmn=tmn.var[which(lon==7.75),which(lat==4.75),1:48]))
 tmn_Maryland_monthly$Location <- 'Maryland'
 tmn_Maryland_monthly$date <- ymd(paste(tmn_Maryland_monthly$Year, tmn_Maryland_monthly$Month, tmn_Maryland_monthly$day, sep="-"))
 tmn_Maryland_monthly_2015 <- select(tmn_Maryland_monthly, Location, Year, Month, tmn) %>% group_by( Month) %>% summarize(tmn=mean(tmn))
@@ -2027,9 +2015,7 @@ tmp_Margibi_monthly <- rename(tmp_Margibi_monthly, Value=tmp)
 #Maryland
 tmp_Maryland_monthly <- as.data.frame(cbind(Year=c(rep(2011, 12), rep(2012, 12), rep(2013, 12), rep(2014, 12)), 
                                             Month=rep(seq(1,12,1), 4), day=1,
-                                            tmp1=tmp.var[which(lon==7.75),which(lat==4.75),1:48],
-                                            tmp2=tmp.var[which(lon==7.75),which(lat==4.25),1:48]))
-tmp_Maryland_monthly$tmp <- rowMeans(select(tmp_Maryland_monthly, tmp1, tmp2))
+                                            tmp=tmp.var[which(lon==7.75),which(lat==4.75),1:48]))
 tmp_Maryland_monthly$Location <- 'Maryland'
 tmp_Maryland_monthly$date <- ymd(paste(tmp_Maryland_monthly$Year, tmp_Maryland_monthly$Month, tmp_Maryland_monthly$day, sep="-"))
 tmp_Maryland_monthly_2015 <- select(tmp_Maryland_monthly, Location, Year, Month, tmp) %>% group_by( Month) %>% summarize(tmp=mean(tmp))
@@ -2332,9 +2318,7 @@ tmx_Margibi_monthly <- rename(tmx_Margibi_monthly, Value=tmx)
 #Maryland
 tmx_Maryland_monthly <- as.data.frame(cbind(Year=c(rep(2011, 12), rep(2012, 12), rep(2013, 12), rep(2014, 12)), 
                                             Month=rep(seq(1,12,1), 4), day=1,
-                                            tmx1=tmx.var[which(lon==7.75),which(lat==4.75),1:48],
-                                            tmx2=tmx.var[which(lon==7.75),which(lat==4.25),1:48]))
-tmx_Maryland_monthly$tmx <- rowMeans(select(tmx_Maryland_monthly, tmx1, tmx2))
+                                            tmx=tmx.var[which(lon==7.75),which(lat==4.75),1:48]))
 tmx_Maryland_monthly$Location <- 'Maryland'
 tmx_Maryland_monthly$date <- ymd(paste(tmx_Maryland_monthly$Year, tmx_Maryland_monthly$Month, tmx_Maryland_monthly$day, sep="-"))
 tmx_Maryland_monthly_2015 <- select(tmx_Maryland_monthly, Location, Year, Month, tmx) %>% group_by( Month) %>% summarize(tmx=mean(tmx))
@@ -2456,3 +2440,63 @@ Liberia_monthly_district <- rbind(VapLiberiamonthly_district, wetLiberiamonthly_
                              dtrLiberiamonthly_district, preLiberiamonthly_district, tmnLiberiamonthly_district,
                              tmpLiberiamonthly_district, tmxLiberiamonthly_district)
 write.csv(Liberia_monthly_district, file='Liberia_monthly_district.csv')
+
+# use interpolation to get the weekly climate parameters
+func_spline <- function(climatefactor,steps=12/52){
+    sp<- splinefun(x=seq(1,length(climatefactor),1), y=climatefactor, method="fmm",  ties = mean)
+    out <- sp(seq(1,length(climatefactor),steps))
+    return(out)
+    
+}
+Liberia_monthly_district <- read.csv('D:/Google Drive/Medicina/MPH/Courses/BIO 260/FinalProjBIO260_2/Weather_data/Liberia_monthly_district.csv')
+Liberia_monthly_vap <- filter(Liberia_monthly_district, measurement=='Vap' & Year>='2013') %>% select(-X)
+Liberia_monthly_wet <- filter(Liberia_monthly_district, measurement=='wet' & Year>='2013') %>% select(-X)
+Liberia_monthly_pet <- filter(Liberia_monthly_district, measurement=='pet' & Year>='2013') %>% select(-X)
+Liberia_monthly_pre <- filter(Liberia_monthly_district, measurement=='pre' & Year>='2013') %>% select(-X)
+Liberia_monthly_tmn <- filter(Liberia_monthly_district, measurement=='tmn' & Year>='2013') %>% select(-X)
+Liberia_monthly_tmp <- filter(Liberia_monthly_district, measurement=='tmp' & Year>='2013') %>% select(-X)
+Liberia_monthly_tmx <- filter(Liberia_monthly_district, measurement=='tmx' & Year>='2013') %>% select(-X)
+Liberia_monthly_dtr <- filter(Liberia_monthly_district, measurement=='dtr' & Year>='2013') %>% select(-X)
+
+Liberia_weekly_vap <- tapply(Liberia_monthly_vap$Value,Liberia_monthly_vap$Location,func_spline,simplify = T)
+Liberia_weekly_wet <- tapply(Liberia_monthly_wet$Value,Liberia_monthly_wet$Location,func_spline,simplify = T)
+Liberia_weekly_pet <- tapply(Liberia_monthly_pet$Value,Liberia_monthly_pet$Location,func_spline,simplify = T)
+Liberia_weekly_pre <- tapply(Liberia_monthly_pre$Value,Liberia_monthly_pre$Location,func_spline,simplify = T)
+Liberia_weekly_tmn <- tapply(Liberia_monthly_tmn$Value,Liberia_monthly_tmn$Location,func_spline,simplify = T)
+Liberia_weekly_tmp <- tapply(Liberia_monthly_tmp$Value,Liberia_monthly_tmp$Location,func_spline,simplify = T)
+Liberia_weekly_tmx <- tapply(Liberia_monthly_tmx$Value,Liberia_monthly_tmx$Location,func_spline,simplify = T)
+Liberia_weekly_dtr <- tapply(Liberia_monthly_tmx$Value,Liberia_monthly_tmx$Location,func_spline,simplify = T)
+
+Liberia_weekly_climate <- as.data.frame(rep(names(Liberia_weekly_tmn), 152))
+colnames(Liberia_weekly_climate) <- "Location"
+Liberia_weekly_climate <- arrange(Liberia_weekly_climate, Location)
+Liberia_weekly_climate$count_week <- 1:152
+Liberia_weekly_climate <- cbind(Liberia_weekly_climate, vap=unlist(Liberia_weekly_vap), wet=unlist(Liberia_weekly_wet), pet=unlist(Liberia_weekly_pet),
+                               pre=unlist(Liberia_weekly_pre), tmn=unlist(Liberia_weekly_tmn), tmp=unlist(Liberia_weekly_tmp), tmx=unlist(Liberia_weekly_tmx),
+                               dtr=unlist(Liberia_weekly_dtr))
+row.names(Liberia_weekly_climate) <- 1:length(Liberia_weekly_climate$Location)
+Liberia_weekly_climate$wet <- ifelse(Liberia_weekly_climate$wet<1,0, Liberia_weekly_climate$wet)
+Liberia_weekly_climate$Location <- toupper(Liberia_weekly_climate$Location)
+
+
+# Obtain the weekly cases count for Liberia in order and add the count_week
+Liberia_weekly_cases <- read.csv('D:/Google Drive/Medicina/MPH/Courses/BIO 260/FinalProjBIO260_2/Cases/Liberia_cases_long.csv')
+Liberia_weekly_cases <- Liberia_weekly_cases %>% filter(Source=='Patient database') %>% select(-X, -Source, -Indicator) %>% spread(Case_definition, Cases) %>% 
+    arrange(Location, Epi_Week) %>% mutate(count_week=rep(53:171,15)) %>% filter(count_week<=152) %>% mutate(Total_cases=Confirmed+Probable) %>%
+    select(-Confirmed, -Probable)
+
+
+# now full joint the case counts data and the climate data
+Liberia_weekly_climate$count_week <- as.numeric(as.character(Liberia_weekly_climate$count_week))
+Liberia_weekly_cases_climate <- left_join(Liberia_weekly_climate,Liberia_weekly_cases,by=c("Location",'count_week'))
+Liberia_weekly_cases_climate <- replace_na(Liberia_weekly_cases_climate, list(Total_cases=0))
+Liberia_weekly_cases_climate$tmx <- as.numeric(as.character(Liberia_weekly_cases_climate$tmx))
+Liberia_weekly_cases_climate$tmp <- as.numeric(as.character(Liberia_weekly_cases_climate$tmp))
+Liberia_weekly_cases_climate$tmn <- as.numeric(as.character(Liberia_weekly_cases_climate$tmn))
+Liberia_weekly_cases_climate$pre <- as.numeric(as.character(Liberia_weekly_cases_climate$pre))
+Liberia_weekly_cases_climate$vap <- as.numeric(as.character(Liberia_weekly_cases_climate$vap))
+Liberia_weekly_cases_climate$wet <- as.numeric(as.character(Liberia_weekly_cases_climate$wet))
+Liberia_weekly_cases_climate$pet <- as.numeric(as.character(Liberia_weekly_cases_climate$pet))
+Liberia_weekly_cases_climate$dtr <- as.numeric(as.character(Liberia_weekly_cases_climate$dtr))
+
+write.csv(Liberia_weekly_cases_climate, 'Liberia_weekly_cases_climate.csv')

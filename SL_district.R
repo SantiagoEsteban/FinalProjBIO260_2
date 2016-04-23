@@ -2246,3 +2246,65 @@ SL_monthly_district <- rbind(Vap_SL_monthly_district, wet_SL_monthly_district, p
                                  dtr_SL_monthly_district, pre_SL_monthly_district, tmn_SL_monthly_district,
                                  tmp_SL_monthly_district, tmx_SL_monthly_district)
 write.csv(SL_monthly_district, file='SL_monthly_district.csv')
+
+# use interpolation to get the weekly climate parameters
+func_spline <- function(climatefactor,steps=12/52){
+    sp<- splinefun(x=seq(1,length(climatefactor),1), y=climatefactor, method="fmm",  ties = mean)
+    out <- sp(seq(1,length(climatefactor),steps))
+    return(out)
+    
+}
+SL_monthly_district <- read.csv('D:/Google Drive/Medicina/MPH/Courses/BIO 260/FinalProjBIO260_2/Weather_data/SL_monthly_district.csv')
+SL_monthly_vap <- filter(SL_monthly_district, measurement=='Vap' & Year>='2013') %>% select(-X)
+SL_monthly_wet <- filter(SL_monthly_district, measurement=='wet' & Year>='2013') %>% select(-X)
+SL_monthly_pet <- filter(SL_monthly_district, measurement=='pet' & Year>='2013') %>% select(-X)
+SL_monthly_pre <- filter(SL_monthly_district, measurement=='pre' & Year>='2013') %>% select(-X)
+SL_monthly_tmn <- filter(SL_monthly_district, measurement=='tmn' & Year>='2013') %>% select(-X)
+SL_monthly_tmp <- filter(SL_monthly_district, measurement=='tmp' & Year>='2013') %>% select(-X)
+SL_monthly_tmx <- filter(SL_monthly_district, measurement=='tmx' & Year>='2013') %>% select(-X)
+SL_monthly_dtr <- filter(SL_monthly_district, measurement=='dtr' & Year>='2013') %>% select(-X)
+
+SL_weekly_vap <- tapply(SL_monthly_vap$Value,SL_monthly_vap$Location,func_spline,simplify = T)
+SL_weekly_wet <- tapply(SL_monthly_wet$Value,SL_monthly_wet$Location,func_spline,simplify = T)
+SL_weekly_pet <- tapply(SL_monthly_pet$Value,SL_monthly_pet$Location,func_spline,simplify = T)
+SL_weekly_pre <- tapply(SL_monthly_pre$Value,SL_monthly_pre$Location,func_spline,simplify = T)
+SL_weekly_tmn <- tapply(SL_monthly_tmn$Value,SL_monthly_tmn$Location,func_spline,simplify = T)
+SL_weekly_tmp <- tapply(SL_monthly_tmp$Value,SL_monthly_tmp$Location,func_spline,simplify = T)
+SL_weekly_tmx <- tapply(SL_monthly_tmx$Value,SL_monthly_tmx$Location,func_spline,simplify = T)
+SL_weekly_dtr <- tapply(SL_monthly_tmx$Value,SL_monthly_tmx$Location,func_spline,simplify = T)
+
+SL_weekly_climate <- as.data.frame(rep(names(SL_weekly_tmn), 152))
+colnames(SL_weekly_climate) <- "Location"
+SL_weekly_climate <- arrange(SL_weekly_climate, Location)
+SL_weekly_climate$count_week <- 1:152
+SL_weekly_climate <- cbind(SL_weekly_climate, vap=unlist(SL_weekly_vap), wet=unlist(SL_weekly_wet), pet=unlist(SL_weekly_pet),
+                                pre=unlist(SL_weekly_pre), tmn=unlist(SL_weekly_tmn), tmp=unlist(SL_weekly_tmp), tmx=unlist(SL_weekly_tmx),
+                                dtr=unlist(SL_weekly_dtr))
+row.names(SL_weekly_climate) <- 1:length(SL_weekly_climate$Location)
+SL_weekly_climate$wet <- ifelse(SL_weekly_climate$wet<1,0, SL_weekly_climate$wet)
+SL_weekly_climate$Location <- toupper(SL_weekly_climate$Location)
+
+
+# Obtain the weekly cases count for SL in order and add the count_week
+SL_weekly_cases <- read.csv('D:/Google Drive/Medicina/MPH/Courses/BIO 260/FinalProjBIO260_2/Cases/SL_cases_long.csv')
+SL_weekly_cases <- SL_weekly_cases %>% filter(Source=='Patient database') %>% select(-X, -Source, -Indicator) %>% spread(Case_definition, Cases) %>% 
+    arrange(Location, Epi_Week) %>% mutate(count_week=rep(53:171,14)) %>% filter(count_week<=152) %>% mutate(Total_cases=Confirmed+Probable) %>%
+    select(-Confirmed, -Probable)
+
+
+# now full joint the case counts data and the climate data
+SL_weekly_climate$count_week <- as.numeric(as.character(SL_weekly_climate$count_week))
+SL_weekly_cases_climate <- left_join(SL_weekly_climate,SL_weekly_cases,by=c("Location",'count_week'))
+SL_weekly_cases_climate <- replace_na(SL_weekly_cases_climate, list(Total_cases=0))
+SL_weekly_cases_climate$tmx <- as.numeric(as.character(SL_weekly_cases_climate$tmx))
+SL_weekly_cases_climate$tmp <- as.numeric(as.character(SL_weekly_cases_climate$tmp))
+SL_weekly_cases_climate$tmn <- as.numeric(as.character(SL_weekly_cases_climate$tmn))
+SL_weekly_cases_climate$pre <- as.numeric(as.character(SL_weekly_cases_climate$pre))
+SL_weekly_cases_climate$vap <- as.numeric(as.character(SL_weekly_cases_climate$vap))
+SL_weekly_cases_climate$wet <- as.numeric(as.character(SL_weekly_cases_climate$wet))
+SL_weekly_cases_climate$pet <- as.numeric(as.character(SL_weekly_cases_climate$pet))
+SL_weekly_cases_climate$dtr <- as.numeric(as.character(SL_weekly_cases_climate$dtr))
+
+write.csv(SL_weekly_cases_climate, 'SL_weekly_cases_climate.csv')
+
+

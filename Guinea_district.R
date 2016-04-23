@@ -2029,7 +2029,7 @@ dtr_Yomou_monthly <- rename(dtr_Yomou_monthly, Value=dtr)
 
 #Merging in long format
 dtr_Guinea_monthly_district <- rbind(dtr_Beyla_monthly, dtr_Boke_monthly, dtr_Boffa_monthly,
-                                     dtr_Coyah_monthly, dtr_Dabola_monthly, dtr_Dalaba_monthly,
+                                     dtr_Conakry_monthly, dtr_Coyah_monthly, dtr_Dabola_monthly, dtr_Dalaba_monthly,
                                      dtr_Dinguiray_monthly, dtr_Dubreka_monthly, dtr_Faranah_monthly,
                                      dtr_Forecariah_monthly, dtr_Fria_monthly, dtr_Gaoual_monthly,
                                      dtr_Gueckedou_monthly, dtr_Kankan_monthly, dtr_Kerouane_monthly,
@@ -5351,14 +5351,64 @@ Guinea_monthly_district <- rbind(Vap_Guinea_monthly_district, wet_Guinea_monthly
                                 dtr_Guinea_monthly_district, pre_Guinea_monthly_district, tmn_Guinea_monthly_district,
                                 tmp_Guinea_monthly_district, tmx_Guinea_monthly_district)
 write.csv(Guinea_monthly_district, file='Guinea_monthly_district.csv')
-typeof(as.data.frame(Guinea_monthly_district))
-is.vector(Guinea_monthly_district)
+
+Guinea_monthly_district <- read.csv('D:/Google Drive/Medicina/MPH/Courses/BIO 260/FinalProjBIO260_2/Weather_data/Guinea_monthly_district.csv')
+
+# use interpolation to get the weekly climate parameters
+func_spline <- function(climatefactor,steps=12/52){
+    sp<- splinefun(x=seq(1,length(climatefactor),1), y=climatefactor, method="fmm",  ties = mean)
+    out <- sp(seq(1,length(climatefactor),steps))
+    return(out)
+    
+}
+guinea_monthly_vap <- filter(Guinea_monthly_district, measurement=='Vap' & Year>='2013') %>% select(-X)
+guinea_monthly_wet <- filter(Guinea_monthly_district, measurement=='wet' & Year>='2013') %>% select(-X)
+guinea_monthly_pet <- filter(Guinea_monthly_district, measurement=='pet' & Year>='2013') %>% select(-X)
+guinea_monthly_pre <- filter(Guinea_monthly_district, measurement=='pre' & Year>='2013') %>% select(-X)
+guinea_monthly_tmn <- filter(Guinea_monthly_district, measurement=='tmn' & Year>='2013') %>% select(-X)
+guinea_monthly_tmp <- filter(Guinea_monthly_district, measurement=='tmp' & Year>='2013') %>% select(-X)
+guinea_monthly_tmx <- filter(Guinea_monthly_district, measurement=='tmx' & Year>='2013') %>% select(-X)
+guinea_monthly_dtr <- filter(Guinea_monthly_district, measurement=='dtr' & Year>='2013') %>% select(-X)
+
+guinea_weekly_vap <- tapply(guinea_monthly_vap$Value,guinea_monthly_vap$Location,func_spline,simplify = T)
+guinea_weekly_wet <- tapply(guinea_monthly_wet$Value,guinea_monthly_wet$Location,func_spline,simplify = T)
+guinea_weekly_pet <- tapply(guinea_monthly_pet$Value,guinea_monthly_pet$Location,func_spline,simplify = T)
+guinea_weekly_pre <- tapply(guinea_monthly_pre$Value,guinea_monthly_pre$Location,func_spline,simplify = T)
+guinea_weekly_tmn <- tapply(guinea_monthly_tmn$Value,guinea_monthly_tmn$Location,func_spline,simplify = T)
+guinea_weekly_tmp <- tapply(guinea_monthly_tmp$Value,guinea_monthly_tmp$Location,func_spline,simplify = T)
+guinea_weekly_tmx <- tapply(guinea_monthly_tmx$Value,guinea_monthly_tmx$Location,func_spline,simplify = T)
+guinea_weekly_dtr <- tapply(guinea_monthly_dtr$Value,guinea_monthly_dtr$Location,func_spline,simplify = T)
+
+guinea_weekly_climate <- as.data.frame(rep(names(guinea_weekly_tmn), 152))
+colnames(guinea_weekly_climate) <- "Location"
+guinea_weekly_climate <- arrange(guinea_weekly_climate, Location)
+guinea_weekly_climate$count_week <- 1:152
+guinea_weekly_climate <- cbind(guinea_weekly_climate, vap=unlist(guinea_weekly_vap), wet=unlist(guinea_weekly_wet), pet=unlist(guinea_weekly_pet),
+                               pre=unlist(guinea_weekly_pre), tmn=unlist(guinea_weekly_tmn), tmp=unlist(guinea_weekly_tmp), tmx=unlist(guinea_weekly_tmx),
+                               dtr=unlist(guinea_weekly_dtr))
+row.names(guinea_weekly_climate) <- 1:length(guinea_weekly_climate$Location)
+guinea_weekly_climate$wet <- ifelse(guinea_weekly_climate$wet<1,0, guinea_weekly_climate$wet)
+guinea_weekly_climate$Location <- toupper(guinea_weekly_climate$Location)
 
 
-ggplot(filter(Guinea_monthly_district, measurement=='tmp')) + geom_line(aes(x=date, y=Value)) + 
-    facet_grid(Location~.)
+# Obtain the weekly cases count for Guinea in order and add the count_week
+guinea_weekly_cases <- read.csv('D:/Google Drive/Medicina/MPH/Courses/BIO 260/FinalProjBIO260_2/Cases/guinea_cases_long.csv')
+guinea_weekly_cases <- guinea_weekly_cases %>% filter(Source=='Patient database') %>% select(-X, -Source, -Indicator) %>% spread(Case_definition, Cases) %>% 
+    arrange(Location, Epi_Week) %>% mutate(count_week=rep(53:171,33)) %>% filter(count_week<=152) %>% mutate(Total_cases=Confirmed+Probable) %>%
+    select(-Confirmed, -Probable)
 
-a <- read.csv('Guinea_monthly_district.csv')
 
-ggplot(filter(a, measurement=='tmp')) + geom_line(aes(x=as.POSIXct(date), y=Value)) + 
-    facet_grid(Location~.)
+# now full joint the case counts data and the climate data
+guinea_weekly_climate$count_week <- as.numeric(as.character(guinea_weekly_climate$count_week))
+guinea_weekly_cases_climate <- left_join(guinea_weekly_climate,guinea_weekly_cases,by=c("Location",'count_week'))
+guinea_weekly_cases_climate <- replace_na(guinea_weekly_cases_climate, list(Total_cases=0))
+guinea_weekly_cases_climate$tmx <- as.numeric(as.character(guinea_weekly_cases_climate$tmx))
+guinea_weekly_cases_climate$tmp <- as.numeric(as.character(guinea_weekly_cases_climate$tmp))
+guinea_weekly_cases_climate$tmn <- as.numeric(as.character(guinea_weekly_cases_climate$tmn))
+guinea_weekly_cases_climate$pre <- as.numeric(as.character(guinea_weekly_cases_climate$pre))
+guinea_weekly_cases_climate$vap <- as.numeric(as.character(guinea_weekly_cases_climate$vap))
+guinea_weekly_cases_climate$wet <- as.numeric(as.character(guinea_weekly_cases_climate$wet))
+guinea_weekly_cases_climate$pet <- as.numeric(as.character(guinea_weekly_cases_climate$pet))
+guinea_weekly_cases_climate$dtr <- as.numeric(as.character(guinea_weekly_cases_climate$dtr))
+
+write.csv(guinea_weekly_cases_climate, 'guinea_weekly_cases_climate.csv')

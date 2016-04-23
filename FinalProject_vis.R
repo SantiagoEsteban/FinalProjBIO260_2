@@ -32,19 +32,20 @@ Guinea <- get_map(location = c(lon = -11.15, lat = 9.950287),
 
 guineards <- readRDS("D:/Google Drive/Medicina/MPH/Courses/BIO 260/FinalProjBIO260_2/Guinea-Admin/GIN_adm2.rds")
 guineashp.df <- fortify(guineards)
+tmp <- filter(guinea_monthly, date=="2011-01-01" & measurement=='tmp')
 data <- as.data.frame(cbind(NAME_2=guineards@data$NAME_2, id=guineards@data$ID_2, tmp=tmp$Value))
 data <- left_join(guineashp.df, data, by='id')
 data$tmp <- as.numeric(as.character((data$tmp)))
 
 ggplot() +
-    geom_polygon(data = data, 
+    geom_polygon(data = filter(data, NAME_2=='Conakry'), 
                  aes(x = long, y = lat, group = group, fill = tmp), 
                  color = "black", size = 0.25) + 
     coord_map()
 
 
 
-tmp <- filter(guinea_monthly, date=="2011-01-01" & measurement=='tmp')
+
 
 ggmap(Guinea, extent='normal') +
     scale_x_continuous(limits = c(-15.5, -7.5), expand = c(0, 0)) + 
