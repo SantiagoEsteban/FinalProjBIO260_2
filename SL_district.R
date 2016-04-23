@@ -2282,6 +2282,7 @@ SL_weekly_climate <- cbind(SL_weekly_climate, vap=unlist(SL_weekly_vap), wet=unl
                                 dtr=unlist(SL_weekly_dtr))
 row.names(SL_weekly_climate) <- 1:length(SL_weekly_climate$Location)
 SL_weekly_climate$wet <- ifelse(SL_weekly_climate$wet<1,0, SL_weekly_climate$wet)
+SL_weekly_climate$pre <- ifelse(SL_weekly_climate$pre<1,0, SL_weekly_climate$pre)
 SL_weekly_climate$Location <- toupper(SL_weekly_climate$Location)
 
 

@@ -16,8 +16,66 @@ library(RNetCDF)
 library(xlsx)
 library(ggmap)
 library(sp)
+library(gganimate)
 
-conakry_monthly <- read.csv("D:/Google Drive/Medicina/MPH/Courses/BIO 260/FinalProjBIO260_2/Weather_data/Conakry_monthly.csv")
+################
+# 3 Cities
+################
+conakry <- read.csv("D:/Google Drive/Medicina/MPH/Courses/BIO 260/FinalProjBIO260_2/guinea_weekly_cases_climate.csv") %>%
+    filter(Location=='CONAKRY') %>% select(-X, -Epi_Week, -Week) %>% gather(measurement, value, 3:11)
+freetown <- read.csv("D:/Google Drive/Medicina/MPH/Courses/BIO 260/FinalProjBIO260_2/SL_weekly_cases_climate.csv") %>%
+    filter(Location=='WESTERNURBAN') %>% select(-X, -Epi_Week, -Week) %>% gather(measurement, value, 3:11)
+monrovia <- read.csv("D:/Google Drive/Medicina/MPH/Courses/BIO 260/FinalProjBIO260_2/Liberia_weekly_cases_climate.csv") %>%
+    filter(Location=='MONTSERRADO') %>% select(-X, -Epi_Week, -Week) %>% gather(measurement, value, 3:11)
+
+three_cities <- rbind(conakry, freetown, monrovia)
+
+#Incidence
+ggplot(three_cities, aes(x=count_week)) + 
+    geom_area(aes(y=value, color=Location, fill=Location), alpha=0.3, data=filter(three_cities, measurement=='Total_cases'))
+
+
+
+
+
+
+
+#All temp variables & incidence
+ggplot(filter(three_cities, Location=='CONAKRY')) + geom_line(aes(x=count_week, y=value, color=measurement)) + facet_grid(measurement~., scale='free')
+ggplot(filter(three_cities, Location=='MONTSERRADO')) + geom_line(aes(x=count_week, y=value, color=measurement)) + facet_grid(measurement~., scale='free')
+ggplot(filter(three_cities, Location=='WESTERNURBAN')) + geom_line(aes(x=count_week, y=value, color=measurement)) + facet_grid(measurement~., scale='free')
+
+#Temperature
+conakry_wide <- read.csv("D:/Google Drive/Medicina/MPH/Courses/BIO 260/FinalProjBIO260_2/guinea_weekly_cases_climate.csv") %>%
+    filter(Location=='CONAKRY') %>% select(-X, -Epi_Week, -Week)
+ggplot(conakry_wide, aes(count_week)) + geom_ribbon(aes(ymin=tmn, ymax=tmx), color='gray', alpha=0.2) + 
+    geom_line(aes(y=tmp), color='red', size=0.8) + geom_line(aes(y=tmx), color='orange', size=0.2) +
+    geom_line(aes(y=tmn), color='orange', size=0.2) + theme_classic()
+
+freetown_wide <- read.csv("D:/Google Drive/Medicina/MPH/Courses/BIO 260/FinalProjBIO260_2/SL_weekly_cases_climate.csv") %>%
+    filter(Location=='WESTERNURBAN') %>% select(-X, -Epi_Week, -Week)
+ggplot(freetown_wide, aes(count_week)) + geom_ribbon(aes(ymin=tmn, ymax=tmx), color='gray', alpha=0.2) + 
+    geom_line(aes(y=tmp), color='red', size=0.8) + geom_line(aes(y=tmx), color='orange', size=0.2) +
+    geom_line(aes(y=tmn), color='orange', size=0.2) + theme_classic()
+
+montserrado_wide <- read.csv("D:/Google Drive/Medicina/MPH/Courses/BIO 260/FinalProjBIO260_2/Liberia_weekly_cases_climate.csv") %>%
+    filter(Location=='MONTSERRADO') %>% select(-X, -Epi_Week, -Week)
+ggplot(freetown_wide, aes(count_week)) + geom_ribbon(aes(ymin=tmn, ymax=tmx), color='gray', alpha=0.2) + 
+    geom_line(aes(y=tmp), color='red', size=0.8) + geom_line(aes(y=tmx), color='orange', size=0.2) +
+    geom_line(aes(y=tmn), color='orange', size=0.2) + theme_classic()
+
+ggplot(three_cities, aes(x=count_week)) + geom_line(aes(y=value, color=Location), data=filter(three_cities, measurement=='tmp'))
+
+
+
+
+lexp_vs_fer_every15_anim <- ggplot(data=filter(complete1, year%in%every15 & region!='Other'), aes(color=region, size=population/1000000, x=fertility, y=life_expectancy, frame=year)) + geom_point() + labs(size="Population\nIn Millions", color="OPEC or OECD\nCountries", shape='Continent') + xlab('Fertility rate') + ylab('Life Expectancy in years') + ggtitle('Fertility rate vs. Life Expectancy')
+
+gg_animate(lexp_vs_fer_every15_anim)
+
+
+
+
 conakry_cases <- read.csv("D:/Google Drive/Medicina/MPH/Courses/BIO 260/FinalProjBIO260_2/Cases/guinea_cases_long.csv")
 conakry_cases <- filter(conakry_cases, Location=="CONAKRY" & Source=='Patient database' & Case_definition=='Confirmed')
 conakry_cases$week_number <- 1:length(conakry_cases$Epi_Week)

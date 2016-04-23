@@ -2476,6 +2476,7 @@ Liberia_weekly_climate <- cbind(Liberia_weekly_climate, vap=unlist(Liberia_weekl
                                dtr=unlist(Liberia_weekly_dtr))
 row.names(Liberia_weekly_climate) <- 1:length(Liberia_weekly_climate$Location)
 Liberia_weekly_climate$wet <- ifelse(Liberia_weekly_climate$wet<1,0, Liberia_weekly_climate$wet)
+Liberia_weekly_climate$pre <- ifelse(Liberia_weekly_climate$pre<1,0, Liberia_weekly_climate$pre)
 Liberia_weekly_climate$Location <- toupper(Liberia_weekly_climate$Location)
 
 

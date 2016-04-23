@@ -5388,6 +5388,7 @@ guinea_weekly_climate <- cbind(guinea_weekly_climate, vap=unlist(guinea_weekly_v
                                dtr=unlist(guinea_weekly_dtr))
 row.names(guinea_weekly_climate) <- 1:length(guinea_weekly_climate$Location)
 guinea_weekly_climate$wet <- ifelse(guinea_weekly_climate$wet<1,0, guinea_weekly_climate$wet)
+guinea_weekly_climate$pre <- ifelse(guinea_weekly_climate$pre<1,0, guinea_weekly_climate$pre)
 guinea_weekly_climate$Location <- toupper(guinea_weekly_climate$Location)
 
 
