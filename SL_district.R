@@ -2294,6 +2294,8 @@ SL_weekly_cases <- SL_weekly_cases %>% filter(Source=='Patient database') %>% se
 
 
 # now full joint the case counts data and the climate data
+SL_weekly_cases$Location <- str_replace_all(SL_weekly_cases$Location, "WESTERN AREA URBAN", "WESTERNURBAN")
+SL_weekly_cases$Location <- str_replace_all(SL_weekly_cases$Location, "WESTERN AREA RURAL", "WESTERNRURAL")
 SL_weekly_climate$count_week <- as.numeric(as.character(SL_weekly_climate$count_week))
 SL_weekly_cases_climate <- left_join(SL_weekly_climate,SL_weekly_cases,by=c("Location",'count_week'))
 SL_weekly_cases_climate <- replace_na(SL_weekly_cases_climate, list(Total_cases=0))
