@@ -87,8 +87,12 @@ guinea_map$NAME_2 <- str_replace_all(guinea_map$NAME_2, "NZÉRÉKORÉ", "NZEREKO
 guinea_map <- left_join(guineashp.df, guinea_map, by='id')
 guinea_map <- rename(guinea_map, Location=NAME_2)
 guinea_weekly_cases_climate <- read.csv("D:/Google Drive/Medicina/MPH/Courses/BIO 260/FinalProjBIO260_2/guinea_weekly_cases_climate.csv")
+guinea_weekly_cases_climate <- group_by(guinea_weekly_cases_climate, Location) %>% mutate(Cum_cases=cumsum(Total_cases)) %>% 
+    ungroup %>% mutate(Weeks=rep(seq(as.Date('2013-01-01'), as.Date('2015-11-29'), by="week"), 33))
 guinea_map_complete <- left_join(guinea_weekly_cases_climate, guinea_map, by='Location') %>% 
     select(-X, -Week, -Epi_Week, -group)
+guineards_adm0 <- readRDS("D:/Google Drive/Medicina/MPH/Courses/BIO 260/FinalProjBIO260_2/Guinea-Admin/GIN_adm0.rds")
+guineashp.adm0 <- fortify(guineards_adm0)
 
 
 
@@ -103,8 +107,13 @@ SL_map$NAME_2 <- toupper(SL_map$NAME_2)
 SL_map <- left_join(SLshp.df, SL_map, by='id')
 SL_map <- rename(SL_map, Location=NAME_2)
 SL_weekly_cases_climate <- read.csv("D:/Google Drive/Medicina/MPH/Courses/BIO 260/FinalProjBIO260_2/SL_weekly_cases_climate.csv")
+SL_weekly_cases_climate <- group_by(SL_weekly_cases_climate, Location) %>% mutate(Cum_cases=cumsum(Total_cases)) %>% 
+    ungroup %>% mutate(Weeks=rep(seq(as.Date('2013-01-01'), as.Date('2015-11-29'), by="week"),14))
 SL_map_complete <- left_join(SL_weekly_cases_climate, SL_map, by='Location') %>% 
     select(-X, -Week, -Epi_Week, -group)
+SL_adm0_rds <- readRDS("D:/Google Drive/Medicina/MPH/Courses/BIO 260/FinalProjBIO260_2/Guinea-Admin/SLE_adm0.rds")
+SLshp.adm0 <- fortify(SL_adm0_rds)
+
 
 #Liberia data
 LBrds <- readRDS("D:/Google Drive/Medicina/MPH/Courses/BIO 260/FinalProjBIO260_2/Guinea-Admin/LBR_adm1.rds")
@@ -118,8 +127,12 @@ LB_map$Location <-str_replace(LB_map$Location, "River Cess", "RIVER CESS")
 LB_map$Location <- toupper(LB_map$Location)
 LB_map <- left_join(LBshp.df, LB_map, by='id')
 LB_weekly_cases_climate <- read.csv("D:/Google Drive/Medicina/MPH/Courses/BIO 260/FinalProjBIO260_2/Liberia_weekly_cases_climate.csv")
+LB_weekly_cases_climate <- group_by(LB_weekly_cases_climate, Location) %>% mutate(Cum_cases=cumsum(Total_cases)) %>% 
+    ungroup %>% mutate(Weeks=rep(seq(as.Date('2013-01-01'), as.Date('2015-11-29'), by="week"),15))
 LB_map_complete <- left_join(LB_weekly_cases_climate, LB_map, by='Location') %>% 
     select(-X, -Week, -Epi_Week, -group)
+LB_adm0_rds <- readRDS("D:/Google Drive/Medicina/MPH/Courses/BIO 260/FinalProjBIO260_2/Guinea-Admin/LBR_adm0.rds")
+LBshp.adm0 <- fortify(LB_adm0_rds)
 
 #################
 #CREAR EL MAPA PERO CON CUMULATIVE INCIDENCE
@@ -128,13 +141,17 @@ LB_map_complete <- left_join(LB_weekly_cases_climate, LB_map, by='Location') %>%
 
 #Creating on file with all the climate, cases and map data
 three_countries_map_complete <- rbind(guinea_map_complete, SL_map_complete, LB_map_complete)
-three_countries_map_complete <- cbind(three_countries_map_complete, seq(as.Date('2013-01-01'), as.Date('2015-11-29'), by="week"))
 
-three_countries_map_incidence <- ggplot(select(three_countries_map_complete, Location, long, lat, Total_cases, count_week) %>% 
-                                            filter(count_week>52), aes(x = long, y = lat, group = Location, fill = Total_cases, frame=count_week)) +
-    geom_polygon(color = "black", size = 0.25) + coord_map() + scale_fill_gradient(low='light gray', high='red')
+#Cumulative incidence animation
+three_countries_map_incidence <- ggplot(select(three_countries_map_complete, Location, long, lat, Cum_cases, Weeks, count_week) %>% 
+                                            filter(count_week>52), aes(x = long, y = lat, group = Location, fill = Cum_cases, frame=Weeks)) +
+    geom_polygon(color = "black", size = 0.25) + coord_map() + scale_fill_gradient(low='light gray', high='red') +
+    geom_polygon(aes(x = long, y = lat, group = group, color="Guinea"), fill=NA, size = 0.75, data=guineashp.adm0) +
+    geom_polygon(aes(x = long, y = lat, group = group, color="Sierra Leone"), fill=NA, size = 0.75, data=SLshp.adm0) +
+    geom_polygon(aes(x = long, y = lat, group = group, color="Liberia"), fill=NA, size = 0.75, data=LBshp.adm0) +
+    coord_map()
 
-gg_animate(three_countries_map_incidence)
+gg_animate(three_countries_map_incidence, saver='mp4')
 
 
 conakry_cases <- read.csv("D:/Google Drive/Medicina/MPH/Courses/BIO 260/FinalProjBIO260_2/Cases/guinea_cases_long.csv")
