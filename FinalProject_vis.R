@@ -66,9 +66,60 @@ ggplot(freetown_wide, aes(count_week)) + geom_ribbon(aes(ymin=tmn, ymax=tmx), co
 
 ggplot(three_cities, aes(x=count_week)) + geom_line(aes(y=value, color=Location), data=filter(three_cities, measurement=='tmp'))
 
-#Animated maps
+
 #Incidence
+guinea_weekly_cases_climate <- read.csv("D:/Google Drive/Medicina/MPH/Courses/BIO 260/FinalProjBIO260_2/guinea_weekly_cases_climate.csv")
+guinea_weekly_cases_climate <- group_by(guinea_weekly_cases_climate, Location) %>% mutate(Cum_cases=cumsum(Total_cases)) %>% 
+    ungroup %>% mutate(Weeks=rep(seq(as.Date('2013-01-01'), as.Date('2015-11-29'), by="week"), 33))
+SL_weekly_cases_climate <- read.csv("D:/Google Drive/Medicina/MPH/Courses/BIO 260/FinalProjBIO260_2/SL_weekly_cases_climate.csv")
+SL_weekly_cases_climate <- group_by(SL_weekly_cases_climate, Location) %>% mutate(Cum_cases=cumsum(Total_cases)) %>% 
+    ungroup %>% mutate(Weeks=rep(seq(as.Date('2013-01-01'), as.Date('2015-11-29'), by="week"),14))
+LB_weekly_cases_climate <- read.csv("D:/Google Drive/Medicina/MPH/Courses/BIO 260/FinalProjBIO260_2/Liberia_weekly_cases_climate.csv")
+LB_weekly_cases_climate <- group_by(LB_weekly_cases_climate, Location) %>% mutate(Cum_cases=cumsum(Total_cases)) %>% 
+    ungroup %>% mutate(Weeks=rep(seq(as.Date('2013-01-01'), as.Date('2015-11-29'), by="week"),15))
+
+#Cumulative incidence for guinea per district
+ggplot(filter(guinea_weekly_cases_climate, count_week>52)) + 
+    geom_line(aes(x=Weeks, y=Cum_cases, group=Location, color=Location), size=0.75) +
+    ylab('Cumulative cases count') + ggtitle('Cumualtive incidence per week for Guinea')
+
+#Cumulative incidence for Liberia per district
+ggplot(filter(LB_weekly_cases_climate, count_week>52)) + 
+    geom_line(aes(x=Weeks, y=Cum_cases, group=Location, color=Location), size=0.75) +
+    ylab('Cumulative cases count') + ggtitle('Cumualtive incidence per week for Liberia')
+
+#Cumulative incidence for Liberia per district
+ggplot(filter(SL_weekly_cases_climate, count_week>52)) + 
+    geom_line(aes(x=Weeks, y=Cum_cases, group=Location, color=Location), size=0.75) +
+    ylab('Cumulative cases count') + ggtitle('Cumualtive incidence per week for Sierra Leone')
+
+
+#Cumulative cases for the three countries
+cum_guinea <- select(guinea_weekly_cases_climate,Location, count_week, Cum_cases, Weeks) %>%
+                filter(count_week>52) %>%
+                group_by(Weeks) %>%
+                summarise(country_cum_sum=sum(Cum_cases)) %>%
+                cbind(Country='Guinea')
+cum_liberia <- select(LB_weekly_cases_climate,Location, count_week, Cum_cases, Weeks) %>%
+    filter(count_week>52) %>%
+    group_by(Weeks) %>%
+    summarise(country_cum_sum=sum(Cum_cases))%>%
+    cbind(Country='Liberia')
+cum_SL <- select(SL_weekly_cases_climate,Location, count_week, Cum_cases, Weeks) %>%
+    filter(count_week>52) %>%
+    group_by(Weeks) %>%
+    summarise(country_cum_sum=sum(Cum_cases))%>%
+    cbind(Country='Sierra Leone')
+
+cum_three_countries <- rbind(cum_guinea, cum_liberia, cum_SL)
+
+ggplot(cum_three_countries) + 
+    geom_line(aes(x=Weeks, y=country_cum_sum, group=Country, color=Country), size=0.75) + 
+    ylab('Cumulative case count') + ggtitle('Cumulative incidence per week')
+
+
 #guinea data
+#Animated maps
 guineards <- readRDS("D:/Google Drive/Medicina/MPH/Courses/BIO 260/FinalProjBIO260_2/Guinea-Admin/GIN_adm2.rds")
 guineashp.df <- fortify(guineards)
 guinea_map <- as.data.frame(cbind(NAME_2=guineards@data$NAME_2, id=guineards@data$ID_2))
@@ -90,11 +141,10 @@ guinea_weekly_cases_climate <- read.csv("D:/Google Drive/Medicina/MPH/Courses/BI
 guinea_weekly_cases_climate <- group_by(guinea_weekly_cases_climate, Location) %>% mutate(Cum_cases=cumsum(Total_cases)) %>% 
     ungroup %>% mutate(Weeks=rep(seq(as.Date('2013-01-01'), as.Date('2015-11-29'), by="week"), 33))
 guinea_map_complete <- left_join(guinea_weekly_cases_climate, guinea_map, by='Location') %>% 
-    select(-X, -Week, -Epi_Week, -group)
+    select(-X, -Week, -Epi_Week)%>% mutate(Country='Guinea')
 guineards_adm0 <- readRDS("D:/Google Drive/Medicina/MPH/Courses/BIO 260/FinalProjBIO260_2/Guinea-Admin/GIN_adm0.rds")
 guineashp.adm0 <- fortify(guineards_adm0)
-
-
+#write.csv(guinea_map_complete, "guinea_map_complete.csv")
 
 #Sierra leone data
 SLrds <- readRDS("D:/Google Drive/Medicina/MPH/Courses/BIO 260/FinalProjBIO260_2/Guinea-Admin/SLE_adm2.rds")
@@ -110,10 +160,11 @@ SL_weekly_cases_climate <- read.csv("D:/Google Drive/Medicina/MPH/Courses/BIO 26
 SL_weekly_cases_climate <- group_by(SL_weekly_cases_climate, Location) %>% mutate(Cum_cases=cumsum(Total_cases)) %>% 
     ungroup %>% mutate(Weeks=rep(seq(as.Date('2013-01-01'), as.Date('2015-11-29'), by="week"),14))
 SL_map_complete <- left_join(SL_weekly_cases_climate, SL_map, by='Location') %>% 
-    select(-X, -Week, -Epi_Week, -group)
+    select(-X, -Week, -Epi_Week)%>% mutate(Country='Sierra Leone')
 SL_adm0_rds <- readRDS("D:/Google Drive/Medicina/MPH/Courses/BIO 260/FinalProjBIO260_2/Guinea-Admin/SLE_adm0.rds")
 SLshp.adm0 <- fortify(SL_adm0_rds)
-
+SL_map_complete$group <- as.factor(as.numeric(as.character(SL_map_complete$group))+100)
+#write.csv(SL_map_complete, "SL_map_complete.csv")
 
 #Liberia data
 LBrds <- readRDS("D:/Google Drive/Medicina/MPH/Courses/BIO 260/FinalProjBIO260_2/Guinea-Admin/LBR_adm1.rds")
@@ -130,17 +181,23 @@ LB_weekly_cases_climate <- read.csv("D:/Google Drive/Medicina/MPH/Courses/BIO 26
 LB_weekly_cases_climate <- group_by(LB_weekly_cases_climate, Location) %>% mutate(Cum_cases=cumsum(Total_cases)) %>% 
     ungroup %>% mutate(Weeks=rep(seq(as.Date('2013-01-01'), as.Date('2015-11-29'), by="week"),15))
 LB_map_complete <- left_join(LB_weekly_cases_climate, LB_map, by='Location') %>% 
-    select(-X, -Week, -Epi_Week, -group)
+    select(-X, -Week, -Epi_Week) %>% mutate(Country='Liberia')
 LB_adm0_rds <- readRDS("D:/Google Drive/Medicina/MPH/Courses/BIO 260/FinalProjBIO260_2/Guinea-Admin/LBR_adm0.rds")
 LBshp.adm0 <- fortify(LB_adm0_rds)
+LB_map_complete$group <- as.factor(as.numeric(as.character(LB_map_complete$group))+200)
+#write(LB_map_complete, "LB_map_complete.csv")
 
-#################
-#CREAR EL MAPA PERO CON CUMULATIVE INCIDENCE
-#################
-
-
-#Creating on file with all the climate, cases and map data
+#Creating one file with all the climate, cases and map data
 three_countries_map_complete <- rbind(guinea_map_complete, SL_map_complete, LB_map_complete)
+
+#Cumulative incidence per country
+    ggplot(select(three_countries_map_complete, Location, long, lat, Cum_cases, Weeks, order, piece, count_week, group) %>% 
+                                            filter(count_week==152), aes(x = long, y = lat, group = group, fill = Cum_cases)) +
+    geom_polygon(color = "black", size = 0.25) + scale_fill_gradient(low='light gray', high='red', name='Cumulative cases') +
+    geom_polygon(aes(x = long, y = lat, group = group, color="Guinea"), fill=NA, size = 0.75, data=guineashp.adm0) +
+    geom_polygon(aes(x = long, y = lat, group = group, color="Sierra Leone"), fill=NA, size = 0.75, data=SLshp.adm0) +
+    geom_polygon(aes(x = long, y = lat, group = group, color="Liberia"), fill=NA, size = 0.75, data=LBshp.adm0) +
+    coord_map() + scale_color_discrete(name="Country")
 
 #Cumulative incidence animation
 three_countries_map_incidence <- ggplot(select(three_countries_map_complete, Location, long, lat, Cum_cases, Weeks, count_week) %>% 
@@ -152,6 +209,95 @@ three_countries_map_incidence <- ggplot(select(three_countries_map_complete, Loc
     coord_map()
 
 gg_animate(three_countries_map_incidence, saver='mp4')
+
+
+#Mean Temp per country
+ggplot(three_countries_map_complete %>% 
+           filter(count_week==1 | count_week==26 | count_week==53|count_week==79|count_week==105|count_week==131, Country=='Guinea'), 
+       aes(x = long, y = lat, group = group, fill = tmp)) +
+    geom_polygon(color = "black", size = 0.25) + scale_fill_gradient(low='yellow', high='red', name='Mean Temp') +
+    coord_map() + facet_wrap(~Weeks)
+
+ggplot(three_countries_map_complete %>% 
+           filter(count_week==1 | count_week==26 | count_week==53|count_week==79|count_week==105|count_week==131, Country=='Sierra Leone'), 
+       aes(x = long, y = lat, group = group, fill = tmp)) +
+    geom_polygon(color = "black", size = 0.25) + scale_fill_gradient(low='yellow', high='red', name='Mean Temp') +
+    coord_map() + facet_wrap(~Weeks)
+
+ggplot(three_countries_map_complete %>% 
+           filter(count_week==1 | count_week==26 | count_week==53|count_week==79|count_week==105|count_week==131, Country=='Liberia'), 
+       aes(x = long, y = lat, group = group, fill = tmp)) +
+    geom_polygon(color = "black", size = 0.25) + scale_fill_gradient(low='yellow', high='red', name='Mean Temp') +
+    coord_map() + facet_wrap(~Weeks)
+
+ggplot(three_countries_map_complete %>% 
+           filter(count_week==1 | count_week==26 | count_week==53|count_week==79|count_week==105|count_week==131)
+       , aes(x = long, y = lat, group = group, fill = tmp)) +
+    geom_polygon(color = "black", size = 0.25) + scale_fill_gradient(low='yellow', high='red') +
+    geom_polygon(aes(x = long, y = lat, group = group, color="Guinea"), fill=NA, size = 0.75, data=guineashp.adm0) +
+    geom_polygon(aes(x = long, y = lat, group = group, color="Sierra Leone"), fill=NA, size = 0.75, data=SLshp.adm0) +
+    geom_polygon(aes(x = long, y = lat, group = group, color="Liberia"), fill=NA, size = 0.75, data=LBshp.adm0) +
+    coord_map() + scale_color_discrete(name="Country")+ facet_wrap(~Weeks)
+
+
+#Mean pre per country
+ggplot(three_countries_map_complete %>% 
+           filter(count_week==1 | count_week==26 | count_week==53|count_week==79|count_week==105|count_week==131, Country=='Guinea'), 
+       aes(x = long, y = lat, group = group, fill = pre)) +
+    geom_polygon(color = "black", size = 0.25) + scale_fill_gradient(name='Mean Precipitation') +
+    coord_map() + facet_wrap(~Weeks)
+
+ggplot(three_countries_map_complete %>% 
+           filter(count_week==1 | count_week==26 | count_week==53|count_week==79|count_week==105|count_week==131, Country=='Sierra Leone'), 
+       aes(x = long, y = lat, group = group, fill = pre)) +
+    geom_polygon(color = "black", size = 0.25) + scale_fill_gradient(name='Mean Precipitation') +
+    coord_map() + facet_wrap(~Weeks)
+
+ggplot(three_countries_map_complete %>% 
+           filter(count_week==1 | count_week==26 | count_week==53|count_week==79|count_week==105|count_week==131, Country=='Liberia'), 
+       aes(x = long, y = lat, group = group, fill = pre)) +
+    geom_polygon(color = "black", size = 0.25) + scale_fill_gradient(name='Mean Precipitation') +
+    coord_map() + facet_wrap(~Weeks)
+
+ggplot(three_countries_map_complete %>% 
+           filter(count_week==1 | count_week==26 | count_week==53|count_week==79|count_week==105|count_week==131)
+       , aes(x = long, y = lat, group = group, fill = pre)) +
+    geom_polygon(color = "black", size = 0.25) + scale_fill_gradient(name='Mean Precipitation') +
+    geom_polygon(aes(x = long, y = lat, group = group, color="Guinea"), fill=NA, size = 0.75, data=guineashp.adm0) +
+    geom_polygon(aes(x = long, y = lat, group = group, color="Sierra Leone"), fill=NA, size = 0.75, data=SLshp.adm0) +
+    geom_polygon(aes(x = long, y = lat, group = group, color="Liberia"), fill=NA, size = 0.75, data=LBshp.adm0) +
+    coord_map() + scale_color_discrete(name="Country")+ facet_wrap(~Weeks)
+
+#vap per country
+ggplot(three_countries_map_complete %>% 
+           filter(count_week==1 | count_week==26 | count_week==53|count_week==79|count_week==105|count_week==131, Country=='Guinea'), 
+       aes(x = long, y = lat, group = group, fill = vap)) +
+    geom_polygon(color = "black", size = 0.25) + scale_fill_gradient(low='green', high='yellow', name='Vapour pressure in hPa') +
+    coord_map() + facet_wrap(~Weeks)
+
+ggplot(three_countries_map_complete %>% 
+           filter(count_week==1 | count_week==26 | count_week==53|count_week==79|count_week==105|count_week==131, Country=='Sierra Leone'), 
+       aes(x = long, y = lat, group = group, fill = vap)) +
+    geom_polygon(color = "black", size = 0.25) + scale_fill_gradient(low='green', high='yellow',name='Vapour pressure in hPa') +
+    coord_map() + facet_wrap(~Weeks)
+
+ggplot(three_countries_map_complete %>% 
+           filter(count_week==1 | count_week==26 | count_week==53|count_week==79|count_week==105|count_week==131, Country=='Liberia'), 
+       aes(x = long, y = lat, group = group, fill = vap)) +
+    geom_polygon(color = "black", size = 0.25) + scale_fill_gradient(low='green', high='yellow',name='Vapour pressure in hPa') +
+    coord_map() + facet_wrap(~Weeks)
+
+ggplot(three_countries_map_complete %>% 
+           filter(count_week==1 | count_week==26 | count_week==53|count_week==79|count_week==105|count_week==131)
+       , aes(x = long, y = lat, group = group, fill = vap)) +
+    geom_polygon(color = "black", size = 0.25) + scale_fill_gradient(low='green', high='yellow',name='Vapour pressure in hPa') +
+    geom_polygon(aes(x = long, y = lat, group = group, color="Guinea"), fill=NA, size = 0.75, data=guineashp.adm0) +
+    geom_polygon(aes(x = long, y = lat, group = group, color="Sierra Leone"), fill=NA, size = 0.75, data=SLshp.adm0) +
+    geom_polygon(aes(x = long, y = lat, group = group, color="Liberia"), fill=NA, size = 0.75, data=LBshp.adm0) +
+    coord_map() + scale_color_discrete(name="Country")+ facet_wrap(~Weeks)
+
+
+
 
 
 conakry_cases <- read.csv("D:/Google Drive/Medicina/MPH/Courses/BIO 260/FinalProjBIO260_2/Cases/guinea_cases_long.csv")

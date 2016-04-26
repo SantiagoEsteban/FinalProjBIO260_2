@@ -48,7 +48,7 @@ PITA 11.25, (12.75, 12.25); 10.75, 12.75
 SIGUIRI 12.25, 9.25; 11.75, (10.25, 9.75, 9.25); 11.25, (9.75, 9.25)
 TELIMELE 11.25, (13.75, 13.25); 10.75, (13.75, 13.25)
 TOUGUE 11.75, 11.25; 11.25, 11.75
-YOMOU 7.75, 9.25; 7.25, (9.25, 8.75)'
+yamou 7.75, 9.25; 7.25, (9.25, 8.75)'
 
 
 
@@ -84,6 +84,7 @@ Vap_Beyla_monthly <- rbind(select(Vap_Beyla_monthly,date, Year, Month, day, Loca
 rm(Vap_Beyla_monthly_2015, Vap_Beyla_monthly_2015a)
 Vap_Beyla_monthly$measurement <- "Vap"
 Vap_Beyla_monthly <- rename(Vap_Beyla_monthly, Value=Vap)
+
 #Boffa
 Vap_Boffa_monthly <- as.data.frame(cbind(Year=c(rep(2011, 12), rep(2012, 12), rep(2013, 12), rep(2014, 12)), 
                                          Month=rep(seq(1,12,1), 4), day=1,
@@ -682,25 +683,25 @@ Vap_Tougue_monthly <- rbind(select(Vap_Tougue_monthly,date, Year, Month, day, Lo
 rm(Vap_Tougue_monthly_2015, Vap_Tougue_monthly_2015a)
 Vap_Tougue_monthly$measurement <- "Vap"
 Vap_Tougue_monthly <- rename(Vap_Tougue_monthly, Value=Vap)
-#Yomou
-Vap_Yomou_monthly <- as.data.frame(cbind(Year=c(rep(2011, 12), rep(2012, 12), rep(2013, 12), rep(2014, 12)), 
+#yamou
+Vap_yamou_monthly <- as.data.frame(cbind(Year=c(rep(2011, 12), rep(2012, 12), rep(2013, 12), rep(2014, 12)), 
                                         Month=rep(seq(1,12,1), 4),day=1, 
                                         Vap1=vap.var[which(lon==9.25),which(lat==7.75),1:48],
                                         Vap2=vap.var[which(lon==9.25),which(lat==7.25),1:48],
                                         Vap3=vap.var[which(lon==8.75),which(lat==7.25),1:48]))
-Vap_Yomou_monthly$Location <- 'Yomou'
-Vap_Yomou_monthly$Vap <- rowMeans(select(Vap_Yomou_monthly, Vap1, Vap2, Vap3))
-Vap_Yomou_monthly$date <- ymd(paste(Vap_Yomou_monthly$Year, Vap_Yomou_monthly$Month, Vap_Yomou_monthly$day, sep="-"))
-Vap_Yomou_monthly_2015 <- select(Vap_Yomou_monthly, Location, Year, Month, Vap) %>% group_by( Month) %>% summarize(Vap=mean(Vap))
-Vap_Yomou_monthly_2015a <- as.data.frame(cbind(Year=rep(2015, 12), Month=rep(seq(1,12,1),1), day=1))
-Vap_Yomou_monthly_2015a$Location <- 'Yomou'
-Vap_Yomou_monthly_2015a$date <- ymd(paste(Vap_Yomou_monthly_2015a$Year, Vap_Yomou_monthly_2015a$Month, Vap_Yomou_monthly_2015a$day, sep="-"))
-Vap_Yomou_monthly_2015a <- select(Vap_Yomou_monthly_2015a, date, Year, Month, day, Location)
-Vap_Yomou_monthly_2015 <- full_join(Vap_Yomou_monthly_2015a, Vap_Yomou_monthly_2015)
-Vap_Yomou_monthly <- rbind(select(Vap_Yomou_monthly,date, Year, Month, day, Location, Vap), Vap_Yomou_monthly_2015)
-rm(Vap_Yomou_monthly_2015, Vap_Yomou_monthly_2015a)
-Vap_Yomou_monthly$measurement <- "Vap"
-Vap_Yomou_monthly <- rename(Vap_Yomou_monthly, Value=Vap)
+Vap_yamou_monthly$Location <- 'yamou'
+Vap_yamou_monthly$Vap <- rowMeans(select(Vap_yamou_monthly, Vap1, Vap2, Vap3))
+Vap_yamou_monthly$date <- ymd(paste(Vap_yamou_monthly$Year, Vap_yamou_monthly$Month, Vap_yamou_monthly$day, sep="-"))
+Vap_yamou_monthly_2015 <- select(Vap_yamou_monthly, Location, Year, Month, Vap) %>% group_by( Month) %>% summarize(Vap=mean(Vap))
+Vap_yamou_monthly_2015a <- as.data.frame(cbind(Year=rep(2015, 12), Month=rep(seq(1,12,1),1), day=1))
+Vap_yamou_monthly_2015a$Location <- 'yamou'
+Vap_yamou_monthly_2015a$date <- ymd(paste(Vap_yamou_monthly_2015a$Year, Vap_yamou_monthly_2015a$Month, Vap_yamou_monthly_2015a$day, sep="-"))
+Vap_yamou_monthly_2015a <- select(Vap_yamou_monthly_2015a, date, Year, Month, day, Location)
+Vap_yamou_monthly_2015 <- full_join(Vap_yamou_monthly_2015a, Vap_yamou_monthly_2015)
+Vap_yamou_monthly <- rbind(select(Vap_yamou_monthly,date, Year, Month, day, Location, Vap), Vap_yamou_monthly_2015)
+rm(Vap_yamou_monthly_2015, Vap_yamou_monthly_2015a)
+Vap_yamou_monthly$measurement <- "Vap"
+Vap_yamou_monthly <- rename(Vap_yamou_monthly, Value=Vap)
 
 #Merging in long format
 Vap_Guinea_monthly_district <- rbind(Vap_Beyla_monthly, Vap_Boke_monthly, Vap_Boffa_monthly,
@@ -713,7 +714,7 @@ Vap_Guinea_monthly_district <- rbind(Vap_Beyla_monthly, Vap_Boke_monthly, Vap_Bo
                                      Vap_Lelouma_monthly, Vap_Lola_monthly, Vap_Macenta_monthly,
                                      Vap_Mali_monthly, Vap_Mamou_monthly, Vap_Nzerekore_monthly,
                                      Vap_Pita_monthly, Vap_Siguiri_monthly, Vap_Telimele_monthly,
-                                     Vap_Tougue_monthly, Vap_Yomou_monthly)
+                                     Vap_Tougue_monthly, Vap_yamou_monthly)
 
 
 #####################
@@ -1345,25 +1346,25 @@ wet_Tougue_monthly <- rbind(select(wet_Tougue_monthly,date, Year, Month, day, Lo
 rm(wet_Tougue_monthly_2015, wet_Tougue_monthly_2015a)
 wet_Tougue_monthly$measurement <- "wet"
 wet_Tougue_monthly <- rename(wet_Tougue_monthly, Value=wet)
-#Yomou
-wet_Yomou_monthly <- as.data.frame(cbind(Year=c(rep(2011, 12), rep(2012, 12), rep(2013, 12), rep(2014, 12)), 
+#yamou
+wet_yamou_monthly <- as.data.frame(cbind(Year=c(rep(2011, 12), rep(2012, 12), rep(2013, 12), rep(2014, 12)), 
                                          Month=rep(seq(1,12,1), 4),day=1, 
                                          wet1=wet.var[which(lon==9.25),which(lat==7.75),1:48],
                                          wet2=wet.var[which(lon==9.25),which(lat==7.25),1:48],
                                          wet3=wet.var[which(lon==8.75),which(lat==7.25),1:48]))
-wet_Yomou_monthly$Location <- 'Yomou'
-wet_Yomou_monthly$wet <- rowMeans(select(wet_Yomou_monthly, wet1, wet2, wet3))
-wet_Yomou_monthly$date <- ymd(paste(wet_Yomou_monthly$Year, wet_Yomou_monthly$Month, wet_Yomou_monthly$day, sep="-"))
-wet_Yomou_monthly_2015 <- select(wet_Yomou_monthly, Location, Year, Month, wet) %>% group_by( Month) %>% summarize(wet=mean(wet))
-wet_Yomou_monthly_2015a <- as.data.frame(cbind(Year=rep(2015, 12), Month=rep(seq(1,12,1),1), day=1))
-wet_Yomou_monthly_2015a$Location <- 'Yomou'
-wet_Yomou_monthly_2015a$date <- ymd(paste(wet_Yomou_monthly_2015a$Year, wet_Yomou_monthly_2015a$Month, wet_Yomou_monthly_2015a$day, sep="-"))
-wet_Yomou_monthly_2015a <- select(wet_Yomou_monthly_2015a, date, Year, Month, day, Location)
-wet_Yomou_monthly_2015 <- full_join(wet_Yomou_monthly_2015a, wet_Yomou_monthly_2015)
-wet_Yomou_monthly <- rbind(select(wet_Yomou_monthly,date, Year, Month, day, Location, wet), wet_Yomou_monthly_2015)
-rm(wet_Yomou_monthly_2015, wet_Yomou_monthly_2015a)
-wet_Yomou_monthly$measurement <- "wet"
-wet_Yomou_monthly <- rename(wet_Yomou_monthly, Value=wet)
+wet_yamou_monthly$Location <- 'yamou'
+wet_yamou_monthly$wet <- rowMeans(select(wet_yamou_monthly, wet1, wet2, wet3))
+wet_yamou_monthly$date <- ymd(paste(wet_yamou_monthly$Year, wet_yamou_monthly$Month, wet_yamou_monthly$day, sep="-"))
+wet_yamou_monthly_2015 <- select(wet_yamou_monthly, Location, Year, Month, wet) %>% group_by( Month) %>% summarize(wet=mean(wet))
+wet_yamou_monthly_2015a <- as.data.frame(cbind(Year=rep(2015, 12), Month=rep(seq(1,12,1),1), day=1))
+wet_yamou_monthly_2015a$Location <- 'yamou'
+wet_yamou_monthly_2015a$date <- ymd(paste(wet_yamou_monthly_2015a$Year, wet_yamou_monthly_2015a$Month, wet_yamou_monthly_2015a$day, sep="-"))
+wet_yamou_monthly_2015a <- select(wet_yamou_monthly_2015a, date, Year, Month, day, Location)
+wet_yamou_monthly_2015 <- full_join(wet_yamou_monthly_2015a, wet_yamou_monthly_2015)
+wet_yamou_monthly <- rbind(select(wet_yamou_monthly,date, Year, Month, day, Location, wet), wet_yamou_monthly_2015)
+rm(wet_yamou_monthly_2015, wet_yamou_monthly_2015a)
+wet_yamou_monthly$measurement <- "wet"
+wet_yamou_monthly <- rename(wet_yamou_monthly, Value=wet)
 
 #Merging in long format
 wet_Guinea_monthly_district <- rbind(wet_Beyla_monthly, wet_Boke_monthly, wet_Boffa_monthly,
@@ -1376,7 +1377,7 @@ wet_Guinea_monthly_district <- rbind(wet_Beyla_monthly, wet_Boke_monthly, wet_Bo
                                      wet_Lelouma_monthly, wet_Lola_monthly, wet_Macenta_monthly,
                                      wet_Mali_monthly, wet_Mamou_monthly, wet_Nzerekore_monthly,
                                      wet_Pita_monthly, wet_Siguiri_monthly, wet_Telimele_monthly,
-                                     wet_Tougue_monthly, wet_Yomou_monthly)
+                                     wet_Tougue_monthly, wet_yamou_monthly)
 
 #####################
 #dtr - daily temp range
@@ -2007,25 +2008,25 @@ dtr_Tougue_monthly <- rbind(select(dtr_Tougue_monthly,date, Year, Month, day, Lo
 rm(dtr_Tougue_monthly_2015, dtr_Tougue_monthly_2015a)
 dtr_Tougue_monthly$measurement <- "dtr"
 dtr_Tougue_monthly <- rename(dtr_Tougue_monthly, Value=dtr)
-#Yomou
-dtr_Yomou_monthly <- as.data.frame(cbind(Year=c(rep(2011, 12), rep(2012, 12), rep(2013, 12), rep(2014, 12)), 
+#yamou
+dtr_yamou_monthly <- as.data.frame(cbind(Year=c(rep(2011, 12), rep(2012, 12), rep(2013, 12), rep(2014, 12)), 
                                          Month=rep(seq(1,12,1), 4),day=1, 
                                          dtr1=dtr.var[which(lon==9.25),which(lat==7.75),1:48],
                                          dtr2=dtr.var[which(lon==9.25),which(lat==7.25),1:48],
                                          dtr3=dtr.var[which(lon==8.75),which(lat==7.25),1:48]))
-dtr_Yomou_monthly$Location <- 'Yomou'
-dtr_Yomou_monthly$dtr <- rowMeans(select(dtr_Yomou_monthly, dtr1, dtr2, dtr3))
-dtr_Yomou_monthly$date <- ymd(paste(dtr_Yomou_monthly$Year, dtr_Yomou_monthly$Month, dtr_Yomou_monthly$day, sep="-"))
-dtr_Yomou_monthly_2015 <- select(dtr_Yomou_monthly, Location, Year, Month, dtr) %>% group_by( Month) %>% summarize(dtr=mean(dtr))
-dtr_Yomou_monthly_2015a <- as.data.frame(cbind(Year=rep(2015, 12), Month=rep(seq(1,12,1),1), day=1))
-dtr_Yomou_monthly_2015a$Location <- 'Yomou'
-dtr_Yomou_monthly_2015a$date <- ymd(paste(dtr_Yomou_monthly_2015a$Year, dtr_Yomou_monthly_2015a$Month, dtr_Yomou_monthly_2015a$day, sep="-"))
-dtr_Yomou_monthly_2015a <- select(dtr_Yomou_monthly_2015a, date, Year, Month, day, Location)
-dtr_Yomou_monthly_2015 <- full_join(dtr_Yomou_monthly_2015a, dtr_Yomou_monthly_2015)
-dtr_Yomou_monthly <- rbind(select(dtr_Yomou_monthly,date, Year, Month, day, Location, dtr), dtr_Yomou_monthly_2015)
-rm(dtr_Yomou_monthly_2015, dtr_Yomou_monthly_2015a)
-dtr_Yomou_monthly$measurement <- "dtr"
-dtr_Yomou_monthly <- rename(dtr_Yomou_monthly, Value=dtr)
+dtr_yamou_monthly$Location <- 'yamou'
+dtr_yamou_monthly$dtr <- rowMeans(select(dtr_yamou_monthly, dtr1, dtr2, dtr3))
+dtr_yamou_monthly$date <- ymd(paste(dtr_yamou_monthly$Year, dtr_yamou_monthly$Month, dtr_yamou_monthly$day, sep="-"))
+dtr_yamou_monthly_2015 <- select(dtr_yamou_monthly, Location, Year, Month, dtr) %>% group_by( Month) %>% summarize(dtr=mean(dtr))
+dtr_yamou_monthly_2015a <- as.data.frame(cbind(Year=rep(2015, 12), Month=rep(seq(1,12,1),1), day=1))
+dtr_yamou_monthly_2015a$Location <- 'yamou'
+dtr_yamou_monthly_2015a$date <- ymd(paste(dtr_yamou_monthly_2015a$Year, dtr_yamou_monthly_2015a$Month, dtr_yamou_monthly_2015a$day, sep="-"))
+dtr_yamou_monthly_2015a <- select(dtr_yamou_monthly_2015a, date, Year, Month, day, Location)
+dtr_yamou_monthly_2015 <- full_join(dtr_yamou_monthly_2015a, dtr_yamou_monthly_2015)
+dtr_yamou_monthly <- rbind(select(dtr_yamou_monthly,date, Year, Month, day, Location, dtr), dtr_yamou_monthly_2015)
+rm(dtr_yamou_monthly_2015, dtr_yamou_monthly_2015a)
+dtr_yamou_monthly$measurement <- "dtr"
+dtr_yamou_monthly <- rename(dtr_yamou_monthly, Value=dtr)
 
 #Merging in long format
 dtr_Guinea_monthly_district <- rbind(dtr_Beyla_monthly, dtr_Boke_monthly, dtr_Boffa_monthly,
@@ -2038,7 +2039,7 @@ dtr_Guinea_monthly_district <- rbind(dtr_Beyla_monthly, dtr_Boke_monthly, dtr_Bo
                                      dtr_Lelouma_monthly, dtr_Lola_monthly, dtr_Macenta_monthly,
                                      dtr_Mali_monthly, dtr_Mamou_monthly, dtr_Nzerekore_monthly,
                                      dtr_Pita_monthly, dtr_Siguiri_monthly, dtr_Telimele_monthly,
-                                     dtr_Tougue_monthly, dtr_Yomou_monthly)
+                                     dtr_Tougue_monthly, dtr_yamou_monthly)
 
 #####################
 #pet - potential evapotranspiration
@@ -2669,25 +2670,25 @@ pet_Tougue_monthly <- rbind(select(pet_Tougue_monthly,date, Year, Month, day, Lo
 rm(pet_Tougue_monthly_2015, pet_Tougue_monthly_2015a)
 pet_Tougue_monthly$measurement <- "pet"
 pet_Tougue_monthly <- rename(pet_Tougue_monthly, Value=pet)
-#Yomou
-pet_Yomou_monthly <- as.data.frame(cbind(Year=c(rep(2011, 12), rep(2012, 12), rep(2013, 12), rep(2014, 12)), 
+#yamou
+pet_yamou_monthly <- as.data.frame(cbind(Year=c(rep(2011, 12), rep(2012, 12), rep(2013, 12), rep(2014, 12)), 
                                          Month=rep(seq(1,12,1), 4),day=1, 
                                          pet1=pet.var[which(lon==9.25),which(lat==7.75),1:48],
                                          pet2=pet.var[which(lon==9.25),which(lat==7.25),1:48],
                                          pet3=pet.var[which(lon==8.75),which(lat==7.25),1:48]))
-pet_Yomou_monthly$Location <- 'Yomou'
-pet_Yomou_monthly$pet <- rowMeans(select(pet_Yomou_monthly, pet1, pet2, pet3))
-pet_Yomou_monthly$date <- ymd(paste(pet_Yomou_monthly$Year, pet_Yomou_monthly$Month, pet_Yomou_monthly$day, sep="-"))
-pet_Yomou_monthly_2015 <- select(pet_Yomou_monthly, Location, Year, Month, pet) %>% group_by( Month) %>% summarize(pet=mean(pet))
-pet_Yomou_monthly_2015a <- as.data.frame(cbind(Year=rep(2015, 12), Month=rep(seq(1,12,1),1), day=1))
-pet_Yomou_monthly_2015a$Location <- 'Yomou'
-pet_Yomou_monthly_2015a$date <- ymd(paste(pet_Yomou_monthly_2015a$Year, pet_Yomou_monthly_2015a$Month, pet_Yomou_monthly_2015a$day, sep="-"))
-pet_Yomou_monthly_2015a <- select(pet_Yomou_monthly_2015a, date, Year, Month, day, Location)
-pet_Yomou_monthly_2015 <- full_join(pet_Yomou_monthly_2015a, pet_Yomou_monthly_2015)
-pet_Yomou_monthly <- rbind(select(pet_Yomou_monthly,date, Year, Month, day, Location, pet), pet_Yomou_monthly_2015)
-rm(pet_Yomou_monthly_2015, pet_Yomou_monthly_2015a)
-pet_Yomou_monthly$measurement <- "pet"
-pet_Yomou_monthly <- rename(pet_Yomou_monthly, Value=pet)
+pet_yamou_monthly$Location <- 'yamou'
+pet_yamou_monthly$pet <- rowMeans(select(pet_yamou_monthly, pet1, pet2, pet3))
+pet_yamou_monthly$date <- ymd(paste(pet_yamou_monthly$Year, pet_yamou_monthly$Month, pet_yamou_monthly$day, sep="-"))
+pet_yamou_monthly_2015 <- select(pet_yamou_monthly, Location, Year, Month, pet) %>% group_by( Month) %>% summarize(pet=mean(pet))
+pet_yamou_monthly_2015a <- as.data.frame(cbind(Year=rep(2015, 12), Month=rep(seq(1,12,1),1), day=1))
+pet_yamou_monthly_2015a$Location <- 'yamou'
+pet_yamou_monthly_2015a$date <- ymd(paste(pet_yamou_monthly_2015a$Year, pet_yamou_monthly_2015a$Month, pet_yamou_monthly_2015a$day, sep="-"))
+pet_yamou_monthly_2015a <- select(pet_yamou_monthly_2015a, date, Year, Month, day, Location)
+pet_yamou_monthly_2015 <- full_join(pet_yamou_monthly_2015a, pet_yamou_monthly_2015)
+pet_yamou_monthly <- rbind(select(pet_yamou_monthly,date, Year, Month, day, Location, pet), pet_yamou_monthly_2015)
+rm(pet_yamou_monthly_2015, pet_yamou_monthly_2015a)
+pet_yamou_monthly$measurement <- "pet"
+pet_yamou_monthly <- rename(pet_yamou_monthly, Value=pet)
 
 #Merging in long format
 pet_Guinea_monthly_district <- rbind(pet_Beyla_monthly, pet_Boke_monthly, pet_Boffa_monthly,
@@ -2700,7 +2701,7 @@ pet_Guinea_monthly_district <- rbind(pet_Beyla_monthly, pet_Boke_monthly, pet_Bo
                                      pet_Lelouma_monthly, pet_Lola_monthly, pet_Macenta_monthly,
                                      pet_Mali_monthly, pet_Mamou_monthly, pet_Nzerekore_monthly,
                                      pet_Pita_monthly, pet_Siguiri_monthly, pet_Telimele_monthly,
-                                     pet_Tougue_monthly, pet_Yomou_monthly)
+                                     pet_Tougue_monthly, pet_yamou_monthly)
 
 #####################
 #pre - precipitation in mm
@@ -3330,25 +3331,25 @@ pre_Tougue_monthly <- rbind(select(pre_Tougue_monthly,date, Year, Month, day, Lo
 rm(pre_Tougue_monthly_2015, pre_Tougue_monthly_2015a)
 pre_Tougue_monthly$measurement <- "pre"
 pre_Tougue_monthly <- rename(pre_Tougue_monthly, Value=pre)
-#Yomou
-pre_Yomou_monthly <- as.data.frame(cbind(Year=c(rep(2011, 12), rep(2012, 12), rep(2013, 12), rep(2014, 12)), 
+#yamou
+pre_yamou_monthly <- as.data.frame(cbind(Year=c(rep(2011, 12), rep(2012, 12), rep(2013, 12), rep(2014, 12)), 
                                          Month=rep(seq(1,12,1), 4),day=1, 
                                          pre1=pre.var[which(lon==9.25),which(lat==7.75),1:48],
                                          pre2=pre.var[which(lon==9.25),which(lat==7.25),1:48],
                                          pre3=pre.var[which(lon==8.75),which(lat==7.25),1:48]))
-pre_Yomou_monthly$Location <- 'Yomou'
-pre_Yomou_monthly$pre <- rowMeans(select(pre_Yomou_monthly, pre1, pre2, pre3))
-pre_Yomou_monthly$date <- ymd(paste(pre_Yomou_monthly$Year, pre_Yomou_monthly$Month, pre_Yomou_monthly$day, sep="-"))
-pre_Yomou_monthly_2015 <- select(pre_Yomou_monthly, Location, Year, Month, pre) %>% group_by( Month) %>% summarize(pre=mean(pre))
-pre_Yomou_monthly_2015a <- as.data.frame(cbind(Year=rep(2015, 12), Month=rep(seq(1,12,1),1), day=1))
-pre_Yomou_monthly_2015a$Location <- 'Yomou'
-pre_Yomou_monthly_2015a$date <- ymd(paste(pre_Yomou_monthly_2015a$Year, pre_Yomou_monthly_2015a$Month, pre_Yomou_monthly_2015a$day, sep="-"))
-pre_Yomou_monthly_2015a <- select(pre_Yomou_monthly_2015a, date, Year, Month, day, Location)
-pre_Yomou_monthly_2015 <- full_join(pre_Yomou_monthly_2015a, pre_Yomou_monthly_2015)
-pre_Yomou_monthly <- rbind(select(pre_Yomou_monthly,date, Year, Month, day, Location, pre), pre_Yomou_monthly_2015)
-rm(pre_Yomou_monthly_2015, pre_Yomou_monthly_2015a)
-pre_Yomou_monthly$measurement <- "pre"
-pre_Yomou_monthly <- rename(pre_Yomou_monthly, Value=pre)
+pre_yamou_monthly$Location <- 'yamou'
+pre_yamou_monthly$pre <- rowMeans(select(pre_yamou_monthly, pre1, pre2, pre3))
+pre_yamou_monthly$date <- ymd(paste(pre_yamou_monthly$Year, pre_yamou_monthly$Month, pre_yamou_monthly$day, sep="-"))
+pre_yamou_monthly_2015 <- select(pre_yamou_monthly, Location, Year, Month, pre) %>% group_by( Month) %>% summarize(pre=mean(pre))
+pre_yamou_monthly_2015a <- as.data.frame(cbind(Year=rep(2015, 12), Month=rep(seq(1,12,1),1), day=1))
+pre_yamou_monthly_2015a$Location <- 'yamou'
+pre_yamou_monthly_2015a$date <- ymd(paste(pre_yamou_monthly_2015a$Year, pre_yamou_monthly_2015a$Month, pre_yamou_monthly_2015a$day, sep="-"))
+pre_yamou_monthly_2015a <- select(pre_yamou_monthly_2015a, date, Year, Month, day, Location)
+pre_yamou_monthly_2015 <- full_join(pre_yamou_monthly_2015a, pre_yamou_monthly_2015)
+pre_yamou_monthly <- rbind(select(pre_yamou_monthly,date, Year, Month, day, Location, pre), pre_yamou_monthly_2015)
+rm(pre_yamou_monthly_2015, pre_yamou_monthly_2015a)
+pre_yamou_monthly$measurement <- "pre"
+pre_yamou_monthly <- rename(pre_yamou_monthly, Value=pre)
 
 #Merging in long format
 pre_Guinea_monthly_district <- rbind(pre_Beyla_monthly, pre_Boke_monthly, pre_Boffa_monthly,
@@ -3361,7 +3362,7 @@ pre_Guinea_monthly_district <- rbind(pre_Beyla_monthly, pre_Boke_monthly, pre_Bo
                                      pre_Lelouma_monthly, pre_Lola_monthly, pre_Macenta_monthly,
                                      pre_Mali_monthly, pre_Mamou_monthly, pre_Nzerekore_monthly,
                                      pre_Pita_monthly, pre_Siguiri_monthly, pre_Telimele_monthly,
-                                     pre_Tougue_monthly, pre_Yomou_monthly)
+                                     pre_Tougue_monthly, pre_yamou_monthly)
 
 #####################
 #tmn - min Temp
@@ -3991,25 +3992,25 @@ tmn_Tougue_monthly <- rbind(select(tmn_Tougue_monthly,date, Year, Month, day, Lo
 rm(tmn_Tougue_monthly_2015, tmn_Tougue_monthly_2015a)
 tmn_Tougue_monthly$measurement <- "tmn"
 tmn_Tougue_monthly <- rename(tmn_Tougue_monthly, Value=tmn)
-#Yomou
-tmn_Yomou_monthly <- as.data.frame(cbind(Year=c(rep(2011, 12), rep(2012, 12), rep(2013, 12), rep(2014, 12)), 
+#yamou
+tmn_yamou_monthly <- as.data.frame(cbind(Year=c(rep(2011, 12), rep(2012, 12), rep(2013, 12), rep(2014, 12)), 
                                          Month=rep(seq(1,12,1), 4),day=1, 
                                          tmn1=tmn.var[which(lon==9.25),which(lat==7.75),1:48],
                                          tmn2=tmn.var[which(lon==9.25),which(lat==7.25),1:48],
                                          tmn3=tmn.var[which(lon==8.75),which(lat==7.25),1:48]))
-tmn_Yomou_monthly$Location <- 'Yomou'
-tmn_Yomou_monthly$tmn <- rowMeans(select(tmn_Yomou_monthly, tmn1, tmn2, tmn3))
-tmn_Yomou_monthly$date <- ymd(paste(tmn_Yomou_monthly$Year, tmn_Yomou_monthly$Month, tmn_Yomou_monthly$day, sep="-"))
-tmn_Yomou_monthly_2015 <- select(tmn_Yomou_monthly, Location, Year, Month, tmn) %>% group_by( Month) %>% summarize(tmn=mean(tmn))
-tmn_Yomou_monthly_2015a <- as.data.frame(cbind(Year=rep(2015, 12), Month=rep(seq(1,12,1),1), day=1))
-tmn_Yomou_monthly_2015a$Location <- 'Yomou'
-tmn_Yomou_monthly_2015a$date <- ymd(paste(tmn_Yomou_monthly_2015a$Year, tmn_Yomou_monthly_2015a$Month, tmn_Yomou_monthly_2015a$day, sep="-"))
-tmn_Yomou_monthly_2015a <- select(tmn_Yomou_monthly_2015a, date, Year, Month, day, Location)
-tmn_Yomou_monthly_2015 <- full_join(tmn_Yomou_monthly_2015a, tmn_Yomou_monthly_2015)
-tmn_Yomou_monthly <- rbind(select(tmn_Yomou_monthly,date, Year, Month, day, Location, tmn), tmn_Yomou_monthly_2015)
-rm(tmn_Yomou_monthly_2015, tmn_Yomou_monthly_2015a)
-tmn_Yomou_monthly$measurement <- "tmn"
-tmn_Yomou_monthly <- rename(tmn_Yomou_monthly, Value=tmn)
+tmn_yamou_monthly$Location <- 'yamou'
+tmn_yamou_monthly$tmn <- rowMeans(select(tmn_yamou_monthly, tmn1, tmn2, tmn3))
+tmn_yamou_monthly$date <- ymd(paste(tmn_yamou_monthly$Year, tmn_yamou_monthly$Month, tmn_yamou_monthly$day, sep="-"))
+tmn_yamou_monthly_2015 <- select(tmn_yamou_monthly, Location, Year, Month, tmn) %>% group_by( Month) %>% summarize(tmn=mean(tmn))
+tmn_yamou_monthly_2015a <- as.data.frame(cbind(Year=rep(2015, 12), Month=rep(seq(1,12,1),1), day=1))
+tmn_yamou_monthly_2015a$Location <- 'yamou'
+tmn_yamou_monthly_2015a$date <- ymd(paste(tmn_yamou_monthly_2015a$Year, tmn_yamou_monthly_2015a$Month, tmn_yamou_monthly_2015a$day, sep="-"))
+tmn_yamou_monthly_2015a <- select(tmn_yamou_monthly_2015a, date, Year, Month, day, Location)
+tmn_yamou_monthly_2015 <- full_join(tmn_yamou_monthly_2015a, tmn_yamou_monthly_2015)
+tmn_yamou_monthly <- rbind(select(tmn_yamou_monthly,date, Year, Month, day, Location, tmn), tmn_yamou_monthly_2015)
+rm(tmn_yamou_monthly_2015, tmn_yamou_monthly_2015a)
+tmn_yamou_monthly$measurement <- "tmn"
+tmn_yamou_monthly <- rename(tmn_yamou_monthly, Value=tmn)
 
 #Merging in long format
 tmn_Guinea_monthly_district <- rbind(tmn_Beyla_monthly, tmn_Boke_monthly, tmn_Boffa_monthly,
@@ -4022,7 +4023,7 @@ tmn_Guinea_monthly_district <- rbind(tmn_Beyla_monthly, tmn_Boke_monthly, tmn_Bo
                                      tmn_Lelouma_monthly, tmn_Lola_monthly, tmn_Macenta_monthly,
                                      tmn_Mali_monthly, tmn_Mamou_monthly, tmn_Nzerekore_monthly,
                                      tmn_Pita_monthly, tmn_Siguiri_monthly, tmn_Telimele_monthly,
-                                     tmn_Tougue_monthly, tmn_Yomou_monthly)
+                                     tmn_Tougue_monthly, tmn_yamou_monthly)
 
 #####################
 #tmp - mean Temp
@@ -4652,25 +4653,25 @@ tmp_Tougue_monthly <- rbind(select(tmp_Tougue_monthly,date, Year, Month, day, Lo
 rm(tmp_Tougue_monthly_2015, tmp_Tougue_monthly_2015a)
 tmp_Tougue_monthly$measurement <- "tmp"
 tmp_Tougue_monthly <- rename(tmp_Tougue_monthly, Value=tmp)
-#Yomou
-tmp_Yomou_monthly <- as.data.frame(cbind(Year=c(rep(2011, 12), rep(2012, 12), rep(2013, 12), rep(2014, 12)), 
+#yamou
+tmp_yamou_monthly <- as.data.frame(cbind(Year=c(rep(2011, 12), rep(2012, 12), rep(2013, 12), rep(2014, 12)), 
                                          Month=rep(seq(1,12,1), 4),day=1, 
                                          tmp1=tmp.var[which(lon==9.25),which(lat==7.75),1:48],
                                          tmp2=tmp.var[which(lon==9.25),which(lat==7.25),1:48],
                                          tmp3=tmp.var[which(lon==8.75),which(lat==7.25),1:48]))
-tmp_Yomou_monthly$Location <- 'Yomou'
-tmp_Yomou_monthly$tmp <- rowMeans(select(tmp_Yomou_monthly, tmp1, tmp2, tmp3))
-tmp_Yomou_monthly$date <- ymd(paste(tmp_Yomou_monthly$Year, tmp_Yomou_monthly$Month, tmp_Yomou_monthly$day, sep="-"))
-tmp_Yomou_monthly_2015 <- select(tmp_Yomou_monthly, Location, Year, Month, tmp) %>% group_by( Month) %>% summarize(tmp=mean(tmp))
-tmp_Yomou_monthly_2015a <- as.data.frame(cbind(Year=rep(2015, 12), Month=rep(seq(1,12,1),1), day=1))
-tmp_Yomou_monthly_2015a$Location <- 'Yomou'
-tmp_Yomou_monthly_2015a$date <- ymd(paste(tmp_Yomou_monthly_2015a$Year, tmp_Yomou_monthly_2015a$Month, tmp_Yomou_monthly_2015a$day, sep="-"))
-tmp_Yomou_monthly_2015a <- select(tmp_Yomou_monthly_2015a, date, Year, Month, day, Location)
-tmp_Yomou_monthly_2015 <- full_join(tmp_Yomou_monthly_2015a, tmp_Yomou_monthly_2015)
-tmp_Yomou_monthly <- rbind(select(tmp_Yomou_monthly,date, Year, Month, day, Location, tmp), tmp_Yomou_monthly_2015)
-rm(tmp_Yomou_monthly_2015, tmp_Yomou_monthly_2015a)
-tmp_Yomou_monthly$measurement <- "tmp"
-tmp_Yomou_monthly <- rename(tmp_Yomou_monthly, Value=tmp)
+tmp_yamou_monthly$Location <- 'yamou'
+tmp_yamou_monthly$tmp <- rowMeans(select(tmp_yamou_monthly, tmp1, tmp2, tmp3))
+tmp_yamou_monthly$date <- ymd(paste(tmp_yamou_monthly$Year, tmp_yamou_monthly$Month, tmp_yamou_monthly$day, sep="-"))
+tmp_yamou_monthly_2015 <- select(tmp_yamou_monthly, Location, Year, Month, tmp) %>% group_by( Month) %>% summarize(tmp=mean(tmp))
+tmp_yamou_monthly_2015a <- as.data.frame(cbind(Year=rep(2015, 12), Month=rep(seq(1,12,1),1), day=1))
+tmp_yamou_monthly_2015a$Location <- 'yamou'
+tmp_yamou_monthly_2015a$date <- ymd(paste(tmp_yamou_monthly_2015a$Year, tmp_yamou_monthly_2015a$Month, tmp_yamou_monthly_2015a$day, sep="-"))
+tmp_yamou_monthly_2015a <- select(tmp_yamou_monthly_2015a, date, Year, Month, day, Location)
+tmp_yamou_monthly_2015 <- full_join(tmp_yamou_monthly_2015a, tmp_yamou_monthly_2015)
+tmp_yamou_monthly <- rbind(select(tmp_yamou_monthly,date, Year, Month, day, Location, tmp), tmp_yamou_monthly_2015)
+rm(tmp_yamou_monthly_2015, tmp_yamou_monthly_2015a)
+tmp_yamou_monthly$measurement <- "tmp"
+tmp_yamou_monthly <- rename(tmp_yamou_monthly, Value=tmp)
 
 #Merging in long format
 tmp_Guinea_monthly_district <- rbind(tmp_Beyla_monthly, tmp_Boke_monthly, tmp_Boffa_monthly,
@@ -4683,7 +4684,7 @@ tmp_Guinea_monthly_district <- rbind(tmp_Beyla_monthly, tmp_Boke_monthly, tmp_Bo
                                      tmp_Lelouma_monthly, tmp_Lola_monthly, tmp_Macenta_monthly,
                                      tmp_Mali_monthly, tmp_Mamou_monthly, tmp_Nzerekore_monthly,
                                      tmp_Pita_monthly, tmp_Siguiri_monthly, tmp_Telimele_monthly,
-                                     tmp_Tougue_monthly, tmp_Yomou_monthly)
+                                     tmp_Tougue_monthly, tmp_yamou_monthly)
 
 
 ###############
@@ -5314,25 +5315,25 @@ tmx_Tougue_monthly <- rbind(select(tmx_Tougue_monthly,date, Year, Month, day, Lo
 rm(tmx_Tougue_monthly_2015, tmx_Tougue_monthly_2015a)
 tmx_Tougue_monthly$measurement <- "tmx"
 tmx_Tougue_monthly <- rename(tmx_Tougue_monthly, Value=tmx)
-#Yomou
-tmx_Yomou_monthly <- as.data.frame(cbind(Year=c(rep(2011, 12), rep(2012, 12), rep(2013, 12), rep(2014, 12)), 
+#yamou
+tmx_yamou_monthly <- as.data.frame(cbind(Year=c(rep(2011, 12), rep(2012, 12), rep(2013, 12), rep(2014, 12)), 
                                          Month=rep(seq(1,12,1), 4),day=1, 
                                          tmx1=tmx.var[which(lon==9.25),which(lat==7.75),1:48],
                                          tmx2=tmx.var[which(lon==9.25),which(lat==7.25),1:48],
                                          tmx3=tmx.var[which(lon==8.75),which(lat==7.25),1:48]))
-tmx_Yomou_monthly$Location <- 'Yomou'
-tmx_Yomou_monthly$tmx <- rowMeans(select(tmx_Yomou_monthly, tmx1, tmx2, tmx3))
-tmx_Yomou_monthly$date <- ymd(paste(tmx_Yomou_monthly$Year, tmx_Yomou_monthly$Month, tmx_Yomou_monthly$day, sep="-"))
-tmx_Yomou_monthly_2015 <- select(tmx_Yomou_monthly, Location, Year, Month, tmx) %>% group_by( Month) %>% summarize(tmx=mean(tmx))
-tmx_Yomou_monthly_2015a <- as.data.frame(cbind(Year=rep(2015, 12), Month=rep(seq(1,12,1),1), day=1))
-tmx_Yomou_monthly_2015a$Location <- 'Yomou'
-tmx_Yomou_monthly_2015a$date <- ymd(paste(tmx_Yomou_monthly_2015a$Year, tmx_Yomou_monthly_2015a$Month, tmx_Yomou_monthly_2015a$day, sep="-"))
-tmx_Yomou_monthly_2015a <- select(tmx_Yomou_monthly_2015a, date, Year, Month, day, Location)
-tmx_Yomou_monthly_2015 <- full_join(tmx_Yomou_monthly_2015a, tmx_Yomou_monthly_2015)
-tmx_Yomou_monthly <- rbind(select(tmx_Yomou_monthly,date, Year, Month, day, Location, tmx), tmx_Yomou_monthly_2015)
-rm(tmx_Yomou_monthly_2015, tmx_Yomou_monthly_2015a)
-tmx_Yomou_monthly$measurement <- "tmx"
-tmx_Yomou_monthly <- rename(tmx_Yomou_monthly, Value=tmx)
+tmx_yamou_monthly$Location <- 'yamou'
+tmx_yamou_monthly$tmx <- rowMeans(select(tmx_yamou_monthly, tmx1, tmx2, tmx3))
+tmx_yamou_monthly$date <- ymd(paste(tmx_yamou_monthly$Year, tmx_yamou_monthly$Month, tmx_yamou_monthly$day, sep="-"))
+tmx_yamou_monthly_2015 <- select(tmx_yamou_monthly, Location, Year, Month, tmx) %>% group_by( Month) %>% summarize(tmx=mean(tmx))
+tmx_yamou_monthly_2015a <- as.data.frame(cbind(Year=rep(2015, 12), Month=rep(seq(1,12,1),1), day=1))
+tmx_yamou_monthly_2015a$Location <- 'yamou'
+tmx_yamou_monthly_2015a$date <- ymd(paste(tmx_yamou_monthly_2015a$Year, tmx_yamou_monthly_2015a$Month, tmx_yamou_monthly_2015a$day, sep="-"))
+tmx_yamou_monthly_2015a <- select(tmx_yamou_monthly_2015a, date, Year, Month, day, Location)
+tmx_yamou_monthly_2015 <- full_join(tmx_yamou_monthly_2015a, tmx_yamou_monthly_2015)
+tmx_yamou_monthly <- rbind(select(tmx_yamou_monthly,date, Year, Month, day, Location, tmx), tmx_yamou_monthly_2015)
+rm(tmx_yamou_monthly_2015, tmx_yamou_monthly_2015a)
+tmx_yamou_monthly$measurement <- "tmx"
+tmx_yamou_monthly <- rename(tmx_yamou_monthly, Value=tmx)
 
 #Merging in long format
 tmx_Guinea_monthly_district <- rbind(tmx_Beyla_monthly, tmx_Boke_monthly, tmx_Boffa_monthly,
@@ -5345,7 +5346,7 @@ tmx_Guinea_monthly_district <- rbind(tmx_Beyla_monthly, tmx_Boke_monthly, tmx_Bo
                                      tmx_Lelouma_monthly, tmx_Lola_monthly, tmx_Macenta_monthly,
                                      tmx_Mali_monthly, tmx_Mamou_monthly, tmx_Nzerekore_monthly,
                                      tmx_Pita_monthly, tmx_Siguiri_monthly, tmx_Telimele_monthly,
-                                     tmx_Tougue_monthly, tmx_Yomou_monthly)
+                                     tmx_Tougue_monthly, tmx_yamou_monthly)
 
 Guinea_monthly_district <- rbind(Vap_Guinea_monthly_district, wet_Guinea_monthly_district, pet_Guinea_monthly_district,
                                 dtr_Guinea_monthly_district, pre_Guinea_monthly_district, tmn_Guinea_monthly_district,
