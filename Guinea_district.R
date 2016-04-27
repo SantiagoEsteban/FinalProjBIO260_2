@@ -5413,4 +5413,8 @@ guinea_weekly_cases_climate$wet <- as.numeric(as.character(guinea_weekly_cases_c
 guinea_weekly_cases_climate$pet <- as.numeric(as.character(guinea_weekly_cases_climate$pet))
 guinea_weekly_cases_climate$dtr <- as.numeric(as.character(guinea_weekly_cases_climate$dtr))
 
+guinea_weekly_cases_climate <- group_by(guinea_weekly_cases_climate, Location) %>% mutate(Cum_cases=cumsum(Total_cases)) %>% 
+    ungroup %>% mutate(Weeks=rep(seq(as.Date('2013-01-01'), as.Date('2015-11-29'), by="week"), 33))
+guinea_weekly_cases_climate$Month <- month(guinea_weekly_cases_climate$Weeks)
+guinea_weekly_cases_climate$Year <- year(guinea_weekly_cases_climate$Weeks)
 write.csv(guinea_weekly_cases_climate, 'guinea_weekly_cases_climate.csv')

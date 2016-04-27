@@ -2309,6 +2309,13 @@ SL_weekly_cases_climate$wet <- as.numeric(as.character(SL_weekly_cases_climate$w
 SL_weekly_cases_climate$pet <- as.numeric(as.character(SL_weekly_cases_climate$pet))
 SL_weekly_cases_climate$dtr <- as.numeric(as.character(SL_weekly_cases_climate$dtr))
 
+
+
+SL_weekly_cases_climate <- read.csv("D:/Google Drive/Medicina/MPH/Courses/BIO 260/FinalProjBIO260_2/SL_weekly_cases_climate.csv")
+SL_weekly_cases_climate <- group_by(SL_weekly_cases_climate, Location) %>% mutate(Cum_cases=cumsum(Total_cases)) %>% 
+    ungroup %>% mutate(Weeks=rep(seq(as.Date('2013-01-01'), as.Date('2015-11-29'), by="week"),14))
+SL_weekly_cases_climate$Month <- month(SL_weekly_cases_climate$Weeks)
+SL_weekly_cases_climate$Year <- year(SL_weekly_cases_climate$Weeks)
 write.csv(SL_weekly_cases_climate, 'SL_weekly_cases_climate.csv')
 
 

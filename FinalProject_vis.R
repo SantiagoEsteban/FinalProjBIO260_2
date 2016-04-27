@@ -119,7 +119,6 @@ ggplot(cum_three_countries) +
 
 
 #guinea data
-#Animated maps
 guineards <- readRDS("D:/Google Drive/Medicina/MPH/Courses/BIO 260/FinalProjBIO260_2/Guinea-Admin/GIN_adm2.rds")
 guineashp.df <- fortify(guineards)
 guinea_map <- as.data.frame(cbind(NAME_2=guineards@data$NAME_2, id=guineards@data$ID_2))
