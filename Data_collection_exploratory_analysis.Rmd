@@ -1,0 +1,24 @@
+---
+title: "Untitled"
+author: "Santiago Esteban"
+date: "April 28, 2016"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+Data collection
+
+Our analysis required both, case count data for the 2014 Ebola outbreak in West Africa and also climate data for the same period (2013-2015) and region.
+
+Case count data
+Weekly case counts since the beginning of the outbreak (December 2013) up until November 2015 were obtained from the WHO website on the 2014 Ebola virus outbreak (http://apps.who.int/gho/data/node.ebola-sitrep). Data for Guinea was available per prefecture (34 prefectures; no data for Mandiana). For Sierra Leone and Liberia case counts per district (Sierra Leone, 14 districts) and per county (Liberia, 15 counties) were retrieved. Only cases in the patient database were considered, both confirmed and probable. Probable cases are defined as patients suspected of having Ebola by a physician or deceased patients who died from "suspected" Ebola and had an epidemilogical link to a confirmed Ebola case; A case is classified as "confirmed" if they have a positive PCR-Ebola test.
+
+Climate data
+Information on several climate factors was retrieved from the Climate Research Unit at the University of East Anglia (http://www.cru.uea.ac.uk/). Data for each climate factor was detailed in a grid with a definition of 0.5*0.5 degrees with monthly information. Climate factors include Vapor Pressure (hPa); Mean, Minimum and Maximum Temperature (degrees Celsius); Potential Evapotranspiration (mm per month); Precipitation (mm per month); Wet Day frequency (days per month) and Diurnal Temperature range (degrees Celsius). Data was available up until 2014.
+The climate data grid was matched with each of the three countries sub-regions, averaging over the values for the total number of 0.5*0.5 degree squares that fitted into each region.
+For the year 2015, no climate data was available, thus it was imputed as the mean of the four previous years. Also, since only monthly information was availble, weekly mean values were interpolated from the monthly data by means of a natural cubic spline function.
+
+Finally information from both sources was combined in long format (LINK TO THE RMD for each country).
