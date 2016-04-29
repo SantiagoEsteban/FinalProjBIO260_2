@@ -5591,7 +5591,7 @@ guinea_weekly_cases_climate$Month <- month(guinea_weekly_cases_climate$Weeks)
 guinea_weekly_cases_climate$Year <- year(guinea_weekly_cases_climate$Weeks)
 guinea_weekly_cases_climate$Country <- "Guinea"
 guinea_weekly_cases_climate <- select(guinea_weekly_cases_climate, -Week, -Epi_Week)
-write.csv(guinea_weekly_cases_climate, 'guinea_weekly_cases_climate.csv')
+write_csv(guinea_weekly_cases_climate, 'guinea_weekly_cases_climate.csv')
 
 ```
 
@@ -7899,11 +7899,12 @@ SL_weekly_cases_climate$dtr <- as.numeric(as.character(SL_weekly_cases_climate$d
 
 SL_weekly_cases_climate <- group_by(SL_weekly_cases_climate, Location) %>% mutate(Cum_cases=cumsum(Total_cases)) %>% 
     ungroup %>% mutate(Weeks=rep(seq(as.Date('2013-01-01'), as.Date('2015-11-29'), by="week"),14))
+
 SL_weekly_cases_climate$Month <- month(SL_weekly_cases_climate$Weeks)
 SL_weekly_cases_climate$Year <- year(SL_weekly_cases_climate$Weeks)
 SL_weekly_cases_climate$Country <- 'Sierra Leone'
 SL_weekly_cases_climate <- select(SL_weekly_cases_climate, -Week, -Epi_Week)
-write.csv(SL_weekly_cases_climate, 'SL_weekly_cases_climate.csv')
+write_csv(SL_weekly_cases_climate, 'SL_weekly_cases_climate.csv')
 ```
 
 ```{r}
@@ -10402,7 +10403,7 @@ Liberia_weekly_cases_climate$Month <- month(Liberia_weekly_cases_climate$Weeks)
 Liberia_weekly_cases_climate$Year <- year(Liberia_weekly_cases_climate$Weeks)
 Liberia_weekly_cases_climate$Country <- 'Liberia'
 Liberia_weekly_cases_climate <- select(Liberia_weekly_cases_climate, -Week, -Epi_Week)
-write.csv(Liberia_weekly_cases_climate, 'Liberia_weekly_cases_climate.csv')
+write_csv(Liberia_weekly_cases_climate, 'Liberia_weekly_cases_climate.csv')
 
 
 ```

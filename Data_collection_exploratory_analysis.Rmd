@@ -9,16 +9,195 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-Data collection
+#Data collection
 
 Our analysis required both, case count data for the 2014 Ebola outbreak in West Africa and also climate data for the same period (2013-2015) and region.
 
-Case count data
+##Case count data
 Weekly case counts since the beginning of the outbreak (December 2013) up until November 2015 were obtained from the WHO website on the 2014 Ebola virus outbreak (http://apps.who.int/gho/data/node.ebola-sitrep). Data for Guinea was available per prefecture (34 prefectures; no data for Mandiana). For Sierra Leone and Liberia case counts per district (Sierra Leone, 14 districts) and per county (Liberia, 15 counties) were retrieved. Only cases in the patient database were considered, both confirmed and probable. Probable cases are defined as patients suspected of having Ebola by a physician or deceased patients who died from "suspected" Ebola and had an epidemilogical link to a confirmed Ebola case; A case is classified as "confirmed" if they have a positive PCR-Ebola test.
 
-Climate data
+##Climate data
 Information on several climate factors was retrieved from the Climate Research Unit at the University of East Anglia (http://www.cru.uea.ac.uk/). Data for each climate factor was detailed in a grid with a definition of 0.5*0.5 degrees with monthly information. Climate factors include Vapor Pressure (hPa); Mean, Minimum and Maximum Temperature (degrees Celsius); Potential Evapotranspiration (mm per month); Precipitation (mm per month); Wet Day frequency (days per month) and Diurnal Temperature range (degrees Celsius). Data was available up until 2014.
 The climate data grid was matched with each of the three countries sub-regions, averaging over the values for the total number of 0.5*0.5 degree squares that fitted into each region.
 For the year 2015, no climate data was available, thus it was imputed as the mean of the four previous years. Also, since only monthly information was availble, weekly mean values were interpolated from the monthly data by means of a natural cubic spline function.
 
 Finally information from both sources was combined in long format (LINK TO THE RMD for each country).
+
+#Exploratory data analysis
+Incidence 3 countries
+```{r}
+library(dplyr)
+library(readr)
+library(lubridate)
+library(tidyr)
+library(stringr)
+library(ggplot2)
+library(readxl)
+library(ggmap)
+library(RNetCDF)
+library(xlsx)
+library(ggmap)
+library(sp)
+library(gganimate)
+library(ggrepel)
+
+#Loading datasets created in previous step
+guinea_weekly_cases_climate <- read.csv('guinea_weekly_cases_climate.csv')
+guinea_weekly_cases_climate$Weeks <- dmy(guinea_weekly_cases_climate$Weeks)
+SL_weekly_cases_climate <- read.csv('SL_weekly_cases_climate.csv')
+SL_weekly_cases_climate$Weeks <- ymd(SL_weekly_cases_climate$Weeks)
+Liberia_weekly_cases_climate <- read.csv('Liberia_weekly_cases_climate.csv')
+Liberia_weekly_cases_climate$Weeks <- dmy(Liberia_weekly_cases_climate$Weeks)
+all_countries <- rbind(guinea_weekly_cases_climate, SL_weekly_cases_climate, Liberia_weekly_cases_climate)
+
+#Marginal incidence per country
+guinea_marginal_incidence <- group_by(guinea_weekly_cases_climate, Weeks) %>% summarise(Total_cases=sum(Total_cases))
+Liberia_marginal_incidence <- group_by(Liberia_weekly_cases_climate, Weeks) %>% summarise(Total_cases=sum(Total_cases))
+SL_marginal_incidence <- group_by(SL_weekly_cases_climate, Weeks) %>% summarise(Total_cases=sum(Total_cases))
+
+ggplot() + 
+    geom_area(data=filter(guinea_marginal_incidence, Weeks>'2013-12-01'), aes(x=Weeks, y=Total_cases, fill='Guinea'),color='black', alpha=0.5, size=0.5) + 
+    geom_area(data=filter(Liberia_marginal_incidence, Weeks>'2013-12-01'), aes(x=Weeks, y=Total_cases, fill='Liberia'),color='black', alpha=0.5, size=0.5) + 
+    geom_area(data=filter(SL_marginal_incidence, Weeks>'2013-12-01'), aes(x=Weeks, y=Total_cases, fill='Sierra Leone'), color='black', alpha=0.5, size=0.5) +
+    scale_fill_discrete(name='Country') +
+    guides(color="none") + ylab('Number of Cases') + ggtitle('Incidence of total cases vs Time') +
+    theme_classic()
+
+```
+
+Cumulative incidence 3 countries
+
+```{r}
+guinea_marginal_cumulative <- group_by(guinea_weekly_cases_climate, Weeks) %>% summarise(Total_cum=sum(Cum_cases))
+Liberia_marginal_cumulative <- group_by(Liberia_weekly_cases_climate, Weeks) %>% summarise(Total_cum=sum(Cum_cases))
+SL_marginal_cumulative <- group_by(SL_weekly_cases_climate, Weeks) %>% summarise(Total_cum=sum(Cum_cases))
+
+ggplot() +
+    geom_line(data=filter(guinea_marginal_cumulative, Weeks>'2013-12-01'), aes(x=Weeks, y=Total_cum, color='Guinea'), size=1) +
+    geom_line(data=filter(Liberia_marginal_cumulative, Weeks>'2013-12-01'), aes(x=Weeks, y=Total_cum, color='Liberia'), size=1) +
+    geom_line(data=filter(SL_marginal_cumulative, Weeks>'2013-12-01'), aes(x=Weeks, y=Total_cum, color='Sierra Leone'), size=1) +
+    scale_color_discrete(name='Country') + ylab('Cumulative number of cases') +
+    ggtitle('Cumulative incidence') + theme_classic()
+
+```
+
+Creating dataframe with maps, climate and case count data.
+
+```{r}
+#########
+#Map data
+#########
+
+#Guinea
+guineards <- readRDS("D:/Google Drive/Medicina/MPH/Courses/BIO 260/FinalProjBIO260_2/Guinea-Admin/GIN_adm2.rds")
+guineashp.df <- fortify(guineards)
+guinea_map <- as.data.frame(cbind(NAME_2=guineards@data$NAME_2, id=guineards@data$ID_2))
+guinea_map$NAME_2 <- toupper(guinea_map$NAME_2)
+guinea_map$NAME_2 <- str_replace_all(guinea_map$NAME_2, "BOKÉ", "BOKE")
+guinea_map$NAME_2 <- str_replace_all(guinea_map$NAME_2, "DINGUIRAYE", "DINGUIRAY")
+guinea_map$NAME_2 <- str_replace_all(guinea_map$NAME_2, "KÉROUANÉ", "KEROUANE")
+guinea_map$NAME_2 <- str_replace_all(guinea_map$NAME_2, "DUBRÉKA", "DUBREKA")
+guinea_map$NAME_2 <- str_replace_all(guinea_map$NAME_2, "FORÉCARIAH", "FORECARIAH")
+guinea_map$NAME_2 <- str_replace_all(guinea_map$NAME_2, "TÉLIMÉLÉ", "TELIMELE")
+guinea_map$NAME_2 <- str_replace_all(guinea_map$NAME_2, "LÉLOUMA", "LELOUMA")
+guinea_map$NAME_2 <- str_replace_all(guinea_map$NAME_2, "LABÉ", "LABE")
+guinea_map$NAME_2 <- str_replace_all(guinea_map$NAME_2, "TOUGUÉ", "TOUGUE")
+guinea_map$NAME_2 <- str_replace_all(guinea_map$NAME_2, "GUÉCKÉDOU", "GUECKEDOU")
+guinea_map$NAME_2 <- str_replace_all(guinea_map$NAME_2, "NZÉRÉKORÉ", "NZEREKORE")
+guinea_map$NAME_2 <- str_replace_all(guinea_map$NAME_2, "YAMOU", "YOMOU")
+guinea_map <- left_join(guineashp.df, guinea_map, by='id')
+guinea_map <- rename(guinea_map, Location=NAME_2)
+guinea_map_complete <- left_join(guinea_weekly_cases_climate, guinea_map, by='Location')
+guineards_adm0 <- readRDS("D:/Google Drive/Medicina/MPH/Courses/BIO 260/FinalProjBIO260_2/Guinea-Admin/GIN_adm0.rds")
+guineashp.adm0 <- fortify(guineards_adm0)
+
+#Sierra Leone
+SLrds <- readRDS("D:/Google Drive/Medicina/MPH/Courses/BIO 260/FinalProjBIO260_2/Guinea-Admin/SLE_adm2.rds")
+SLshp.df <- fortify(SLrds)
+SL_map <- as.data.frame(cbind(NAME_2=SLrds@data$NAME_2, id=SLrds@data$ID_2))
+SL_map$NAME_2 <-str_replace(SL_map$NAME_2, "Western Urban", "WESTERNURBAN")
+SL_map$NAME_2 <-str_replace(SL_map$NAME_2, "Western Rural", "WESTERNRURAL")
+SL_map$NAME_2 <-str_replace(SL_map$NAME_2, "Port Loko", "PORTLOKO")
+SL_map$NAME_2 <- toupper(SL_map$NAME_2)
+SL_map <- left_join(SLshp.df, SL_map, by='id')
+SL_map <- rename(SL_map, Location=NAME_2)
+SL_map_complete <- left_join(SL_weekly_cases_climate, SL_map, by='Location')
+SL_adm0_rds <- readRDS("D:/Google Drive/Medicina/MPH/Courses/BIO 260/FinalProjBIO260_2/Guinea-Admin/SLE_adm0.rds")
+SLshp.adm0 <- fortify(SL_adm0_rds)
+SL_map_complete$group <- as.factor(as.numeric(as.character(SL_map_complete$group))+100)
+
+#Liberia
+LBrds <- readRDS("D:/Google Drive/Medicina/MPH/Courses/BIO 260/FinalProjBIO260_2/Guinea-Admin/LBR_adm1.rds")
+LBshp.df <- fortify(LBrds)
+LB_map <- as.data.frame(cbind(Location=LBrds@data$NAME_1, id=LBrds@data$ID_1))
+LB_map$Location <- toupper(LB_map$Location)
+LB_map$Location <-str_replace(LB_map$Location, "GBAPOLU", "GBARPOLU")
+LB_map$Location <-str_replace(LB_map$Location, "GRANDBASSA", "GRAND_BASSA")
+LB_map$Location <-str_replace(LB_map$Location, "GRANDGEDEH", "GRAND_GEDEH")
+LB_map$Location <-str_replace(LB_map$Location, "GRANDKRU", "GRAND_KRU")
+LB_map$Location <-str_replace(LB_map$Location, "RIVER CESS", "RIVER_CESS")
+LB_map$Location <-str_replace(LB_map$Location, "GRAND CAPE MOUNT", "GRAND_CAPE_MOUNT")
+LB_map$Location <-str_replace(LB_map$Location, "RIVER GEE", "RIVER_GEE")
+LB_map <- left_join(LBshp.df, LB_map, by='id')
+LB_map_complete <- left_join(Liberia_weekly_cases_climate, LB_map, by='Location')
+LB_adm0_rds <- readRDS("D:/Google Drive/Medicina/MPH/Courses/BIO 260/FinalProjBIO260_2/Guinea-Admin/LBR_adm0.rds")
+LBshp.adm0 <- fortify(LB_adm0_rds)
+LB_map_complete$group <- as.factor(as.numeric(as.character(LB_map_complete$group))+200)
+```
+
+##Cumulative incidence per region
+
+We can clearly see that the highest number of cases were concentrated near capitals of the three countries: Freetown (Sierra Leone)
+```{r}
+ ggplot() +
+    geom_polygon(data=filter(guinea_map_complete,count_week==152), aes(x = long, y = lat, group = group, fill = Cum_cases), color="black", size=0.25) + scale_fill_gradient(name='Cumulative cases', low="white", high="red") +
+geom_polygon(data=filter(SL_map_complete,count_week==152), aes(x = long, y = lat, group = group, fill = Cum_cases), color="black", size=0.25) +
+    geom_polygon(data=filter(LB_map_complete,count_week==152), aes(x = long, y = lat, group = group, fill = Cum_cases), color="black", size=0.25)  +
+    geom_polygon(aes(x = long, y = lat, group = group, color="Guinea"), fill=NA, size = 0.75, data=guineashp.adm0) +
+    geom_polygon(aes(x = long, y = lat, group = group, color="Sierra Leone"), fill=NA, size = 0.75, data=SLshp.adm0) +
+    geom_polygon(aes(x = long, y = lat, group = group, color="Liberia"), fill=NA, size = 0.75, data=LBshp.adm0) +
+    geom_point(aes(x=-13.628, y=9.5876), color='blue', size=3) +
+    geom_point(aes(x=-13.2317, y=8.4657), color='blue', size=3) +
+    geom_point(aes(x=-10.7605, y=6.2907), color='blue', size=3) +
+    geom_text(aes(x=-14.1784, y=9.6412, label='Conakry'), size=5) +
+    geom_text(aes(x=-13.8317, y=8.4657, label='Freetown'), size=5) +
+    geom_text(aes(x=-11.3605, y=6.2907, label='Monrovia'), size=5) +
+    coord_map() + scale_color_discrete(name="Country") + theme_classic() +
+        ggtitle('Cumulative case count by November 2015')
+```
+
+##Cumulative Incidence per region
+
+```{r}
+three_countries_map_complete <- rbind(
+    select(guinea_map_complete, Location, long, lat, group, Cum_cases, Weeks, Country) %>% filter(Weeks>'2013-12-01'),
+    select(SL_map_complete, Location, long, lat, group, Cum_cases, Weeks,Country) %>% filter(Weeks>'2013-12-01'),
+    select(LB_map_complete, Location, long, lat, group, Cum_cases, Weeks, Country) %>% filter(Weeks>'2013-12-01')
+)
+
+three_countries_map_incidence <- ggplot(three_countries_map_complete, aes(x = long, y = lat, group = group, fill = Cum_cases, frame=Weeks)) +
+    geom_polygon(color = "black", size = 0.25) + coord_map() + scale_fill_gradient(name='Cumualtive cases', low='white', high='red')
+
+gg_animate(three_countries_map_incidence)
+
+```
+
+Climate for the three cities
+
+```{r}
+#Long climate datafram for each capital
+conakry_data <- filter(guinea_weekly_cases_climate, Location=='CONAKRY') %>% select(-Month, -Year, -Country, -count_week) %>% gather(measurement, value, 2:11)
+
+freetown_data <- filter(SL_weekly_cases_climate, Location=='WESTERNURBAN') %>% select(-Month, -Year, -Country, -count_week) %>% gather(measurement, value, 2:11)
+
+monrovia_data <- filter(Liberia_weekly_cases_climate, Location=='MONTSERRADO') %>% select(-Month, -Year, -Country, -count_week) %>% gather(measurement, value, 2:11)
+
+#Graphs per city
+ggplot(filter(conakry_data, measurement!='pet', measurement!='tmn', measurement!='tmx', Weeks>='2013-12-29'), aes(x=Weeks, y=value)) + geom_area(alpha=0.4, aes(fill=measurement)) + geom_line(aes(color=measurement)) +
+    facet_grid(measurement~., scale='free', shrink=T, as.table = F) + theme(strip.background = element_blank(),   strip.text.y = element_blank()) +
+    scale_fill_discrete(name='Measurement', labels=c('Cum. cases','Daily temp. range','Precipitation','Mean temp.','Case count','Vapor pressure','Wet days')) +
+    guides(color='none') + ggtitle('Conakry, Guinea')
+
+```
+
+Climate of reference weeks (summer, fall, winter, spring), for the three countries.
