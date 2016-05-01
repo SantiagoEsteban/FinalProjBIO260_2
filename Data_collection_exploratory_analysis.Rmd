@@ -382,6 +382,38 @@ cases <- ggplot(three_countries_map_climate %>%
 grid.arrange(tmp, tmx, tmn, pre, vap, cases, ncol=6)
 ```
 
+Also diference in temperature over the rpevious weeks and incidence
+Increase of rainfall over the previous weeks and incidence
+
+```{r}
+tmp.dif <- list()
+for(i in 75:152){
+            tmp.dif[[i]] <- guinea_weekly_cases_climate$tmp[guinea_weekly_cases_climate$count_week==i]-guinea_weekly_cases_climate$tmp[guinea_weekly_cases_climate$count_week==i-4]
+}
+
+tmn.dif <- list()
+for(i in 75:152){
+            tmn.dif[[i]] <- guinea_weekly_cases_climate$tmn[guinea_weekly_cases_climate$count_week==i]-guinea_weekly_cases_climate$tmn[guinea_weekly_cases_climate$count_week==i-4]
+}
+
+tmx.dif <- list()
+for(i in 75:152){
+            tmx.dif[[i]] <- guinea_weekly_cases_climate$tmx[guinea_weekly_cases_climate$count_week==i]-guinea_weekly_cases_climate$tmx[guinea_weekly_cases_climate$count_week==i-4]
+}
+
+pre.dif <- list()
+for(i in 75:152){
+            pre.dif[[i]] <- guinea_weekly_cases_climate$pre[guinea_weekly_cases_climate$count_week==i]-guinea_weekly_cases_climate$pre[guinea_weekly_cases_climate$count_week==i-4]
+}
+
+vap.dif <- list()
+for(i in 75:152){
+            vap.dif[[i]] <- guinea_weekly_cases_climate$vap[guinea_weekly_cases_climate$count_week==i]-guinea_weekly_cases_climate$vap[guinea_weekly_cases_climate$count_week==i-4]
+}
+
+guinea_climate_dif <- cbind(Location=as.character(unique(guinea_weekly_cases_climate$Location)), count_week=sort(rep(75:152, 34)), tmp_dif=unlist(tmp.dif), tmx_dif=unlist(tmx.dif), tmn_dif=unlist(tmn.dif), pre_dif=unlist(pre.dif), vap_dif=unlist(vap.dif))
+ 
+```
 
 
 
