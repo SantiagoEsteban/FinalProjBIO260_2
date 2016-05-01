@@ -295,15 +295,7 @@ grid.arrange(three_cities_tmp, three_cities_pre, three_cities_vap, three_cities_
 
 #Analysis per district
 
-We saw before that not all districts were affected. Thus we explore the relationship between the climatic factors and the incidence on all regions. 
-
-COMPARE MAPS OF CLIMATE FACTORS AND INCIDENCE
-Also diference in temperature over the rpevious weeks and incidence
-Increase of rainfall over the rpevious weeks and incidence
-
-
-
-Climate of reference weeks (summer, fall, winter, spring), for the three countries.
+We saw before that not all districts were affected. Thus we explore the relationship between the climatic factors and the incidence on all regions. In the figure below we can appreciate how incidence increases as the temperature drops and the dry season begins.
 
 ```{r}
 three_countries_map_climate <- rbind(
@@ -312,71 +304,86 @@ three_countries_map_climate <- rbind(
     select(LB_map_complete, Location, count_week, long, lat, group, tmp, tmx, tmn, pre, vap,Total_cases, Weeks, Country) %>% filter(Weeks>'2013-12-01'))
 
 #Mean Temp
+tmp.palette <- brewer.pal(5,name="Oranges")
 tmp <- ggplot(three_countries_map_climate %>% 
            filter(count_week==77 | count_week==89 | count_week==101|count_week==113)
        , aes(x = long, y = lat, group = group, fill = tmp)) +
-    geom_polygon(color = "black", size = 0.25) + scale_fill_gradient(low='yellow', high='red',name='Mean Temperature\nin degrees Celsius') +
+    geom_polygon(color = "black", size = 0.25) + scale_fill_gradientn(colors=tmp.palette, name='') +
     geom_polygon(aes(x = long, y = lat, group = group, color="Guinea"), fill=NA, size = 0.75, data=guineashp.adm0) +
     geom_polygon(aes(x = long, y = lat, group = group, color="Sierra Leone"), fill=NA, size = 0.75, data=SLshp.adm0) +
     geom_polygon(aes(x = long, y = lat, group = group, color="Liberia"), fill=NA, size = 0.75, data=LBshp.adm0) +
-    coord_map() + scale_color_discrete(name="Country")+ facet_grid(Weeks~.) + theme_classic() +
-    ggtitle('Mean Temperatures per region, Year 2014')
+    coord_map() + guides(color='none')+ facet_grid(Weeks~.) + theme(strip.background = element_blank(),   strip.text.x = element_blank(), strip.text.y = element_blank(), legend.position='bottom') +
+    ggtitle('Mean Temp.')
 
 #Max Temp
-ggplot(three_countries_map_climate %>% 
+tmx.palette <- brewer.pal(5,name='Reds')
+tmx <- ggplot(three_countries_map_climate %>% 
            filter(count_week==77 | count_week==89 | count_week==101|count_week==113)
        , aes(x = long, y = lat, group = group, fill = tmx)) +
-    geom_polygon(color = "black", size = 0.25) + scale_fill_gradient(low='yellow', high='red',name='Max Temperature\nin degrees Celsius') +
+    geom_polygon(color = "black", size = 0.25) + scale_fill_gradientn(colors=tmx.palette, name='') +
     geom_polygon(aes(x = long, y = lat, group = group, color="Guinea"), fill=NA, size = 0.75, data=guineashp.adm0) +
     geom_polygon(aes(x = long, y = lat, group = group, color="Sierra Leone"), fill=NA, size = 0.75, data=SLshp.adm0) +
     geom_polygon(aes(x = long, y = lat, group = group, color="Liberia"), fill=NA, size = 0.75, data=LBshp.adm0) +
-    coord_map() + scale_color_discrete(name="Country")+ facet_grid(Weeks~.) + theme_classic() +
-    ggtitle('Max Temperatures per region, Year 2014')
+    coord_map() + guides(color='none')+ 
+    facet_grid(Weeks~.) + 
+    theme(strip.background = element_blank(),   strip.text.x = element_blank(), strip.text.y = element_blank(), legend.position='bottom') +
+    ggtitle('Max Temp.')
 
 #Min Temp
-ggplot(three_countries_map_climate %>% 
+tmn.palette <- brewer.pal(5, name='Purples')
+tmn <- ggplot(three_countries_map_climate %>% 
            filter(count_week==77 | count_week==89 | count_week==101|count_week==113)
        , aes(x = long, y = lat, group = group, fill = tmn)) +
-    geom_polygon(color = "black", size = 0.25) + scale_fill_gradient(low='yellow', high='red',name='Min Temperature\nin degrees Celsius') +
+    geom_polygon(color = "black", size = 0.25) + scale_fill_gradientn(colors=tmn.palette, name='') +
     geom_polygon(aes(x = long, y = lat, group = group, color="Guinea"), fill=NA, size = 0.75, data=guineashp.adm0) +
     geom_polygon(aes(x = long, y = lat, group = group, color="Sierra Leone"), fill=NA, size = 0.75, data=SLshp.adm0) +
     geom_polygon(aes(x = long, y = lat, group = group, color="Liberia"), fill=NA, size = 0.75, data=LBshp.adm0) +
-    coord_map() + scale_color_discrete(name="Country")+ facet_grid(Weeks~.) + theme_classic() +
-    ggtitle('Min Temperatures per region, Year 2014')
+    coord_map() + guides(color='none')+ 
+    facet_grid(Weeks~.) + 
+    theme(strip.background = element_blank(),   strip.text.x = element_blank(), strip.text.y = element_blank(), legend.position='bottom') +
+    ggtitle('Min Temp.')
 
 #Precipitation
-ggplot(three_countries_map_climate %>% 
+pre.palette <- brewer.pal(5, name='Blues')
+pre <- ggplot(three_countries_map_climate %>% 
            filter(count_week==77 | count_week==89 | count_week==101|count_week==113)
        , aes(x = long, y = lat, group = group, fill = pre)) +
-    geom_polygon(color = "black", size = 0.25) + scale_fill_gradient(low='light blue', high='dark blue',name='Preciptiation\nin mm/week') +
+    geom_polygon(color = "black", size = 0.25) + scale_fill_gradientn(colors=pre.palette, name='') +
     geom_polygon(aes(x = long, y = lat, group = group, color="Guinea"), fill=NA, size = 0.75, data=guineashp.adm0) +
     geom_polygon(aes(x = long, y = lat, group = group, color="Sierra Leone"), fill=NA, size = 0.75, data=SLshp.adm0) +
     geom_polygon(aes(x = long, y = lat, group = group, color="Liberia"), fill=NA, size = 0.75, data=LBshp.adm0) +
-    coord_map() + scale_color_discrete(name="Country")+ facet_grid(Weeks~.) + theme_classic()+
-    ggtitle('Mean Precipitation per region, Year 2014')
+    coord_map() + guides(color='none')+ facet_grid(Weeks~.) + theme(strip.background = element_blank(),   strip.text.x = element_blank(), strip.text.y = element_blank(), legend.position='bottom') +
+    ggtitle('Precipitation\nin mm')
 
 #Vapor pressure
-ggplot(three_countries_map_climate %>% 
+vap.palette <- brewer.pal(5, name='BuGn')
+vap <- ggplot(three_countries_map_climate %>% 
            filter(count_week==77 | count_week==89 | count_week==101|count_week==113)
        , aes(x = long, y = lat, group = group, fill = vap)) +
-    geom_polygon(color = "black", size = 0.25) + scale_fill_gradient(low='green', high='yellow',name='Vapor pressure\nin hPa') +
+    geom_polygon(color = "black", size = 0.25) + scale_fill_gradientn(colors=vap.palette, name='') +
     geom_polygon(aes(x = long, y = lat, group = group, color="Guinea"), fill=NA, size = 0.75, data=guineashp.adm0) +
     geom_polygon(aes(x = long, y = lat, group = group, color="Sierra Leone"), fill=NA, size = 0.75, data=SLshp.adm0) +
     geom_polygon(aes(x = long, y = lat, group = group, color="Liberia"), fill=NA, size = 0.75, data=LBshp.adm0) +
-    coord_map() + scale_color_discrete(name="Country")+ facet_wrap(Weeks~.) + theme_classic()+
-    ggtitle('Vapor Pressure per region, Year 2014')
+    coord_map() + guides(color='none')+ facet_grid(Weeks~.) + theme(strip.background = element_blank(),   strip.text.x = element_blank(), strip.text.y = element_blank(), legend.position='bottom') +
+    ggtitle('Vapor pressure\nin hPa')
 
 #Incidence
-ggplot(three_countries_map_climate %>% 
+cases <- ggplot(three_countries_map_climate %>% 
            filter(count_week==77 | count_week==89 | count_week==101|count_week==113)
        , aes(x = long, y = lat, group = group, fill = Total_cases)) +
-    geom_polygon(color = "black", size = 0.25) + scale_fill_gradient(low='green', high='yellow',name='Incidence per week') +
+    geom_polygon(color = "black",  size = 0.25) + scale_fill_gradientn(colors=terrain.colors(10), values=c(0,0.05,0.1,0.15,0.25,0.3,1), name='') +
     geom_polygon(aes(x = long, y = lat, group = group, color="Guinea"), fill=NA, size = 0.75, data=guineashp.adm0) +
     geom_polygon(aes(x = long, y = lat, group = group, color="Sierra Leone"), fill=NA, size = 0.75, data=SLshp.adm0) +
     geom_polygon(aes(x = long, y = lat, group = group, color="Liberia"), fill=NA, size = 0.75, data=LBshp.adm0) +
-    coord_map() + scale_color_discrete(name="Country")+ facet_wrap(Weeks~.) + theme_classic()+
-    ggtitle('Weekly incidence per region, Year 2014')
+    coord_map() + guides(color='none') + facet_grid(Weeks~.) +
+    theme(legend.position='bottom') +
+    ggtitle('Weekly incidence')
+
+grid.arrange(tmp, tmx, tmn, pre, vap, cases, ncol=6)
 ```
+
+
+
 
 Peaks
 
