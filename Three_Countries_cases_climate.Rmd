@@ -5591,8 +5591,8 @@ guinea_weekly_cases_climate$Month <- month(guinea_weekly_cases_climate$Weeks)
 guinea_weekly_cases_climate$Year <- year(guinea_weekly_cases_climate$Weeks)
 guinea_weekly_cases_climate$Country <- "Guinea"
 guinea_weekly_cases_climate <- select(guinea_weekly_cases_climate, -Week, -Epi_Week)
-write_csv(guinea_weekly_cases_climate, 'guinea_weekly_cases_climate.csv')
-
+#write_csv(guinea_weekly_cases_climate, 'guinea_weekly_cases_climate.csv')
+save(guinea_weekly_cases_climate, file='guinea_weekly_cases_climate.Rdata')
 ```
 
 The same process was implemented for the Sierra Leone and Liberia data.
@@ -7904,7 +7904,8 @@ SL_weekly_cases_climate$Month <- month(SL_weekly_cases_climate$Weeks)
 SL_weekly_cases_climate$Year <- year(SL_weekly_cases_climate$Weeks)
 SL_weekly_cases_climate$Country <- 'Sierra Leone'
 SL_weekly_cases_climate <- select(SL_weekly_cases_climate, -Week, -Epi_Week)
-write_csv(SL_weekly_cases_climate, 'SL_weekly_cases_climate.csv')
+#write_csv(SL_weekly_cases_climate, 'SL_weekly_cases_climate.csv')
+save(SL_weekly_cases_climate, file='SL_weekly_cases_climate.Rdata')
 ```
 
 ```{r}
@@ -10403,8 +10404,8 @@ Liberia_weekly_cases_climate$Month <- month(Liberia_weekly_cases_climate$Weeks)
 Liberia_weekly_cases_climate$Year <- year(Liberia_weekly_cases_climate$Weeks)
 Liberia_weekly_cases_climate$Country <- 'Liberia'
 Liberia_weekly_cases_climate <- select(Liberia_weekly_cases_climate, -Week, -Epi_Week)
-write_csv(Liberia_weekly_cases_climate, 'Liberia_weekly_cases_climate.csv')
-
+#write_csv(Liberia_weekly_cases_climate, 'Liberia_weekly_cases_climate.csv')
+save(Liberia_weekly_cases_climate, file='Liberia_weekly_cases_climate.Rdata')
 
 ```
 

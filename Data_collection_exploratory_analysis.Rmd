@@ -21,13 +21,20 @@ Information on several climate factors was retrieved from the Climate Research U
 The climate data grid was matched with each of the three countries sub-regions, averaging over the values for the total number of 0.5*0.5 degree squares that fitted into each region.
 For the year 2015, no climate data was available, thus it was imputed as the mean of the four previous years. Also, since only monthly information was availble, weekly mean values were interpolated from the monthly data by means of a natural cubic spline function.
 
-Finally information from both sources was combined in long format (LINK TO THE RMD for each country).
+Finally information from both sources was combined in long format (See Three_Countries_cases_climate.Rmd).
 
 #Exploratory data analysis
 
-Incidence 3 countries
+##Analysis of country level data
 
-```{r}
+###Incidence per country
+Initially we explored the weekly and cumulative incidence by country. We can see that the outbreak had different patterns in the three countries: Guinea was where the outbreak started and where the last cases were recorded. Nevertheless, the incidence was significantly lower compared to Sierra Leone or Liberia and its peak occurred later. On the other hand, Liberia had an early peak and an abrupt early decline in incidence. Sierra Leone was the country that had the highest cumulative incidence and the highest peak, although it peaked later, almost at the same time as Guinea. 
+
+```{r, echo=FALSE}
+#############
+#PACKAGES
+#############
+
 library(dplyr)
 library(readr)
 library(lubridate)
@@ -45,32 +52,37 @@ library(ggrepel)
 library(gridExtra)
 library(RColorBrewer)
 library(knitr)
+```
 
+```{r}
 #Loading datasets created in previous step and adding information on the peaks of onset
+
+#Guinea
 guinea_weekly_cases_climate <- read.csv('guinea_weekly_cases_climate.csv')
 guinea_weekly_cases_climate$Weeks <- dmy(guinea_weekly_cases_climate$Weeks)
 guinea_weekly_cases_climate <- group_by(guinea_weekly_cases_climate, Location) %>% mutate(Peak=ifelse(Total_cases>0 & Total_cases==max(Total_cases),1,0), Cum_peak=cumsum(Peak)) %>% ungroup
 guinea_weekly_cases_climate$Cum_peak <- ifelse(guinea_weekly_cases_climate$Cum_peak>=1,1,0)
 
-
+#Sierra Leone
 SL_weekly_cases_climate <- read.csv('SL_weekly_cases_climate.csv')
 SL_weekly_cases_climate$Weeks <- ymd(SL_weekly_cases_climate$Weeks)
 SL_weekly_cases_climate <- group_by(SL_weekly_cases_climate, Location) %>% mutate(Peak=ifelse(Total_cases>0 & Total_cases==max(Total_cases),1,0), Cum_peak=cumsum(Peak)) %>% ungroup
 SL_weekly_cases_climate$Cum_peak <- ifelse(SL_weekly_cases_climate$Cum_peak>=1,1,0)
 
+#Liberia
 Liberia_weekly_cases_climate <- read.csv('Liberia_weekly_cases_climate.csv')
 Liberia_weekly_cases_climate$Weeks <- dmy(Liberia_weekly_cases_climate$Weeks)
 Liberia_weekly_cases_climate <- group_by(Liberia_weekly_cases_climate, Location) %>% mutate(Peak=ifelse(Total_cases>0 & Total_cases==max(Total_cases),1,0), Cum_peak=cumsum(Peak)) %>% ungroup
 Liberia_weekly_cases_climate$Cum_peak <- ifelse(Liberia_weekly_cases_climate$Cum_peak>=1,1,0)
 
+#Three Countries
 all_countries <- rbind(guinea_weekly_cases_climate, SL_weekly_cases_climate, Liberia_weekly_cases_climate)
 
 ```
 
-First we explore the weekly and cumulative incidence aggregated by country.
 
-```{r}
-#Marginal incidence per country
+```{r, echo=FALSE, fig.width=16}
+#Aggregating weekly incidence per country
 guinea_marginal_incidence <- group_by(guinea_weekly_cases_climate, Weeks) %>% summarise(Total_cases=sum(Total_cases), country='Guinea')
 Liberia_marginal_incidence <- group_by(Liberia_weekly_cases_climate, Weeks) %>% summarise(Total_cases=sum(Total_cases), country='Liberia')
 SL_marginal_incidence <- group_by(SL_weekly_cases_climate, Weeks) %>% summarise(Total_cases=sum(Total_cases), country='Sierra Leone')
@@ -92,20 +104,22 @@ three_countries_marginal_cumulative <- rbind(guinea_marginal_cumulative, Liberia
 
 kable(group_by(three_countries_marginal_cumulative, country) %>% summarise('Cumulative incidence'=max(Total_cum)))
 
-ggplot() +
-    geom_area(data=filter(SL_marginal_cumulative, Weeks>'2013-12-01'), aes(x=Weeks, y=Total_cum, fill='Sierra Leone', color='Sierra Leone'), alpha=0.69, size=1) +
-    geom_area(data=filter(Liberia_marginal_cumulative, Weeks>'2013-12-01'), aes(x=Weeks, y=Total_cum, fill='Liberia', color='Liberia'), alpha=0.7, size=1) +
-    geom_area(data=filter(guinea_marginal_cumulative, Weeks>'2013-12-01'), aes(x=Weeks, y=Total_cum, fill='Guinea', color='Guinea'), alpha=0.7, size=1) +
-    scale_fill_discrete(name='Country') + 
-    guides(color = "none")+
-    ylab('Cumulative number of cases') +
-    ggtitle('Cumulative incidence from 12/2013 - 11/2015') +
-    theme_classic()
+# ggplot() +
+#     geom_area(data=filter(SL_marginal_cumulative, Weeks>'2013-12-01'), aes(x=Weeks, y=Total_cum, fill='Sierra Leone', color='Sierra Leone'), alpha=0.69, size=1) +
+#     geom_area(data=filter(Liberia_marginal_cumulative, Weeks>'2013-12-01'), aes(x=Weeks, y=Total_cum, fill='Liberia', color='Liberia'), alpha=0.7, size=1) +
+#     geom_area(data=filter(guinea_marginal_cumulative, Weeks>'2013-12-01'), aes(x=Weeks, y=Total_cum, fill='Guinea', color='Guinea'), alpha=0.7, size=1) +
+#     scale_fill_discrete(name='Country') + 
+#     guides(color = "none")+
+#     ylab('Cumulative number of cases') +
+#     ggtitle('Cumulative incidence from 12/2013 - 11/2015') +
+#     theme_classic()
 ```
 
-Furthermore, we compare it to the average of the climate factors per country.
+###Incidence and climatic factors
 
-```{r}
+Following our main aim, we proceed to compare the incidence to the averaged climatic factors, per country. We can see that temperature has a downward trajectory in the weeks preceding the onset of the outbreak in all three countries. This is particularly the case for maximum temperature. It also coincides with the start of the rainy season. 
+
+```{r, echo=FALSE}
 #Min-Mean-Max temp
 guinea_marginal_temp <- group_by(guinea_weekly_cases_climate, Weeks) %>% summarise(tmn=mean(tmn), tmp=mean(tmp), tmx=mean(tmx), country='Guinea')
 Liberia_marginal_temp <- group_by(Liberia_weekly_cases_climate, Weeks) %>% summarise(tmn=mean(tmn), tmp=mean(tmp), tmx=mean(tmx), country='Liberia')
@@ -145,13 +159,10 @@ three_countries_cumulative <- ggplot(data=filter(three_countries_marginal_cumula
 grid.arrange(three_countries_tmp, three_countries_pre, three_countries_vap, three_countries_incidence, three_countries_cumulative, nrow=5)
 ```
 
-We can see that temperature has a downward trajectory in the weeks preceding the onset of the outbreak in all three countries. This is particularly the case for maximum temperature. It also coincides with the start of the rainy season. 
 
+##Analysis of district level data
 
-We visualize now the cumulative incidence per region for the three countries at the end of 2015 to see which were the most affected districts.
-
-
-```{r}
+```{r, echo=FALSE}
 #Creating dataframe with maps, climate and case count data.
 
 #########
@@ -215,11 +226,10 @@ LBshp.adm0 <- fortify(LB_adm0_rds)
 LB_map_complete$group <- as.factor(as.numeric(as.character(LB_map_complete$group))+200)
 ```
 
-##Cumulative incidence per region
+###Incidence per district
+We visualize now the cumulative incidence per region for the three countries at the end of 2015 to see which were the most affected districts. We can clearly see that the highest number of cases were concentrated near the capitals of the three countries: Conakry (Conakry, Guinea), Freetown (Western Urban, Sierra Leone) and Monrovia (Montserrado, Liberia), while other districts presented no cases.
 
-We can clearly see that the highest number of cases were concentrated near the capitals of the three countries: Conakry (Conakry, Guinea), Freetown (Western Urban, Sierra Leone) and Monrovia (Montserrado, Liberia), while other districts presented no cases.
-
-```{r}
+```{r, echo=FALSE, fig.width=16, fig.height=16}
 cumulative_guinea_district <- group_by(guinea_weekly_cases_climate, Location) %>%
     summarise('Cumulative incidence'=max(Cum_cases))
 cumulative_Liberia_district <- group_by(Liberia_weekly_cases_climate, Location) %>%
@@ -227,9 +237,9 @@ cumulative_Liberia_district <- group_by(Liberia_weekly_cases_climate, Location) 
 cumulative_SL_district <- group_by(SL_weekly_cases_climate, Location) %>%
     summarise('Cumulative incidence'=max(Cum_cases))
 
-kable(cumulative_guinea_district, format="html", caption='Cumulative incidence by district for Guinea, 12/2013 - 11/2015')
-kable(cumulative_Liberia_district, format="html", caption='Cumulative incidence by district for Liberia, 12/2013 - 11/2015')
-kable(cumulative_SL_district, format="html", caption='Cumulative incidence by district for Sierra Leone, 12/2013 - 11/2015')
+# kable(cumulative_guinea_district, format="html", caption='Cumulative incidence by district for Guinea, 12/2013 - 11/2015')
+# kable(cumulative_Liberia_district, format="html", caption='Cumulative incidence by district for Liberia, 12/2013 - 11/2015')
+# kable(cumulative_SL_district, format="html", caption='Cumulative incidence by district for Sierra Leone, 12/2013 - 11/2015')
 
 #Maps showing cumulative incidence by district
 mypalette<-brewer.pal(9,"Oranges")
@@ -250,9 +260,10 @@ geom_polygon(data=filter(SL_map_complete,count_week==152), aes(x = long, y = lat
         ggtitle('Cumulative case count by November 2015')
 ```
 
+
 Nevertheless, as we can see in the animation below, the outbreak began near the junction of the three borders and later expanded towards the main cities.
 
-```{r}
+```{r fig.show = "animate", echo=FALSE, fig.align='center'}
 three_countries_map_complete <- rbind(
     select(guinea_map_complete, count_week, Location, long, lat, group, Cum_cases, Total_cases, Peak, Cum_peak,Weeks, Country) %>% filter(Weeks>'2013-12-01'),
     select(SL_map_complete, Location, count_week, long, lat, group, Cum_cases, Total_cases, Peak, Cum_peak, Weeks,Country) %>% filter(Weeks>'2013-12-01'),
@@ -261,46 +272,47 @@ three_countries_map_complete <- rbind(
 
 weeks_incidence <- seq(53,152, by=4)
 three_countries_map_incidence <- ggplot(filter(three_countries_map_complete, count_week%in%weeks_incidence), aes(x = long, y = lat, group = group, fill = Cum_cases, frame=Weeks)) +
-    geom_polygon(color = "black", size = 0.25) + coord_map() + scale_fill_gradientn(name='Cumulative case count', colours = mypalette, values=c(0,0.05,0.1,0.2,0.3, 0.4, 0.5, 1))
+    geom_polygon(color = "black", size = 0.25) + coord_map() + scale_fill_gradientn(name='Cumulative case count', colours = mypalette, values=c(0,0.05,0.1,0.2,0.3, 0.4, 0.5, 1)) + ggtitle('Cumulative incidence by week\n')
 
 gg_animate(three_countries_map_incidence)
 
 ```
 
+
+
+```{r, echo=FALSE}
 #Analysis per main district
 
-As we did beforfe we explore the relationship between climate factors and incidence, but this time by main district. Again, we see the same pattern as described at the country level: temperature drops and the peak of the rainy season is reached weeks before the onset of the outbreak.
-
-```{r}
-loc <- c('CONAKRY', 'WESTERNURBAN','MONTSERRADO')
-three_cities <-filter(all_countries, Location%in%loc, Weeks>='2013-12-29')
-
-three_cities_tmp <- ggplot(three_cities, aes(Weeks, tmp)) +
-    geom_ribbon(aes(ymin=tmn, ymax=tmx), color='gray', alpha=0.2) + 
-    geom_line(aes(y=tmp), color='red', size=0.8) + geom_line(aes(y=tmx), color='orange', size=0.2) +
-    geom_line(aes(y=tmn), color='orange', size=0.2) + xlab('') + ylab('Min-Mean-Max\nTemp') + facet_grid(~Location) 
-
-three_cities_pre <- ggplot(three_cities, aes(Weeks)) + geom_area(aes(y=pre), color='light blue', size=1, fill='light blue', alpha=0.6) +
-    geom_line(aes(y=pre), color='light blue')  + xlab('') + ylab('Precipitation\nin mm') + facet_grid(~Location)+ theme(strip.background = element_blank(),   strip.text.x = element_blank())
-
-three_cities_vap <- ggplot(three_cities, aes(Weeks)) + geom_area(aes(y=vap), size=1, fill='yellow', alpha=0.6) +
-    geom_line(aes(y=vap), color='yellow') + xlab('') + ylab('Vapor pressure\nin hPa') + facet_grid(~Location)+ theme(strip.background = element_blank(),   strip.text.x = element_blank())
-
-three_cities_total <- ggplot(three_cities, aes(Weeks)) + geom_area(aes(y=Total_cases), size=1, fill='light green', alpha=0.6) +
-    geom_line(aes(y=Total_cases), color='light green') + xlab('') + ylab('Case count') + facet_grid(~Location)+ theme(strip.background = element_blank(),   strip.text.x = element_blank())
-
-three_cities_cum <- ggplot(three_cities, aes(Weeks)) + geom_area(aes(y=Cum_cases), size=1, fill='orange', alpha=0.6) +
-    geom_line(aes(y=Cum_cases), color='orange') + xlab('') + ylab('Cumualtive case count') + facet_grid(~Location)+ theme(strip.background = element_blank(),   strip.text.x = element_blank())
-
-grid.arrange(three_cities_tmp, three_cities_pre, three_cities_vap, three_cities_total, three_cities_cum, nrow=5)
+# As we did beforfe we explore the relationship between climate factors and incidence, but this time by main district. Again, we see the same pattern as described at the country level: temperature drops and the peak of the rainy season is reached weeks before the onset of the outbreak.
+# loc <- c('CONAKRY', 'WESTERNURBAN','MONTSERRADO')
+# three_cities <-filter(all_countries, Location%in%loc, Weeks>='2013-12-29')
+# 
+# three_cities_tmp <- ggplot(three_cities, aes(Weeks, tmp)) +
+#     geom_ribbon(aes(ymin=tmn, ymax=tmx), color='gray', alpha=0.2) + 
+#     geom_line(aes(y=tmp), color='red', size=0.8) + geom_line(aes(y=tmx), color='orange', size=0.2) +
+#     geom_line(aes(y=tmn), color='orange', size=0.2) + xlab('') + ylab('Min-Mean-Max\nTemp') + facet_grid(~Location) 
+# 
+# three_cities_pre <- ggplot(three_cities, aes(Weeks)) + geom_area(aes(y=pre), color='light blue', size=1, fill='light blue', alpha=0.6) +
+#     geom_line(aes(y=pre), color='light blue')  + xlab('') + ylab('Precipitation\nin mm') + facet_grid(~Location)+ theme(strip.background = element_blank(),   strip.text.x = element_blank())
+# 
+# three_cities_vap <- ggplot(three_cities, aes(Weeks)) + geom_area(aes(y=vap), size=1, fill='yellow', alpha=0.6) +
+#     geom_line(aes(y=vap), color='yellow') + xlab('') + ylab('Vapor pressure\nin hPa') + facet_grid(~Location)+ theme(strip.background = element_blank(),   strip.text.x = element_blank())
+# 
+# three_cities_total <- ggplot(three_cities, aes(Weeks)) + geom_area(aes(y=Total_cases), size=1, fill='light green', alpha=0.6) +
+#     geom_line(aes(y=Total_cases), color='light green') + xlab('') + ylab('Case count') + facet_grid(~Location)+ theme(strip.background = element_blank(),   strip.text.x = element_blank())
+# 
+# three_cities_cum <- ggplot(three_cities, aes(Weeks)) + geom_area(aes(y=Cum_cases), size=1, fill='orange', alpha=0.6) +
+#     geom_line(aes(y=Cum_cases), color='orange') + xlab('') + ylab('Cumualtive case count') + facet_grid(~Location)+ theme(strip.background = element_blank(),   strip.text.x = element_blank())
+# 
+# grid.arrange(three_cities_tmp, three_cities_pre, three_cities_vap, three_cities_total, three_cities_cum, nrow=5)
 ```
 
 
-#Analysis per district
+###Incidence and climatic factors
 
 We saw before that not all districts were affected. Thus we explore the relationship between the climatic factors and the incidence on all regions. In the figure below we can appreciate how incidence increases as the temperature drops and the dry season begins.
 
-```{r}
+```{r, echo=FALSE, fig.width=16, fig.height=16}
 three_countries_map_climate <- rbind(
     select(guinea_map_complete, Location, count_week, long, lat, group, tmp, tmx, tmn, pre, vap, Total_cases, Weeks, Country) %>% filter(Weeks>'2013-12-01'),
     select(SL_map_complete, Location, count_week, long, lat, group, tmp, tmx, tmn, pre, vap, Total_cases, Weeks,Country) %>% filter(Weeks>'2013-12-01'),
@@ -388,113 +400,116 @@ grid.arrange(tmp, tmx, tmn, pre, vap, cases, ncol=6)
 
 We can also see that the incidence is also associated with the difference in temperature and precipitation over four weeks, as shown in the maps below.
 
-```{r}
-load("guinea_climate_dif.Rdata")
-load("SL_climate_dif.Rdata")
-load("Liberia_climate_dif.Rdata")
+```{r, echo=FALSE, fig.width=16}
 
-guinea_climate_dif <- left_join(guinea_climate_dif, guinea_map, by='Location')
-guinea_climate_dif$tmp_dif <- as.numeric(as.character(guinea_climate_dif$tmp_dif))
-guinea_climate_dif$tmn_dif <- as.numeric(as.character(guinea_climate_dif$tmn_dif))
-guinea_climate_dif$tmx_dif <- as.numeric(as.character(guinea_climate_dif$tmx_dif))
-guinea_climate_dif$pre_dif <- as.numeric(as.character(guinea_climate_dif$pre_dif))
-guinea_climate_dif$vap_dif <- as.numeric(as.character(guinea_climate_dif$vap_dif))
-
-SL_climate_dif <- left_join(SL_climate_dif, SL_map, by='Location')
-SL_climate_dif$group <- as.factor(as.numeric(as.character(SL_climate_dif$group))+100)
-SL_climate_dif$tmp_dif <- as.numeric(as.character(SL_climate_dif$tmp_dif))
-SL_climate_dif$tmn_dif <- as.numeric(as.character(SL_climate_dif$tmn_dif))
-SL_climate_dif$tmx_dif <- as.numeric(as.character(SL_climate_dif$tmx_dif))
-SL_climate_dif$pre_dif <- as.numeric(as.character(SL_climate_dif$pre_dif))
-SL_climate_dif$vap_dif <- as.numeric(as.character(SL_climate_dif$vap_dif))
-
-Liberia_climate_dif <- left_join(Liberia_climate_dif, LB_map, by='Location')
-Liberia_climate_dif$group <- as.factor(as.numeric(as.character(Liberia_climate_dif$group))+200)
-Liberia_climate_dif$tmp_dif <- as.numeric(as.character(Liberia_climate_dif$tmp_dif))
-Liberia_climate_dif$tmn_dif <- as.numeric(as.character(Liberia_climate_dif$tmn_dif))
-Liberia_climate_dif$tmx_dif <- as.numeric(as.character(Liberia_climate_dif$tmx_dif))
-Liberia_climate_dif$pre_dif <- as.numeric(as.character(Liberia_climate_dif$pre_dif))
-Liberia_climate_dif$vap_dif <- as.numeric(as.character(Liberia_climate_dif$vap_dif))
-
-three_countries_climate_dif <- rbind(guinea_climate_dif, SL_climate_dif, Liberia_climate_dif)
-
-#Creating maps
-tmp.palette <- brewer.pal(5,name="Oranges")
-tmp_dif <- ggplot(three_countries_climate_dif %>% 
-           filter(count_week==77 | count_week==89 | count_week==101|count_week==113)
-       , aes(x = long, y = lat, group = group, fill = tmp_dif)) +
-    geom_polygon(color = "black", size = 0.25) + scale_fill_gradientn(colors=tmp.palette, name='') +
-    geom_polygon(aes(x = long, y = lat, group = group, color="Guinea"), fill=NA, size = 0.75, data=guineashp.adm0) +
-    geom_polygon(aes(x = long, y = lat, group = group, color="Sierra Leone"), fill=NA, size = 0.75, data=SLshp.adm0) +
-    geom_polygon(aes(x = long, y = lat, group = group, color="Liberia"), fill=NA, size = 0.75, data=LBshp.adm0) +
-    coord_map() + guides(color='none')+ facet_grid(Weeks~.) + theme(strip.background = element_blank(),   strip.text.x = element_blank(), strip.text.y = element_blank(), legend.position='bottom') +
-    ggtitle('Mean Temp. dif')
-
-#Max Temp
-tmx.palette <- brewer.pal(5,name='Reds')
-tmx_dif <- ggplot(three_countries_climate_dif %>% 
-           filter(count_week==77 | count_week==89 | count_week==101|count_week==113)
-       , aes(x = long, y = lat, group = group, fill = tmx_dif)) +
-    geom_polygon(color = "black", size = 0.25) + scale_fill_gradientn(colors=tmx.palette, name='') +
-    geom_polygon(aes(x = long, y = lat, group = group, color="Guinea"), fill=NA, size = 0.75, data=guineashp.adm0) +
-    geom_polygon(aes(x = long, y = lat, group = group, color="Sierra Leone"), fill=NA, size = 0.75, data=SLshp.adm0) +
-    geom_polygon(aes(x = long, y = lat, group = group, color="Liberia"), fill=NA, size = 0.75, data=LBshp.adm0) +
-    coord_map() + guides(color='none')+ 
-    facet_grid(Weeks~.) + 
-    theme(strip.background = element_blank(),   strip.text.x = element_blank(), strip.text.y = element_blank(), legend.position='bottom') +
-    ggtitle('Max Temp. dif')
-
-#Min Temp
-tmn.palette <- brewer.pal(5, name='Purples')
-tmn_dif <- ggplot(three_countries_climate_dif %>% 
-           filter(count_week==77 | count_week==89 | count_week==101|count_week==113)
-       , aes(x = long, y = lat, group = group, fill = tmn_dif)) +
-    geom_polygon(color = "black", size = 0.25) + scale_fill_gradientn(colors=tmn.palette, name='') +
-    geom_polygon(aes(x = long, y = lat, group = group, color="Guinea"), fill=NA, size = 0.75, data=guineashp.adm0) +
-    geom_polygon(aes(x = long, y = lat, group = group, color="Sierra Leone"), fill=NA, size = 0.75, data=SLshp.adm0) +
-    geom_polygon(aes(x = long, y = lat, group = group, color="Liberia"), fill=NA, size = 0.75, data=LBshp.adm0) +
-    coord_map() + guides(color='none')+ 
-    facet_grid(Weeks~.) + 
-    theme(strip.background = element_blank(),   strip.text.x = element_blank(), strip.text.y = element_blank(), legend.position='bottom') +
-    ggtitle('Min Temp. dif')
-
-#Precipitation
-pre.palette <- brewer.pal(5, name='Blues')
-pre_dif <- ggplot(three_countries_climate_dif %>% 
-           filter(count_week==77 | count_week==89 | count_week==101|count_week==113)
-       , aes(x = long, y = lat, group = group, fill = pre_dif)) +
-    geom_polygon(color = "black", size = 0.25) + scale_fill_gradientn(colors=pre.palette, name='') +
-    geom_polygon(aes(x = long, y = lat, group = group, color="Guinea"), fill=NA, size = 0.75, data=guineashp.adm0) +
-    geom_polygon(aes(x = long, y = lat, group = group, color="Sierra Leone"), fill=NA, size = 0.75, data=SLshp.adm0) +
-    geom_polygon(aes(x = long, y = lat, group = group, color="Liberia"), fill=NA, size = 0.75, data=LBshp.adm0) +
-    coord_map() + guides(color='none')+ facet_grid(Weeks~.) + theme(strip.background = element_blank(),   strip.text.x = element_blank(), strip.text.y = element_blank(), legend.position='bottom') +
-    ggtitle('Precipitation\ndif')
-
-#Vapor pressure
-vap.palette <- brewer.pal(5, name='BuGn')
-vap_dif <- ggplot(three_countries_climate_dif %>% 
-           filter(count_week==77 | count_week==89 | count_week==101|count_week==113)
-       , aes(x = long, y = lat, group = group, fill = vap_dif)) +
-    geom_polygon(color = "black", size = 0.25) + scale_fill_gradientn(colors=vap.palette, name='') +
-    geom_polygon(aes(x = long, y = lat, group = group, color="Guinea"), fill=NA, size = 0.75, data=guineashp.adm0) +
-    geom_polygon(aes(x = long, y = lat, group = group, color="Sierra Leone"), fill=NA, size = 0.75, data=SLshp.adm0) +
-    geom_polygon(aes(x = long, y = lat, group = group, color="Liberia"), fill=NA, size = 0.75, data=LBshp.adm0) +
-    coord_map() + guides(color='none')+ facet_grid(Weeks~.) + theme(strip.background = element_blank(),   strip.text.x = element_blank(), strip.text.y = element_blank(), legend.position='bottom') +
-    ggtitle('Vapor pressure\ndif')
-
-#Incidence
-cases <- ggplot(three_countries_climate_dif %>% 
-           filter(count_week==77 | count_week==89 | count_week==101|count_week==113)
-       , aes(x = long, y = lat, group = group, fill = Total_cases)) +
-    geom_polygon(color = "black",  size = 0.25) + scale_fill_gradientn(colors=terrain.colors(10), values=c(0,0.05,0.1,0.15,0.25,0.3,1), name='') +
-    geom_polygon(aes(x = long, y = lat, group = group, color="Guinea"), fill=NA, size = 0.75, data=guineashp.adm0) +
-    geom_polygon(aes(x = long, y = lat, group = group, color="Sierra Leone"), fill=NA, size = 0.75, data=SLshp.adm0) +
-    geom_polygon(aes(x = long, y = lat, group = group, color="Liberia"), fill=NA, size = 0.75, data=LBshp.adm0) +
-    coord_map() + guides(color='none') + facet_grid(Weeks~.) +
-    theme(legend.position='bottom') +
-    ggtitle('Weekly incidence')
-
-grid.arrange(tmp_dif, tmx_dif, tmn_dif, pre_dif, vap_dif, cases, ncol=6)
+# #Load data created in "Climate_diference.Rmd"
+# load("guinea_climate_dif.Rdata")
+# load("SL_climate_dif.Rdata")
+# load("Liberia_climate_dif.Rdata")
+# 
+# guinea_climate_dif <- left_join(guinea_climate_dif, guinea_map, by='Location')
+# guinea_climate_dif$tmp_dif <- as.numeric(as.character(guinea_climate_dif$tmp_dif))
+# guinea_climate_dif$tmn_dif <- as.numeric(as.character(guinea_climate_dif$tmn_dif))
+# guinea_climate_dif$tmx_dif <- as.numeric(as.character(guinea_climate_dif$tmx_dif))
+# guinea_climate_dif$pre_dif <- as.numeric(as.character(guinea_climate_dif$pre_dif))
+# guinea_climate_dif$vap_dif <- as.numeric(as.character(guinea_climate_dif$vap_dif))
+# 
+# SL_climate_dif <- left_join(SL_climate_dif, SL_map, by='Location')
+# SL_climate_dif$group <- as.factor(as.numeric(as.character(SL_climate_dif$group))+100)
+# SL_climate_dif$tmp_dif <- as.numeric(as.character(SL_climate_dif$tmp_dif))
+# SL_climate_dif$tmn_dif <- as.numeric(as.character(SL_climate_dif$tmn_dif))
+# SL_climate_dif$tmx_dif <- as.numeric(as.character(SL_climate_dif$tmx_dif))
+# SL_climate_dif$pre_dif <- as.numeric(as.character(SL_climate_dif$pre_dif))
+# SL_climate_dif$vap_dif <- as.numeric(as.character(SL_climate_dif$vap_dif))
+# 
+# Liberia_climate_dif <- left_join(Liberia_climate_dif, LB_map, by='Location')
+# Liberia_climate_dif$group <- as.factor(as.numeric(as.character(Liberia_climate_dif$group))+200)
+# Liberia_climate_dif$tmp_dif <- as.numeric(as.character(Liberia_climate_dif$tmp_dif))
+# Liberia_climate_dif$tmn_dif <- as.numeric(as.character(Liberia_climate_dif$tmn_dif))
+# Liberia_climate_dif$tmx_dif <- as.numeric(as.character(Liberia_climate_dif$tmx_dif))
+# Liberia_climate_dif$pre_dif <- as.numeric(as.character(Liberia_climate_dif$pre_dif))
+# Liberia_climate_dif$vap_dif <- as.numeric(as.character(Liberia_climate_dif$vap_dif))
+# 
+# three_countries_climate_dif <- rbind(guinea_climate_dif, SL_climate_dif, Liberia_climate_dif)
+# 
+# #Creating maps
+# tmp.palette <- brewer.pal(5,name="Oranges")
+# tmp_dif <- ggplot(three_countries_climate_dif %>% 
+#            filter(count_week==77 | count_week==89 | count_week==101|count_week==113) %>%
+#                select()
+#        , aes(x = long, y = lat, group = group, fill = tmp_dif)) +
+#     geom_polygon(color = "black", size = 0.25) + scale_fill_gradientn(colors=tmp.palette, name='') +
+#     geom_polygon(aes(x = long, y = lat, group = group, color="Guinea"), fill=NA, size = 0.75, data=guineashp.adm0) +
+#     geom_polygon(aes(x = long, y = lat, group = group, color="Sierra Leone"), fill=NA, size = 0.75, data=SLshp.adm0) +
+#     geom_polygon(aes(x = long, y = lat, group = group, color="Liberia"), fill=NA, size = 0.75, data=LBshp.adm0) +
+#     coord_map() + guides(color='none')+ facet_grid(Weeks~.) + theme(strip.background = element_blank(),   strip.text.x = element_blank(), strip.text.y = element_blank(), legend.position='bottom') +
+#     ggtitle('Mean Temp. dif')
+# 
+# #Max Temp
+# tmx.palette <- brewer.pal(5,name='Reds')
+# tmx_dif <- ggplot(three_countries_climate_dif %>% 
+#            filter(count_week==77 | count_week==89 | count_week==101|count_week==113)
+#        , aes(x = long, y = lat, group = group, fill = tmx_dif)) +
+#     geom_polygon(color = "black", size = 0.25) + scale_fill_gradientn(colors=tmx.palette, name='') +
+#     geom_polygon(aes(x = long, y = lat, group = group, color="Guinea"), fill=NA, size = 0.75, data=guineashp.adm0) +
+#     geom_polygon(aes(x = long, y = lat, group = group, color="Sierra Leone"), fill=NA, size = 0.75, data=SLshp.adm0) +
+#     geom_polygon(aes(x = long, y = lat, group = group, color="Liberia"), fill=NA, size = 0.75, data=LBshp.adm0) +
+#     coord_map() + guides(color='none')+ 
+#     facet_grid(Weeks~.) + 
+#     theme(strip.background = element_blank(),   strip.text.x = element_blank(), strip.text.y = element_blank(), legend.position='bottom') +
+#     ggtitle('Max Temp. dif')
+# 
+# #Min Temp
+# tmn.palette <- brewer.pal(5, name='Purples')
+# tmn_dif <- ggplot(three_countries_climate_dif %>% 
+#            filter(count_week==77 | count_week==89 | count_week==101|count_week==113)
+#        , aes(x = long, y = lat, group = group, fill = tmn_dif)) +
+#     geom_polygon(color = "black", size = 0.25) + scale_fill_gradientn(colors=tmn.palette, name='') +
+#     geom_polygon(aes(x = long, y = lat, group = group, color="Guinea"), fill=NA, size = 0.75, data=guineashp.adm0) +
+#     geom_polygon(aes(x = long, y = lat, group = group, color="Sierra Leone"), fill=NA, size = 0.75, data=SLshp.adm0) +
+#     geom_polygon(aes(x = long, y = lat, group = group, color="Liberia"), fill=NA, size = 0.75, data=LBshp.adm0) +
+#     coord_map() + guides(color='none')+ 
+#     facet_grid(Weeks~.) + 
+#     theme(strip.background = element_blank(),   strip.text.x = element_blank(), strip.text.y = element_blank(), legend.position='bottom') +
+#     ggtitle('Min Temp. dif')
+# 
+# #Precipitation
+# pre.palette <- brewer.pal(5, name='Blues')
+# pre_dif <- ggplot(three_countries_climate_dif %>% 
+#            filter(count_week==77 | count_week==89 | count_week==101|count_week==113)
+#        , aes(x = long, y = lat, group = group, fill = pre_dif)) +
+#     geom_polygon(color = "black", size = 0.25) + scale_fill_gradientn(colors=pre.palette, name='') +
+#     geom_polygon(aes(x = long, y = lat, group = group, color="Guinea"), fill=NA, size = 0.75, data=guineashp.adm0) +
+#     geom_polygon(aes(x = long, y = lat, group = group, color="Sierra Leone"), fill=NA, size = 0.75, data=SLshp.adm0) +
+#     geom_polygon(aes(x = long, y = lat, group = group, color="Liberia"), fill=NA, size = 0.75, data=LBshp.adm0) +
+#     coord_map() + guides(color='none')+ facet_grid(Weeks~.) + theme(strip.background = element_blank(),   strip.text.x = element_blank(), strip.text.y = element_blank(), legend.position='bottom') +
+#     ggtitle('Precipitation\ndif')
+# 
+# #Vapor pressure
+# vap.palette <- brewer.pal(5, name='BuGn')
+# vap_dif <- ggplot(three_countries_climate_dif %>% 
+#            filter(count_week==77 | count_week==89 | count_week==101|count_week==113)
+#        , aes(x = long, y = lat, group = group, fill = vap_dif)) +
+#     geom_polygon(color = "black", size = 0.25) + scale_fill_gradientn(colors=vap.palette, name='') +
+#     geom_polygon(aes(x = long, y = lat, group = group, color="Guinea"), fill=NA, size = 0.75, data=guineashp.adm0) +
+#     geom_polygon(aes(x = long, y = lat, group = group, color="Sierra Leone"), fill=NA, size = 0.75, data=SLshp.adm0) +
+#     geom_polygon(aes(x = long, y = lat, group = group, color="Liberia"), fill=NA, size = 0.75, data=LBshp.adm0) +
+#     coord_map() + guides(color='none')+ facet_grid(Weeks~.) + theme(strip.background = element_blank(),   strip.text.x = element_blank(), strip.text.y = element_blank(), legend.position='bottom') +
+#     ggtitle('Vapor pressure\ndif')
+# 
+# #Incidence
+# cases <- ggplot(three_countries_climate_dif %>% 
+#            filter(count_week==77 | count_week==89 | count_week==101|count_week==113)
+#        , aes(x = long, y = lat, group = group, fill = Total_cases)) +
+#     geom_polygon(color = "black",  size = 0.25) + scale_fill_gradientn(colors=terrain.colors(10), values=c(0,0.05,0.1,0.15,0.25,0.3,1), name='') +
+#     geom_polygon(aes(x = long, y = lat, group = group, color="Guinea"), fill=NA, size = 0.75, data=guineashp.adm0) +
+#     geom_polygon(aes(x = long, y = lat, group = group, color="Sierra Leone"), fill=NA, size = 0.75, data=SLshp.adm0) +
+#     geom_polygon(aes(x = long, y = lat, group = group, color="Liberia"), fill=NA, size = 0.75, data=LBshp.adm0) +
+#     coord_map() + guides(color='none') + facet_grid(Weeks~.) +
+#     theme(legend.position='bottom') +
+#     ggtitle('Weekly incidence')
+# 
+# grid.arrange(tmp_dif, tmx_dif, tmn_dif, pre_dif, vap_dif, cases, ncol=6)
 
 
 ```
@@ -502,14 +517,16 @@ grid.arrange(tmp_dif, tmx_dif, tmn_dif, pre_dif, vap_dif, cases, ncol=6)
 
 ##Peaks
 
-```{r}
+In order to explore our second aim, we look at the peaks of incidence throughout regions.  
+
+```{r, echo=FALSE, fig.height=16, fig.width=16}
 three_countries_peaks <- all_countries %>% select(Location, count_week, Total_cases, Weeks, Peak, Country)
-ggplot(data=filter(all_countries, Peak==1 & Cum_peak==1), aes(x=Weeks, y=Total_cases)) +
+ggplot(data=filter(all_countries, Peak==1 & Cum_peak==1), aes(Weeks, Total_cases, color=Location), alpha=0.6) +
     geom_point() +
+    guides(fill='none', color='none') + 
     geom_line(aes(color=Country)) +
     #geom_text_repel(aes(label=Location)) +
     facet_grid(Country~.)
-
 
 weeks_count <- c(60,70,80,85,90,95,100,105,110,115, 120,150)
 ggplot(data=filter(three_countries_map_complete, count_week%in%weeks_count), aes(x = long, y = lat, group = group, fill=Cum_peak)) +
@@ -521,10 +538,5 @@ ggplot(data=filter(three_countries_map_complete, count_week%in%weeks_count), aes
     scale_fill_continuous(low='gray', high='dark red') +
     guides(fill='none') +
     coord_map() +facet_wrap(~Weeks, ncol=4)
-
-
 ```
-
-
-MONTHLY data in the other rmd
 
