@@ -2316,6 +2316,10 @@ SL_weekly_cases_climate <- group_by(SL_weekly_cases_climate, Location) %>% mutat
     ungroup %>% mutate(Weeks=rep(seq(as.Date('2013-01-01'), as.Date('2015-11-29'), by="week"),14))
 SL_weekly_cases_climate$Month <- month(SL_weekly_cases_climate$Weeks)
 SL_weekly_cases_climate$Year <- year(SL_weekly_cases_climate$Weeks)
+load("SL.population.Rdata")
+SL_weekly_cases_climate <- left_join(SL_weekly_cases_climate, SL.population, by='Location')
+dist_coordinates <- read.xlsx('geolocation_districts.xlsx',1) %>% select(-Country)
+SL_weekly_cases_climate <- left_join(SL_weekly_cases_climate, dist_coordinates, by='Location')
 write.csv(SL_weekly_cases_climate, 'SL_weekly_cases_climate.csv')
 
 

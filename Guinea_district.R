@@ -5400,7 +5400,7 @@ guinea_weekly_cases <- guinea_weekly_cases %>% filter(Source=='Patient database'
     select(-Confirmed, -Probable)
 
 
-# now full joint the case counts data and the climate data
+# now full joint the case counts data, climate data, location and population data
 guinea_weekly_climate$count_week <- as.numeric(as.character(guinea_weekly_climate$count_week))
 guinea_weekly_cases_climate <- left_join(guinea_weekly_climate,guinea_weekly_cases,by=c("Location",'count_week'))
 guinea_weekly_cases_climate <- replace_na(guinea_weekly_cases_climate, list(Total_cases=0))
@@ -5418,4 +5418,8 @@ guinea_weekly_cases_climate <- group_by(guinea_weekly_cases_climate, Location) %
 guinea_weekly_cases_climate$Month <- month(guinea_weekly_cases_climate$Weeks)
 guinea_weekly_cases_climate$Year <- year(guinea_weekly_cases_climate$Weeks)
 guinea_weekly_cases_climate$Country <- "Guinea"
+load("guinea.population.Rdata")
+guinea_weekly_cases_climate <- left_join(guinea_weekly_cases_climate, guinea.population, by='Location')
+dist_coordinates <- read.xlsx('geolocation_districts.xlsx',1) %>% select(-Country)
+guinea_weekly_cases_climate <- left_join(guinea_weekly_cases_climate, dist_coordinates, by='Location')
 write.csv(guinea_weekly_cases_climate, 'guinea_weekly_cases_climate.csv')
