@@ -30,7 +30,7 @@ Finally information from both sources was combined in long format (See Three_Cou
 ###Incidence per country
 Initially we explored the weekly and cumulative incidence by country. We can see that the outbreak had different patterns in the three countries: Guinea was where the outbreak started and where the last cases were recorded. Nevertheless, the incidence was significantly lower compared to Sierra Leone or Liberia and its peak occurred later. On the other hand, Liberia had an early peak and an abrupt early decline in incidence. Sierra Leone was the country that had the highest cumulative incidence and the highest peak, although it peaked later, almost at the same time as Guinea. 
 
-```{r, echo=FALSE}
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
 #############
 #PACKAGES
 #############
@@ -52,9 +52,11 @@ library(ggrepel)
 library(gridExtra)
 library(RColorBrewer)
 library(knitr)
+library(splines)
+library(rms)
 ```
 
-```{r}
+```{r, echo=FALSE}
 #Loading datasets created in previous step and adding information on the peaks of onset
 
 #Guinea
@@ -80,8 +82,7 @@ all_countries <- rbind(guinea_weekly_cases_climate, SL_weekly_cases_climate, Lib
 
 ```
 
-
-```{r, echo=FALSE, fig.width=16}
+```{r, echo=FALSE, fig.width=14, fig.height=12, fig.align=center}
 #Aggregating weekly incidence per country
 guinea_marginal_incidence <- group_by(guinea_weekly_cases_climate, Weeks) %>% summarise(Total_cases=sum(Total_cases), country='Guinea')
 Liberia_marginal_incidence <- group_by(Liberia_weekly_cases_climate, Weeks) %>% summarise(Total_cases=sum(Total_cases), country='Liberia')
@@ -101,8 +102,11 @@ guinea_marginal_cumulative <- group_by(guinea_weekly_cases_climate, Weeks) %>% s
 Liberia_marginal_cumulative <- group_by(Liberia_weekly_cases_climate, Weeks) %>% summarise(Total_cum=sum(Cum_cases), country='Liberia')
 SL_marginal_cumulative <- group_by(SL_weekly_cases_climate, Weeks) %>% summarise(Total_cum=sum(Cum_cases), country='Sierra Leone')
 three_countries_marginal_cumulative <- rbind(guinea_marginal_cumulative, Liberia_marginal_cumulative, SL_marginal_cumulative)
+three_countries_marginal_cumulative$population[three_countries_marginal_cumulative$country=='Guinea'] <- 12608590
+three_countries_marginal_cumulative$population[three_countries_marginal_cumulative$country=='Sierra Leone'] <- 6452184
+three_countries_marginal_cumulative$population[three_countries_marginal_cumulative$country=='Liberia'] <- 4503438
 
-kable(group_by(three_countries_marginal_cumulative, country) %>% summarise('Cumulative incidence'=max(Total_cum)))
+kable(group_by(three_countries_marginal_cumulative, country) %>% summarise('Cumulative incidence'=max(Total_cum), Proportion=max(Total_cum)/max(population)))
 
 # ggplot() +
 #     geom_area(data=filter(SL_marginal_cumulative, Weeks>'2013-12-01'), aes(x=Weeks, y=Total_cum, fill='Sierra Leone', color='Sierra Leone'), alpha=0.69, size=1) +
@@ -117,9 +121,9 @@ kable(group_by(three_countries_marginal_cumulative, country) %>% summarise('Cumu
 
 ###Incidence and climatic factors
 
-Following our main aim, we proceed to compare the incidence to the averaged climatic factors, per country. We can see that temperature has a downward trajectory in the weeks preceding the onset of the outbreak in all three countries. This is particularly the case for maximum temperature. It also coincides with the start of the rainy season. 
+Following our main aim, we proceed to explore the raltionship between the incidence and the averaged climatic factors, per country. We can see that temperature has a downward trajectory in the weeks preceding the onset of the outbreak in all three countries. This is particularly the case for maximum temperature. It also coincides with the start of the rainy season. 
 
-```{r, echo=FALSE}
+```{r, echo=FALSE, fig.align=center, fig.width=16, fig.height=16}
 #Min-Mean-Max temp
 guinea_marginal_temp <- group_by(guinea_weekly_cases_climate, Weeks) %>% summarise(tmn=mean(tmn), tmp=mean(tmp), tmx=mean(tmx), country='Guinea')
 Liberia_marginal_temp <- group_by(Liberia_weekly_cases_climate, Weeks) %>% summarise(tmn=mean(tmn), tmp=mean(tmp), tmx=mean(tmx), country='Liberia')
@@ -161,7 +165,6 @@ grid.arrange(three_countries_tmp, three_countries_pre, three_countries_vap, thre
 
 
 ##Analysis of district level data
-
 ```{r, echo=FALSE}
 #Creating dataframe with maps, climate and case count data.
 
@@ -229,6 +232,7 @@ LB_map_complete$group <- as.factor(as.numeric(as.character(LB_map_complete$group
 ###Incidence per district
 We visualize now the cumulative incidence per region for the three countries at the end of 2015 to see which were the most affected districts. We can clearly see that the highest number of cases were concentrated near the capitals of the three countries: Conakry (Conakry, Guinea), Freetown (Western Urban, Sierra Leone) and Monrovia (Montserrado, Liberia), while other districts presented no cases.
 
+
 ```{r, echo=FALSE, fig.width=16, fig.height=16}
 cumulative_guinea_district <- group_by(guinea_weekly_cases_climate, Location) %>%
     summarise('Cumulative incidence'=max(Cum_cases))
@@ -237,14 +241,14 @@ cumulative_Liberia_district <- group_by(Liberia_weekly_cases_climate, Location) 
 cumulative_SL_district <- group_by(SL_weekly_cases_climate, Location) %>%
     summarise('Cumulative incidence'=max(Cum_cases))
 
-# kable(cumulative_guinea_district, format="html", caption='Cumulative incidence by district for Guinea, 12/2013 - 11/2015')
-# kable(cumulative_Liberia_district, format="html", caption='Cumulative incidence by district for Liberia, 12/2013 - 11/2015')
-# kable(cumulative_SL_district, format="html", caption='Cumulative incidence by district for Sierra Leone, 12/2013 - 11/2015')
+kable(cumulative_guinea_district, caption='Cumulative incidence by district for Guinea, 12/2013 - 11/2015')
+kable(cumulative_Liberia_district, caption='Cumulative incidence by district for Liberia, 12/2013 - 11/2015')
+kable(cumulative_SL_district, caption='Cumulative incidence by district for Sierra Leone, 12/2013 - 11/2015')
 
 #Maps showing cumulative incidence by district
 mypalette<-brewer.pal(9,"Oranges")
  ggplot() +
-    geom_polygon(data=filter(guinea_map_complete,count_week==152), aes(x = long, y = lat, group = group, fill = Cum_cases), color="black", size=0.25) + scale_fill_gradientn(name='Cumulative cases', colours = mypalette, values=c(0,0.05,0.1,0.2,0.3, 0.4, 0.5, 1)) +
+    geom_polygon(data=filter(guinea_map_complete,count_week==152), aes(x = long, y = lat, group = group, fill = Cum_cases), color="black", size=0.25) + scale_fill_gradientn(name='Cumulative cases', colours = mypalette, values=c(0,0.0001, 0.001, 0.01, 0.02, 0.03, 0.04, 0.05,0.1,0.2,0.3, 0.4, 0.5, 1)) +
 geom_polygon(data=filter(SL_map_complete,count_week==152), aes(x = long, y = lat, group = group, fill = Cum_cases), color="black", size=0.25) +
     geom_polygon(data=filter(LB_map_complete,count_week==152), aes(x = long, y = lat, group = group, fill = Cum_cases), color="black", size=0.25)  +
     geom_polygon(aes(x = long, y = lat, group = group, color="Guinea"), fill=NA, size = 0.75, data=guineashp.adm0) +
@@ -257,7 +261,8 @@ geom_polygon(data=filter(SL_map_complete,count_week==152), aes(x = long, y = lat
     geom_text(aes(x=-13.8317, y=8.4657, label='Freetown'), size=5) +
     geom_text(aes(x=-11.3605, y=6.2907, label='Monrovia'), size=5) +
     coord_map() + scale_color_discrete(name="Country") + theme_classic() +
-        ggtitle('Cumulative case count by November 2015')
+        ggtitle('Cumulative case count by November 2015') +
+     xlab('Longitude') + ylab('Latitude')+ theme(plot.title = element_text(size=20), axis.title=element_text(size=16))
 ```
 
 
@@ -272,13 +277,13 @@ three_countries_map_complete <- rbind(
 
 weeks_incidence <- seq(53,152, by=4)
 three_countries_map_incidence <- ggplot(filter(three_countries_map_complete, count_week%in%weeks_incidence), aes(x = long, y = lat, group = group, fill = Cum_cases, frame=Weeks)) +
-    geom_polygon(color = "black", size = 0.25) + coord_map() + scale_fill_gradientn(name='Cumulative case count', colours = mypalette, values=c(0,0.05,0.1,0.2,0.3, 0.4, 0.5, 1)) + ggtitle('Cumulative incidence by week\n')
+    geom_polygon(color = "black", size = 0.25) + coord_map() + scale_fill_gradientn(name='Cumulative case count', colours = mypalette, values=c(0,0.0001, 0.001, 0.01, 0.02, 0.03, 0.04, 0.05,0.1,0.2,0.3, 0.4, 0.5, 1)) + ggtitle('Cumulative incidence by week\n')
 
 gg_animate(three_countries_map_incidence)
 
 ```
 
-
+The two previous figures suggest that there is both a time and a spacial effect (time and region correlation of the incidence). We aim to explore this in the following sections.
 
 ```{r, echo=FALSE}
 #Analysis per main district
@@ -307,6 +312,46 @@ gg_animate(three_countries_map_incidence)
 # grid.arrange(three_cities_tmp, three_cities_pre, three_cities_vap, three_cities_total, three_cities_cum, nrow=5)
 ```
 
+###Time effect on incidence per district
+In order to explore this effect we fit a simple linear regression model, by region. We limit the analysis the three districts with the highest case count per country (Guinea: Conakry, Macenta, Forecariah; Sierra Leone: Western Urban, Port Loko, Western Rural; Liberia: Montserrado, Margibi, Lofa).
+We fit a spline of the effect of time on the number of cases as the outcome, per region. Then we analyze the residuals.
+
+```{r, echo=FALSE}
+Conakry <- filter(all_countries, Location=='CONAKRY', count_week>52)
+lm.Conakry <- lm(Total_cases~ns(count_week, df=7), data=Conakry)
+ggplot() + geom_point(aes(x=count_week, y=Total_cases), data=Conakry) +
+    geom_line(aes(seq(53,152,1), y=lm.Conakry$fitted.values))
+ggplot() + geom_smooth(aes(x=seq(53,152,1), y=lm.Conakry$residuals)) + geom_point(aes(x=seq(53,152,1), y=lm.Conakry$residuals))
+ggplot() + geom_point(aes(x=lm.Conakry$fitted.values, y=lm.Conakry$residuals))
+
+
+Macenta <- filter(all_countries, Location=='MACENTA', count_week>52)
+lm.Macenta <- lm(Total_cases~ns(count_week, df=7), data=Macenta)
+ggplot() + geom_point(aes(x=count_week, y=Total_cases), data=Macenta) +
+    geom_line(aes(seq(53,152,1), y=lm.Macenta$fitted.values))
+ggplot() + geom_smooth(aes(x=seq(53,152,1), y=lm.Macenta$residuals)) + geom_point(aes(x=seq(53,152,1), y=lm.Macenta$residuals))
+ggplot() + geom_point(aes(x=lm.Macenta$fitted.values, y=lm.Macenta$residuals))
+
+Forecariah <- filter(all_countries, Location=='FORECARIAH', count_week>52)
+lm.Forecariah <- lm(Total_cases~ns(count_week, df=7), data=Forecariah)
+ggplot() + geom_point(aes(x=count_week, y=Total_cases), data=Forecariah) +
+    geom_line(aes(seq(53,152,1), y=lm.Forecariah$fitted.values))
+ggplot() + geom_smooth(aes(x=seq(53,152,1), y=lm.Forecariah$residuals)) + geom_point(aes(x=seq(53,152,1), y=lm.Forecariah$residuals))
+ggplot() + geom_point(aes(x=lm.Forecariah$fitted.values, y=lm.Forecariah$residuals))
+
+```
+
+For all analyzed regions we see a clear non-time effect, but it does not account for all the variability in the outcome, as we can conclude from the residuals plots, particularly this is the case at the peak of incidence.
+
+HERE WE SHOULD EXPLORE A MODEL WITH LONG AND LAT AS COVARIATES. WE HAVE TO GET LONG AND LAT FOR EVERY REGION. FITTING THIS MODEL ON THE RESIDUALS OF THE PREVIOUS MAYBE.
+ALSO REGIONAL CORRELATION of regions (columns)
+
+THEN THE CORRELATION OF CLIMATIC FACTORS ON OUTCOME
+> ccf(Forecariah$tmn, Forecariah$Total_cases)
+> ccf(Forecariah$tmx, Forecariah$Total_cases)
+> ccf(Forecariah$tmp, Forecariah$Total_cases)
+> ccf(Forecariah$pre, Forecariah$Total_cases)
+> ccf(Forecariah$vap, Forecariah$Total_cases)
 
 ###Incidence and climatic factors
 
