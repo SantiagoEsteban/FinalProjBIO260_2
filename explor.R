@@ -17,11 +17,15 @@ ggplot() + geom_line(aes(x=conakry$count_week, y=fg$fitted.values), color='red')
 
 ggplot(conakry, aes(x=count_week, y=Total_cases)) + geom_point() + geom_smooth()
 
-guinea <- filter(all_countries, Country=='Guinea') %>% select(Location, count_week, Total_cases)
-guinea.wide <- spread(guinea, Location, Total_cases)
+guinea <- filter(all_countries, Country=='Guinea') %>% select(Location, count_week, Total_cases, Longitude, Latitude)
+guinea.wide <- spread(guinea, count_week, Total_cases)
+row.names(guinea.wide) <- guinea.wide$Location
+guinea.wide <- select(guinea.wide, -Location)
+heatmap(as.matrix(guinea.wide))
 a <- names(colSums(guinea.wide)<1)
 
 cor.matrix <- cor(select(guinea.wide, -count_week, -DINGUIRAY, -GAOUAL, -KOUBIA, -KOUNDARA, -LABE, -LELOUMA, -MAMOU, -MANDIANA,-NZEREKORE))
 
 library(corrplot)
 corrplot(cor.matrix)
+heatmap(as.matrix(guinea.wide))

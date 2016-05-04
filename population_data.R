@@ -12,15 +12,16 @@ guinea.population <- str_replace_all(guinea.population, ',',"")
 guinea_names <- read_csv("guinea_weekly_cases_climate.csv") %>% select(Location) %>%
                 unique()
 guinea.population <-cbind(guinea_names, Population=guinea.population)
-save(guinea.population, file="guinea.population") 
+save(guinea.population, file="guinea.population.Rdata") 
 
 #Scraping population data for Sierra Leone
 i <- read_html('http://www.citypopulation.de/SierraLeone.html')
 SL.population <- i %>% html_nodes(".adm+ tbody .prio1") %>% html_text()
 SL.population <- str_replace_all(SL.population, ',',"")
-SL.population <-cbind(Location=c('KAILAHUN', "KENEMA","KONO", "BOMBALI","KAMBIA","KOINADUGU","PORTLOKO","TONKOLILI",
-                                 "BO", "BONTHE", "MOYAMBA", "PUJEHUN", "WESTERNURBAN", "WESTERNRURAL"), Population=SL.population)
-save(SL.population, file="SL.population")
+SL.population <-as.data.frame(cbind(Location=c('KAILAHUN', "KENEMA","KONO", "BOMBALI","KAMBIA","KOINADUGU","PORTLOKO","TONKOLILI",
+                                 "BO", "BONTHE", "MOYAMBA", "PUJEHUN", "WESTERNURBAN", "WESTERNRURAL"), Population=SL.population))
+SL.population <- arrange(SL.population, Location)
+save(SL.population, file="SL.population.Rdata")
 
 #Scraping population data for Liberia
 
@@ -30,4 +31,4 @@ LB.population <- str_replace_all(LB.population, ',',"")
 LB_names <- read_csv("Liberia_weekly_cases_climate.csv") %>% select(Location) %>%
     unique()
 LB.population <-cbind(Location=LB_names, Population=LB.population)
-save(LB.population, file="LB.population")
+save(LB.population, file="LB.population.Rdata")
