@@ -407,54 +407,85 @@ rgl::plot3d(all.countries.cases$Longitude, all.countries.cases$Latitude, lm.all.
 This simplified model gives us an idea about the effect of the geographical location. The highest residuals are observed at the regions with the highest incidence (Conakry, Western Urban/Rural Area, Port Loko and Montserrado). Thus, we can conclude that there is a spatial effect but it does not account for all the variability in the outcome.
 
 ###Time effect on incidence per district
-In order to explore this effect we fit a simple linear regression model, by region. We limit the analysis the three districts with the highest case count per country (Guinea: Conakry, Macenta, Forecariah; Sierra Leone: Western Urban, Port Loko, Western Rural; Liberia: Montserrado, Margibi, Lofa).
+In order to explore this effect we fit a simple linear regression model, by region. We limit the analysis the two districts with the highest case count per country (Guinea: Conakry, Macenta; Sierra Leone: Western Urban, Port Loko; Liberia: Montserrado, Margibi).
 We fit a spline of the effect of time on the number of cases as the outcome, per region. Then we analyze the residuals.
 
-```{r, echo=FALSE}
-lm.Conakry <- lm(Total_cases~ns(count_week, df=5), data=filter(all_countries, Location=='CONAKRY', count_week>52))
-lm.Macenta <- lm(Total_cases~ns(count_week, df=5), data=filter(all_countries, Location=='MACENTA', count_week>52))
-lm.Forecariah <- lm(Total_cases~ns(count_week, df=5), data=filter(all_countries, Location=='FORECARIAH', count_week>52))
-guinea.model <- filter(all_countries, Location=='CONAKRY'|Location=='MACENTA'|Location=='FORECARIAH', count_week>52) %>% select(Location, count_week) %>% mutate(fitted=rbind(lm.Conakry$fitted.values, lm.Macenta$fitted.values, lm.Forecariah$fitted.values), residuals=rbind(lm.Conakry$residuals, lm.Macenta$residuals, lm.Forecariah$residuals))
+```{r, echo=FALSE, fig.align=center, fig.height=16, fig.width=16}
+conakry <- filter(filter(all_countries, Location=='CONAKRY', count_week>52))
+lm.conakry <- lm(Total_cases~ns(count_week, df=5), data=conakry)
+conakry.a <- ggplot() + geom_hline(aes(yintercept=0, color='0'), size=1.5) + geom_point(aes(x=conakry$count_week, y=lm.conakry$residuals, fill=lm.conakry$residuals), color='black', pch=21, size=2)  + scale_fill_gradientn(colours = brewer.pal(3,'Oranges')) + xlab('Week number') + ylab('Residuals') +  guides(fill='none', color='none') + ggtitle('Conakry, Guinea') + theme_classic()
+conakry.b <- ggplot() + geom_hline(aes(yintercept=0, color='0'), size=1.5) + geom_point(aes(x=lm.conakry$fitted.values, y=lm.conakry$residuals, fill=lm.conakry$residuals), color='black', pch=21, size=2)  + scale_fill_gradientn(colours = brewer.pal(3,'Blues')) + xlab('Fitted values') + ylab('Residuals') +  guides(fill='none', color='none') + ggtitle('Conakry, Guinea') + theme_classic()
+conakry.graph <- grid.arrange(conakry.a, conakry.b,ncol=2)
 
-# Conakry.a <- ggplot() + geom_point(aes(x=count_week, y=Total_cases, fill=Total_cases), color='black', data=Conakry, pch=21, size=2) + geom_line(aes(Conakry$count_week, y=lm.Conakry$fitted.values, color='Fitted\nvalues'), size=1.5) + scale_fill_gradientn(colours = mypalette) + xlab('Week number') + ylab('Weekly incidence') +  xlab('Week number') + guides(fill='none') + scale_color_discrete(name="")+ ggtitle('Observed and fitted values') + theme_classic()
-Conakry.a <- ggplot() + geom_hline(aes(yintercept=0, color='0'), size=1.5) + geom_point(aes(x=Conakry$count_week, y=lm.Conakry$residuals, fill=lm.Conakry$residuals), color='black', pch=21, size=2)  + scale_fill_gradientn(colours = brewer.pal(3,'Oranges')) + xlab('Week number') + ylab('Residuals') +  guides(fill='none', color='none') + ggtitle('Weeks vs Residuals') + theme_classic()
-Conakry.b <- ggplot() + geom_hline(aes(yintercept=0, color='0'), size=1.5) + geom_point(aes(x=lm.Conakry$fitted.values, y=lm.Conakry$residuals, fill=lm.Conakry$residuals), color='black', pch=21, size=2)  + scale_fill_gradientn(colours = brewer.pal(3,'Blues')) + xlab('Fitted values') + ylab('Residuals') +  guides(fill='none', color='none') + ggtitle('Fitted values vs Residuals') + theme_classic()
+macenta <- filter(filter(all_countries, Location=='MACENTA', count_week>52))
+lm.macenta <- lm(Total_cases~ns(count_week, df=5), data=macenta)
+macenta.a <- ggplot() + geom_hline(aes(yintercept=0, color='0'), size=1.5) + geom_point(aes(x=macenta$count_week, y=lm.macenta$residuals, fill=lm.macenta$residuals), color='black', pch=21, size=2)  + scale_fill_gradientn(colours = brewer.pal(3,'Oranges')) + xlab('Week number') + ylab('Residuals') +  guides(fill='none', color='none') + ggtitle('Macenta, Guinea') + theme_classic()
+macenta.b <- ggplot() + geom_hline(aes(yintercept=0, color='0'), size=1.5) + geom_point(aes(x=lm.macenta$fitted.values, y=lm.macenta$residuals, fill=lm.macenta$residuals), color='black', pch=21, size=2)  + scale_fill_gradientn(colours = brewer.pal(3,'Blues')) + xlab('Fitted values') + ylab('Residuals') +  guides(fill='none', color='none') + ggtitle('Macenta, Guinea') + theme_classic()
+macenta.graph <- grid.arrange(macenta.a, macenta.b,ncol=2)
 
-Conakry.graph <- grid.arrange(Conakry.a, Conakry.b,ncol=2)
+westernurban <- filter(filter(all_countries, Location=='WESTERNURBAN', count_week>52))
+lm.westernurban <- lm(Total_cases~ns(count_week, df=5), data=westernurban)
+westernurban.a <- ggplot() + geom_hline(aes(yintercept=0, color='0'), size=1.5) + geom_point(aes(x=westernurban$count_week, y=lm.westernurban$residuals, fill=lm.westernurban$residuals), color='black', pch=21, size=2)  + scale_fill_gradientn(colours = brewer.pal(3,'Oranges')) + xlab('Week number') + ylab('Residuals') +  guides(fill='none', color='none') + ggtitle('Western Area Urban, Sierra Leone') + theme_classic()
+westernurban.b <- ggplot() + geom_hline(aes(yintercept=0, color='0'), size=1.5) + geom_point(aes(x=lm.westernurban$fitted.values, y=lm.westernurban$residuals, fill=lm.westernurban$residuals), color='black', pch=21, size=2)  + scale_fill_gradientn(colours = brewer.pal(3,'Blues')) + xlab('Fitted values') + ylab('Residuals') +  guides(fill='none', color='none') + ggtitle('Western Area Urban, Sierra Leone') + theme_classic()
+westernurban.graph <- grid.arrange(westernurban.a, westernurban.b,ncol=2)
 
-Macenta <- filter(all_countries, Location=='MACENTA', count_week>52)
-lm.Macenta <- lm(Total_cases~ns(count_week, df=7), data=Macenta)
-ggplot() + geom_point(aes(x=count_week, y=Total_cases), data=Macenta) +
-    geom_line(aes(seq(53,152,1), y=lm.Macenta$fitted.values))
-ggplot() + geom_smooth(aes(x=seq(53,152,1), y=lm.Macenta$residuals)) + geom_point(aes(x=seq(53,152,1), y=lm.Macenta$residuals))
-ggplot() + geom_point(aes(x=lm.Macenta$fitted.values, y=lm.Macenta$residuals))
+portloko <- filter(filter(all_countries, Location=='PORTLOKO', count_week>52))
+lm.portloko <- lm(Total_cases~ns(count_week, df=5), data=portloko)
+portloko.a <- ggplot() + geom_hline(aes(yintercept=0, color='0'), size=1.5) + geom_point(aes(x=portloko$count_week, y=lm.portloko$residuals, fill=lm.portloko$residuals), color='black', pch=21, size=2)  + scale_fill_gradientn(colours = brewer.pal(3,'Oranges')) + xlab('Week number') + ylab('Residuals') +  guides(fill='none', color='none') + ggtitle('Port Loko, Sierra Leone') + theme_classic()
+portloko.b <- ggplot() + geom_hline(aes(yintercept=0, color='0'), size=1.5) + geom_point(aes(x=lm.portloko$fitted.values, y=lm.portloko$residuals, fill=lm.portloko$residuals), color='black', pch=21, size=2)  + scale_fill_gradientn(colours = brewer.pal(3,'Blues')) + xlab('Fitted values') + ylab('Residuals') +  guides(fill='none', color='none') + ggtitle('Port Loko, Sierra Leone') + theme_classic()
+portloko.graph <- grid.arrange(portloko.a, portloko.b,ncol=2)
 
-Forecariah <- filter(all_countries, Location=='FORECARIAH', count_week>52)
-lm.Forecariah <- lm(Total_cases~ns(count_week, df=7), data=Forecariah)
-ggplot() + geom_point(aes(x=count_week, y=Total_cases), data=Forecariah) +
-    geom_line(aes(seq(53,152,1), y=lm.Forecariah$fitted.values))
-ggplot() + geom_smooth(aes(x=seq(53,152,1), y=lm.Forecariah$residuals)) + geom_point(aes(x=seq(53,152,1), y=lm.Forecariah$residuals))
-ggplot() + geom_point(aes(x=lm.Forecariah$fitted.values, y=lm.Forecariah$residuals))
+montserrado <- filter(filter(all_countries, Location=='MONTSERRADO', count_week>52))
+lm.montserrado <- lm(Total_cases~ns(count_week, df=5), data=montserrado)
+montserrado.a <- ggplot() + geom_hline(aes(yintercept=0, color='0'), size=1.5) + geom_point(aes(x=montserrado$count_week, y=lm.montserrado$residuals, fill=lm.montserrado$residuals), color='black', pch=21, size=2)  + scale_fill_gradientn(colours = brewer.pal(3,'Oranges')) + xlab('Week number') + ylab('Residuals') +  guides(fill='none', color='none') + ggtitle('Montserrado, Liberia') + theme_classic()
+montserrado.b <- ggplot() + geom_hline(aes(yintercept=0, color='0'), size=1.5) + geom_point(aes(x=lm.montserrado$fitted.values, y=lm.montserrado$residuals, fill=lm.montserrado$residuals), color='black', pch=21, size=2)  + scale_fill_gradientn(colours = brewer.pal(3,'Blues')) + xlab('Fitted values') + ylab('Residuals') +  guides(fill='none', color='none') + ggtitle('Montserrado, Liberia') + theme_classic()
+montserrado.graph <- grid.arrange(montserrado.a, montserrado.b,ncol=2)
 
+margibi <- filter(filter(all_countries, Location=='MARGIBI', count_week>52))
+lm.margibi <- lm(Total_cases~ns(count_week, df=5), data=margibi)
+margibi.a <- ggplot() + geom_hline(aes(yintercept=0, color='0'), size=1.5) + geom_point(aes(x=margibi$count_week, y=lm.margibi$residuals, fill=lm.margibi$residuals), color='black', pch=21, size=2)  + scale_fill_gradientn(colours = brewer.pal(3,'Oranges')) + xlab('Week number') + ylab('Residuals') +  guides(fill='none', color='none') + ggtitle('Margibi, Liberia') + theme_classic()
+margibi.b <- ggplot() + geom_hline(aes(yintercept=0, color='0'), size=1.5) + geom_point(aes(x=lm.margibi$fitted.values, y=lm.margibi$residuals, fill=lm.margibi$residuals), color='black', pch=21, size=2)  + scale_fill_gradientn(colours = brewer.pal(3,'Blues')) + xlab('Fitted values') + ylab('Residuals') +  guides(fill='none', color='none') + ggtitle('Margibi, Liberia') + theme_classic()
+margibi.graph <- grid.arrange(margibi.a, margibi.b,ncol=2)
 
-
+grid.arrange(conakry.graph, macenta.graph, westernurban.graph, portloko.graph, montserrado.graph, margibi.graph, ncol=2, nrow=3)
 ```
 
-For all analyzed regions we see a clear non-time effect, but it does not account for all the variability in the outcome, as we can conclude from the residuals plots, particularly this is the case at the peak of incidence.
+Again, we see that time alone does not explain most of the variability of the outcome, as we can conclude from the residuals plots. This is particularly the case at the peak of incidence.
 
-HERE WE SHOULD EXPLORE A MODEL WITH LONG AND LAT AS COVARIATES. WE HAVE TO GET LONG AND LAT FOR EVERY REGION. FITTING THIS MODEL ON THE RESIDUALS OF THE PREVIOUS MAYBE.
-ALSO REGIONAL CORRELATION of regions (columns)
+###Time and spatial effect combined
+```{r, echo=FALSE, fig.align=center, fig.width=16, fig.heigh=16}
+lm.temp <- lm(Total_cases~ns(count_week, df=5), data=all.countries.cases)
+lm.temp.complete <- select(all.countries.cases, Location, Longitude, Latitude, count_week, Total_cases)
+lm.temp.complete$fitted <- lm.temp$fitted.values
+lm.temp.complete$residuals <- lm.temp$residuals
+temp.graph <- ggplot(lm.temp.complete) + geom_point(aes(x=count_week, y=residuals, fill=residuals), pch=21, size=2) + scale_fill_gradientn(colors=brewer.pal(9,'Spectral')) + xlab('Week') + ylab('Residuals') + ggtitle('Time spline model') + guides(fill='none')
 
-THEN THE CORRELATION OF CLIMATIC FACTORS ON OUTCOME
-> ccf(Forecariah$tmn, Forecariah$Total_cases)
-> ccf(Forecariah$tmx, Forecariah$Total_cases)
-> ccf(Forecariah$tmp, Forecariah$Total_cases)
-> ccf(Forecariah$pre, Forecariah$Total_cases)
-> ccf(Forecariah$vap, Forecariah$Total_cases)
+lm.spatial <- lm(residuals~ns(Longitude, df=3)*ns(Latitude, df=4), data=lm.temp.complete)
+spatial.graph <- ggplot() + geom_point(aes(x=lm.temp.complete$count_week, y=lm.spatial$residuals, fill=lm.spatial$residuals), pch=21, size=2) + scale_fill_gradientn(colors=brewer.pal(9,'Spectral')) + xlab('Week') + ylab('Residuals') + ggtitle('Long and Lat interaction spline model\non Time spline model residuals') + guides(fill='none')
+
+lm.spatial2 <- lm(Total_cases~ns(Longitude, df=3)*ns(Latitude, df=4)*ns(count_week, df=5), data=all.countries.cases)
+ggplot() + geom_point(aes(x=lm.temp.complete$count_week, y=lm.spatial2$residuals))
+spatial.time.graph <- ggplot() + geom_point(aes(x=lm.temp.complete$count_week, y=lm.spatial2$residuals, fill=lm.spatial2$residuals), pch=21, size=2) + scale_fill_gradientn(colors=brewer.pal(9,'Spectral')) + xlab('Week') + ylab('Residuals') + ggtitle('Long, Lat and week effect interaction model') + guides(fill='none')
+
+grid.arrange(temp.graph, spatial.graph, spatial.time.graph, ncol=3)
+```
+
+Although this is a very simplified approach, we can see a rather small effect of time and location. This favours the hypothesis that other factors despite time and geolocation have an important impact on the weekly incidence (public health itnerventions, climatic factors, etc).
+
+
+###Climatic factors and incidence
+
+As was mentioned int the introduction, previous studies have shown that there might be a climatic factor effect on the incidence of Ebola. In the next section we intend to described this relationship.
 
 ###Incidence and climatic factors
 
-We saw before that not all districts were affected. Thus we explore the relationship between the climatic factors and the incidence on all regions. In the figure below we can appreciate how incidence increases as the temperature drops and the dry season begins.
+Initially we explore the correlation between the climatic factors. As expected the temperature variables are highly correlated, as well as vapor pressure and precipitation. Daily temperature range shows very low correlation with any of the other climatic factors.
+
+```{r, echo=FALSE, fig.align=center, fig.width=12, fig.height=12}
+corrplot(cor(select(all_countries, tmp, tmn, tmx, vap, pre, pet,dtr)), order="hclust", method="square", tl.pos="lt", tl.col="black", tl.cex=0.6, tl.srt=45, addCoef.col="black", addCoefasPercent = TRUE, sig.level=0.05, insig = "blank", title='Correlation matrix of climatic factors')
+```
+
+We saw before that not all districts were affected. Thus we explore the relationship between the climatic factors and the incidence on all regions on a very high level. In the figure below we can appreciate how incidence increases as the temperature drops and the dry season begins.
 
 ```{r, echo=FALSE, fig.width=16, fig.height=16}
 three_countries_map_climate <- rbind(
@@ -541,137 +572,39 @@ cases <- ggplot(three_countries_map_climate %>%
 grid.arrange(tmp, tmx, tmn, pre, vap, cases, ncol=6)
 ```
 
+We proceed to analyze the correlation between the climcatic factors and the incidence. Nontheless, we also include a lag effect that will let us explore lagged correlations.
 
-We can also see that the incidence is also associated with the difference in temperature and precipitation over four weeks, as shown in the maps below.
-
-```{r, echo=FALSE, fig.width=16}
-
-# #Load data created in "Climate_diference.Rmd"
-# load("guinea_climate_dif.Rdata")
-# load("SL_climate_dif.Rdata")
-# load("Liberia_climate_dif.Rdata")
-# 
-# guinea_climate_dif <- left_join(guinea_climate_dif, guinea_map, by='Location')
-# guinea_climate_dif$tmp_dif <- as.numeric(as.character(guinea_climate_dif$tmp_dif))
-# guinea_climate_dif$tmn_dif <- as.numeric(as.character(guinea_climate_dif$tmn_dif))
-# guinea_climate_dif$tmx_dif <- as.numeric(as.character(guinea_climate_dif$tmx_dif))
-# guinea_climate_dif$pre_dif <- as.numeric(as.character(guinea_climate_dif$pre_dif))
-# guinea_climate_dif$vap_dif <- as.numeric(as.character(guinea_climate_dif$vap_dif))
-# 
-# SL_climate_dif <- left_join(SL_climate_dif, SL_map, by='Location')
-# SL_climate_dif$group <- as.factor(as.numeric(as.character(SL_climate_dif$group))+100)
-# SL_climate_dif$tmp_dif <- as.numeric(as.character(SL_climate_dif$tmp_dif))
-# SL_climate_dif$tmn_dif <- as.numeric(as.character(SL_climate_dif$tmn_dif))
-# SL_climate_dif$tmx_dif <- as.numeric(as.character(SL_climate_dif$tmx_dif))
-# SL_climate_dif$pre_dif <- as.numeric(as.character(SL_climate_dif$pre_dif))
-# SL_climate_dif$vap_dif <- as.numeric(as.character(SL_climate_dif$vap_dif))
-# 
-# Liberia_climate_dif <- left_join(Liberia_climate_dif, LB_map, by='Location')
-# Liberia_climate_dif$group <- as.factor(as.numeric(as.character(Liberia_climate_dif$group))+200)
-# Liberia_climate_dif$tmp_dif <- as.numeric(as.character(Liberia_climate_dif$tmp_dif))
-# Liberia_climate_dif$tmn_dif <- as.numeric(as.character(Liberia_climate_dif$tmn_dif))
-# Liberia_climate_dif$tmx_dif <- as.numeric(as.character(Liberia_climate_dif$tmx_dif))
-# Liberia_climate_dif$pre_dif <- as.numeric(as.character(Liberia_climate_dif$pre_dif))
-# Liberia_climate_dif$vap_dif <- as.numeric(as.character(Liberia_climate_dif$vap_dif))
-# 
-# three_countries_climate_dif <- rbind(guinea_climate_dif, SL_climate_dif, Liberia_climate_dif)
-# 
-# #Creating maps
-# tmp.palette <- brewer.pal(5,name="Oranges")
-# tmp_dif <- ggplot(three_countries_climate_dif %>% 
-#            filter(count_week==77 | count_week==89 | count_week==101|count_week==113) %>%
-#                select()
-#        , aes(x = long, y = lat, group = group, fill = tmp_dif)) +
-#     geom_polygon(color = "black", size = 0.25) + scale_fill_gradientn(colors=tmp.palette, name='') +
-#     geom_polygon(aes(x = long, y = lat, group = group, color="Guinea"), fill=NA, size = 0.75, data=guineashp.adm0) +
-#     geom_polygon(aes(x = long, y = lat, group = group, color="Sierra Leone"), fill=NA, size = 0.75, data=SLshp.adm0) +
-#     geom_polygon(aes(x = long, y = lat, group = group, color="Liberia"), fill=NA, size = 0.75, data=LBshp.adm0) +
-#     coord_map() + guides(color='none')+ facet_grid(Weeks~.) + theme(strip.background = element_blank(),   strip.text.x = element_blank(), strip.text.y = element_blank(), legend.position='bottom') +
-#     ggtitle('Mean Temp. dif')
-# 
-# #Max Temp
-# tmx.palette <- brewer.pal(5,name='Reds')
-# tmx_dif <- ggplot(three_countries_climate_dif %>% 
-#            filter(count_week==77 | count_week==89 | count_week==101|count_week==113)
-#        , aes(x = long, y = lat, group = group, fill = tmx_dif)) +
-#     geom_polygon(color = "black", size = 0.25) + scale_fill_gradientn(colors=tmx.palette, name='') +
-#     geom_polygon(aes(x = long, y = lat, group = group, color="Guinea"), fill=NA, size = 0.75, data=guineashp.adm0) +
-#     geom_polygon(aes(x = long, y = lat, group = group, color="Sierra Leone"), fill=NA, size = 0.75, data=SLshp.adm0) +
-#     geom_polygon(aes(x = long, y = lat, group = group, color="Liberia"), fill=NA, size = 0.75, data=LBshp.adm0) +
-#     coord_map() + guides(color='none')+ 
-#     facet_grid(Weeks~.) + 
-#     theme(strip.background = element_blank(),   strip.text.x = element_blank(), strip.text.y = element_blank(), legend.position='bottom') +
-#     ggtitle('Max Temp. dif')
-# 
-# #Min Temp
-# tmn.palette <- brewer.pal(5, name='Purples')
-# tmn_dif <- ggplot(three_countries_climate_dif %>% 
-#            filter(count_week==77 | count_week==89 | count_week==101|count_week==113)
-#        , aes(x = long, y = lat, group = group, fill = tmn_dif)) +
-#     geom_polygon(color = "black", size = 0.25) + scale_fill_gradientn(colors=tmn.palette, name='') +
-#     geom_polygon(aes(x = long, y = lat, group = group, color="Guinea"), fill=NA, size = 0.75, data=guineashp.adm0) +
-#     geom_polygon(aes(x = long, y = lat, group = group, color="Sierra Leone"), fill=NA, size = 0.75, data=SLshp.adm0) +
-#     geom_polygon(aes(x = long, y = lat, group = group, color="Liberia"), fill=NA, size = 0.75, data=LBshp.adm0) +
-#     coord_map() + guides(color='none')+ 
-#     facet_grid(Weeks~.) + 
-#     theme(strip.background = element_blank(),   strip.text.x = element_blank(), strip.text.y = element_blank(), legend.position='bottom') +
-#     ggtitle('Min Temp. dif')
-# 
-# #Precipitation
-# pre.palette <- brewer.pal(5, name='Blues')
-# pre_dif <- ggplot(three_countries_climate_dif %>% 
-#            filter(count_week==77 | count_week==89 | count_week==101|count_week==113)
-#        , aes(x = long, y = lat, group = group, fill = pre_dif)) +
-#     geom_polygon(color = "black", size = 0.25) + scale_fill_gradientn(colors=pre.palette, name='') +
-#     geom_polygon(aes(x = long, y = lat, group = group, color="Guinea"), fill=NA, size = 0.75, data=guineashp.adm0) +
-#     geom_polygon(aes(x = long, y = lat, group = group, color="Sierra Leone"), fill=NA, size = 0.75, data=SLshp.adm0) +
-#     geom_polygon(aes(x = long, y = lat, group = group, color="Liberia"), fill=NA, size = 0.75, data=LBshp.adm0) +
-#     coord_map() + guides(color='none')+ facet_grid(Weeks~.) + theme(strip.background = element_blank(),   strip.text.x = element_blank(), strip.text.y = element_blank(), legend.position='bottom') +
-#     ggtitle('Precipitation\ndif')
-# 
-# #Vapor pressure
-# vap.palette <- brewer.pal(5, name='BuGn')
-# vap_dif <- ggplot(three_countries_climate_dif %>% 
-#            filter(count_week==77 | count_week==89 | count_week==101|count_week==113)
-#        , aes(x = long, y = lat, group = group, fill = vap_dif)) +
-#     geom_polygon(color = "black", size = 0.25) + scale_fill_gradientn(colors=vap.palette, name='') +
-#     geom_polygon(aes(x = long, y = lat, group = group, color="Guinea"), fill=NA, size = 0.75, data=guineashp.adm0) +
-#     geom_polygon(aes(x = long, y = lat, group = group, color="Sierra Leone"), fill=NA, size = 0.75, data=SLshp.adm0) +
-#     geom_polygon(aes(x = long, y = lat, group = group, color="Liberia"), fill=NA, size = 0.75, data=LBshp.adm0) +
-#     coord_map() + guides(color='none')+ facet_grid(Weeks~.) + theme(strip.background = element_blank(),   strip.text.x = element_blank(), strip.text.y = element_blank(), legend.position='bottom') +
-#     ggtitle('Vapor pressure\ndif')
-# 
-# #Incidence
-# cases <- ggplot(three_countries_climate_dif %>% 
-#            filter(count_week==77 | count_week==89 | count_week==101|count_week==113)
-#        , aes(x = long, y = lat, group = group, fill = Total_cases)) +
-#     geom_polygon(color = "black",  size = 0.25) + scale_fill_gradientn(colors=terrain.colors(10), values=c(0,0.05,0.1,0.15,0.25,0.3,1), name='') +
-#     geom_polygon(aes(x = long, y = lat, group = group, color="Guinea"), fill=NA, size = 0.75, data=guineashp.adm0) +
-#     geom_polygon(aes(x = long, y = lat, group = group, color="Sierra Leone"), fill=NA, size = 0.75, data=SLshp.adm0) +
-#     geom_polygon(aes(x = long, y = lat, group = group, color="Liberia"), fill=NA, size = 0.75, data=LBshp.adm0) +
-#     coord_map() + guides(color='none') + facet_grid(Weeks~.) +
-#     theme(legend.position='bottom') +
-#     ggtitle('Weekly incidence')
-# 
-# grid.arrange(tmp_dif, tmx_dif, tmn_dif, pre_dif, vap_dif, cases, ncol=6)
-
-
+```{r, echo=FALSE}
+all.countries.52 <- filter(all_countries, count_week>52) %>% select(Location, tmp, vap, tmn, tmx, pre, dtr, pet, Total_cases)
+par(mfrow=c(2,3))
+plot(ccf(all.countries.52$tmp, all.countries.52$Total_cases, plot=F), main='Mean Temperature')
+plot(ccf(all.countries.52$tmn, all.countries.52$Total_cases, plot=F), main='Min Temperature')
+plot(ccf(all.countries.52$tmx, all.countries.52$Total_cases, plot=F), main='Max Temperature')
+plot(ccf(all.countries.52$pre, all.countries.52$Total_cases, plot=F), main='Precipitation')
+plot(ccf(all.countries.52$vap, all.countries.52$Total_cases, plot=F), main='Vapor Pressure')
+plot(ccf(all.countries.52$dtr, all.countries.52$Total_cases, plot=F), main='Daily temperature range')
 ```
+
+The plot above clearly shows that for some features, the correlation with the incidence increases as the lag increases in absolute terms. Nevertheless this is a crude analysis. A more formal evaluation of this effect is granted.
 
 
 ##Peaks
 
 In order to explore our second aim, we look at the peaks of incidence throughout regions.  
 
-```{r, echo=FALSE, fig.height=16, fig.width=16}
-three_countries_peaks <- all_countries %>% select(Location, count_week, Total_cases, Weeks, Peak, Country)
-ggplot(data=filter(all_countries, Peak==1 & Cum_peak==1), aes(Weeks, Total_cases, color=Location), alpha=0.6) +
-    geom_point() +
+```{r, echo=FALSE, fig.height=14, fig.width=14, fig.align=center}
+three_countries_peaks <- all_countries %>% select(Location, count_week, Total_cases, Weeks, Peak, Country) %>% group_by(Location) %>% mutate(Cum_peak=cumsum(Peak))
+ggplot(data=filter(three_countries_peaks, Peak==1 & Cum_peak==1 ), aes(Weeks, Total_cases, color=Location), alpha=0.6) +
     guides(fill='none', color='none') + 
-    geom_line(aes(color=Country)) +
-    #geom_text_repel(aes(label=Location)) +
-    facet_grid(Country~.)
+    geom_line(aes(color=Country), size=1.5) +
+    geom_point(color='black', size=1.5) +
+    geom_text_repel(aes(label=Location), size=3, color='black', nudge_y=3) +
+    facet_grid(Country~.) + ggtitle('Region Peaks by Time, per Country') + ylab('Weekly cases')
+```
 
+The above graph shows that there are also different 'peaking' patterns within countries. Regions in Guinea peak in a more homogeneous way througout the duration of the outbreak. On the other hand, Liberia has a ver early and high peak. Sierra Leaone has increasing peaks that lead up to the most important one in Freetown (Western Area Urban). Again, a spatial and temproal correlation is suggested. 
+
+```{r}
 weeks_count <- c(60,70,80,85,90,95,100,105,110,115, 120,150)
 ggplot(data=filter(three_countries_map_complete, count_week%in%weeks_count), aes(x = long, y = lat, group = group, fill=Cum_peak)) +
     geom_polygon(color = "black", size = 0.25) +
@@ -681,6 +614,6 @@ ggplot(data=filter(three_countries_map_complete, count_week%in%weeks_count), aes
         scale_color_discrete(name='Country') +
     scale_fill_continuous(low='gray', high='dark red') +
     guides(fill='none') +
-    coord_map() +facet_wrap(~Weeks, ncol=4)
+    coord_map() +facet_wrap(~Weeks, ncol=4) + ggtitle('Timing of peaks per region')
 ```
 
